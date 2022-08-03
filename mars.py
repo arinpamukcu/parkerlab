@@ -1,9 +1,6 @@
 import os
 import numpy as np
 
-# upload MARS data
-# MARS_ctrl = '/content/' + mouse + '_raw_feat_top_v1_8.npz'
-# MARS_amph = '/content/' + mouse + '_amph_raw_feat_top_v1_8.npz'
 
 def get_mars_dir(drug, dose, animal_id):
     behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
@@ -31,6 +28,7 @@ def mars_features(drug, dose, animal_id):
 
     # define
     feature_names = mars_ctrl['features']
+    feature_count = len(feature_names)
     features_ctrl_all = mars_ctrl['data_smooth'][0]
     features_amph_all = mars_amph['data_smooth'][0]
 
@@ -40,4 +38,5 @@ def mars_features(drug, dose, animal_id):
     features_ctrl = features_ctrl_some[::4, :]
     features_amph = features_amph_some[::4, :]
 
-    return feature_names, features_ctrl, features_amph
+    return feature_count, feature_names, features_ctrl, features_amph
+

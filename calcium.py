@@ -2,12 +2,8 @@
 import os
 import pandas as pd
 import numpy as np
-from scipy.ndimage import gaussian_filter1d
 from scipy.signal import find_peaks
 
-# upload calcium data
-# mouse = '20200110_m040_clo01'
-# file_calcium = mouse + '_neurons_dv.csv'
 
 def get_calcium_dir(drug, dose, animal_id):
     calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
@@ -33,9 +29,9 @@ def get_calcium_data(drug, dose, animal_id):
     # print("time during ctrl: " + str(time_ctrl))
     # print("time during amph: " + str(time_amph))
 
-    # smooth
-    calcium_ctrl_smooth = gaussian_filter1d(calcium_ctrl, sigma=10)
-    calcium_amph_smooth = gaussian_filter1d(calcium_amph, sigma=10)
+    # # smooth
+    # calcium_ctrl_smooth = gaussian_filter1d(calcium_ctrl, sigma=10)
+    # calcium_amph_smooth = gaussian_filter1d(calcium_amph, sigma=10)
 
     return calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph
 
@@ -59,6 +55,7 @@ def binarize_calcium(drug, dose, animal_id):
             events_amph[n, peaks_amph[t]] = 1
 
     # spikecount
+    # after you binarize per neuron, change the sum to mean
     eventcount_ctrl = np.sum(np.array(events_ctrl), axis=0)
     eventcount_amph = np.sum(np.array(events_amph), axis=0)
 
