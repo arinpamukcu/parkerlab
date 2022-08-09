@@ -4,7 +4,7 @@
 
 from mars import *
 from calcium_old import *
-from test import *
+from info import *
 from time import sleep
 from progressbar import progressbar
 
@@ -20,15 +20,15 @@ def event_per_speed():
     dose = 'Vehicle'
     for drug in drugs:
 
-        animal_ids = get_animal_id(drug, dose)
+        experiments, animal_ids = get_animal_id(drug, dose)
 
-        for animal_id in animal_ids:
-            print(animal_id)
+        for experiment in experiments:
+            print(experiment)
 
-            calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, animal_id)
-            eventcount_ctrl, eventcount_amph = binarize_calcium(drug, dose, animal_id)
+            calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
+            eventcount_ctrl, eventcount_amph = binarize_calcium(drug, dose, experiment)
 
-            feature_count, feature_names, features_ctrl, features_amph = mars_features(drug, dose, animal_id)
+            feature_count, feature_names, features_ctrl, features_amph = mars_features(drug, dose, experiment)
 
             bin1_events_ctrl, bin2_events_ctrl, bin3_events_ctrl, bin4_events_ctrl, bin5_events_ctrl, bin6_events_ctrl = (
                 [] for i in range(6))
@@ -99,7 +99,7 @@ def event_per_speed():
 
             event_per_speed_concat = np.concatenate((event_per_speed_ctrl, event_per_speed_amph), axis=0)
             event_per_speed.append(event_per_speed_concat)
-            event_per_speed_dict[animal_id] = event_per_speed_concat
+            event_per_speed_dict[experiment] = event_per_speed_concat
 
             print(event_per_speed_concat)
 
