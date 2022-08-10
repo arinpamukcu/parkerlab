@@ -2,20 +2,26 @@
 # x-axis: Locomotor speed bin (cm/s)
 # bin: <0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
 
-from mars import *
 from calcium import *
 from info import *
+import numpy as np
+import matplotlib.pyplot as plt
 
 def event_per_speed():
-    event_per_speed = []
-    event_per_speed_dict = {}
+    # event_per_speed_dict = {}
+    # event_per_speed_ctrl_all = []
+    # event_per_speed_amph_all = []
+    D1_event_per_speed_ctrl = []
+    D1_event_per_speed_amph = []
+    D2_event_per_speed_ctrl = []
+    D2_event_per_speed_amph = []
 
-    # drugs = get_drug()
-    drugs = ['SCH23390']
+    drugs = get_drug()
+    # drugs = ['Clozapine','Haloperidol']
     dose = 'Vehicle'
     for drug in drugs:
 
-        experiments, animal_ids = get_animal_id(drug, dose)
+        experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
 
         for experiment in experiments:
             print(experiment)
@@ -57,7 +63,8 @@ def event_per_speed():
                                     (np.sum(bin4_events_ctrl)/bin4_duration_ctrl)*300,
                                     (np.sum(bin5_events_ctrl)/bin5_duration_ctrl)*300,
                                     (np.sum(bin6_events_ctrl)/bin6_duration_ctrl)*300]
-            # divide by time spent per binned speed or divide by 5hz*60 (300)
+            # event_per_speed_ctrl_all.append(event_per_speed_ctrl)
+            # print(event_per_speed_ctrl)
 
             for t in range(0, len(speed_amph)):
                 if speed_amph[t] < 0.5:
@@ -85,13 +92,35 @@ def event_per_speed():
                                     (np.sum(bin4_events_amph)/bin4_duration_amph)*300,
                                     (np.sum(bin5_events_amph)/bin5_duration_amph)*300,
                                     (np.sum(bin6_events_amph)/bin6_duration_amph)*300]
+            # event_per_speed_amph_all.append(event_per_speed_amph)
+            # print(event_per_speed_amph)
 
-            event_per_speed_concat = np.concatenate((event_per_speed_ctrl, event_per_speed_amph), axis=0)
-            event_per_speed.append(event_per_speed_concat)
-            event_per_speed_dict[experiment] = event_per_speed_concat
+            # event_per_speed_dict[experiment] = [event_per_speed_ctrl, event_per_speed_amph]
 
-            print(event_per_speed_concat)
+            if experiment in D1_folders:
+                D1_event_per_speed_ctrl.append(event_per_speed_ctrl)
+                D1_event_per_speed_amph.append(event_per_speed_amph)
 
+            elif experiment in D2_folders:
+                D2_event_per_speed_ctrl.append(event_per_speed_ctrl)
+                D2_event_per_speed_amph.append(event_per_speed_amph)
 
-    return event_per_speed_dict
+    print(len(D1_event_per_speed_ctrl))
+    print(len(D1_event_per_speed_amph))
+    print(len(D2_event_per_speed_ctrl))
+    print(len(D2_event_per_speed_amph))
+
+    plt.figure(figsize=(6, 4))
+    plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='d1-ctrl')
+    plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='d2-amph')
+    x_default = [0, 1, 2, 3, 4, 5];
+    x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14'];
+    plt.xticks(x_default, x_new);
+    plt.xlabel('Locomotor speed bin (cm/s)')
+    plt.ylabel('Ca event rate (event/min)')
+    plt.title("D1 SPNs")
+    plt.legend()
+    plt.show()
+
+    return
 

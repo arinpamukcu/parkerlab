@@ -2,7 +2,6 @@
 # x-axis: Locomotor speed bin (cm/s)
 # bin: <0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
 
-from mars import *
 from calcium import *
 from info import *
 
@@ -11,7 +10,7 @@ def event_per_speed():
     event_per_speed_dict = {}
 
     # drugs = get_drug()
-    drugs = ['SCH23390']
+    drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
 
