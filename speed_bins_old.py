@@ -15,8 +15,7 @@ def event_per_speed():
     event_per_speed = []
     event_per_speed_dict = {}
 
-    # drugs = get_drug()
-    drugs = ['SCH23390']
+    drugs = get_drug()
     dose = 'Vehicle'
     for drug in drugs:
 
@@ -67,8 +66,6 @@ def event_per_speed():
                                             (np.sum(bin4_events_ctrl)/bin4_duration_ctrl)*300,
                                             (np.sum(bin5_events_ctrl)/bin5_duration_ctrl)*300,
                                             (np.sum(bin6_events_ctrl)/bin6_duration_ctrl)*300]
-                    # print(event_per_speed_ctrl)
-                    # divide by time spent per binned speed or divide by 5hz*60 (300)
 
                     for t in range(0, len(features_amph)):
                         if features_amph[t, ft] < 0.5:

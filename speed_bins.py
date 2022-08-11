@@ -8,13 +8,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def event_per_speed():
+    # event_per_speed_dict = {}
     D1_event_per_speed_ctrl = []
     D1_event_per_speed_amph = []
     D2_event_per_speed_ctrl = []
     D2_event_per_speed_amph = []
 
-    # drugs = get_drug()
-    drugs = ['Clozapine']
+    drugs = get_drug()
     dose = 'Vehicle'
     for drug in drugs:
 
@@ -60,7 +60,6 @@ def event_per_speed():
                                     (np.sum(bin4_events_ctrl)/bin4_duration_ctrl)*300,
                                     (np.sum(bin5_events_ctrl)/bin5_duration_ctrl)*300,
                                     (np.sum(bin6_events_ctrl)/bin6_duration_ctrl)*300]
-            # event_per_speed_ctrl_all.append(event_per_speed_ctrl)
 
             for t in range(0, len(speed_amph)):
                 if speed_amph[t] < 0.5:
@@ -88,7 +87,6 @@ def event_per_speed():
                                     (np.sum(bin4_events_amph)/bin4_duration_amph)*300,
                                     (np.sum(bin5_events_amph)/bin5_duration_amph)*300,
                                     (np.sum(bin6_events_amph)/bin6_duration_amph)*300]
-            # event_per_speed_amph_all.append(event_per_speed_amph)
 
             # event_per_speed_dict[experiment] = [event_per_speed_ctrl, event_per_speed_amph]
 
