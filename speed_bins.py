@@ -8,16 +8,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def event_per_speed():
-    # event_per_speed_dict = {}
-    # event_per_speed_ctrl_all = []
-    # event_per_speed_amph_all = []
     D1_event_per_speed_ctrl = []
     D1_event_per_speed_amph = []
     D2_event_per_speed_ctrl = []
     D2_event_per_speed_amph = []
 
-    drugs = get_drug()
-    # drugs = ['Clozapine','Haloperidol']
+    # drugs = get_drug()
+    drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
 
@@ -64,7 +61,6 @@ def event_per_speed():
                                     (np.sum(bin5_events_ctrl)/bin5_duration_ctrl)*300,
                                     (np.sum(bin6_events_ctrl)/bin6_duration_ctrl)*300]
             # event_per_speed_ctrl_all.append(event_per_speed_ctrl)
-            # print(event_per_speed_ctrl)
 
             for t in range(0, len(speed_amph)):
                 if speed_amph[t] < 0.5:
@@ -93,7 +89,6 @@ def event_per_speed():
                                     (np.sum(bin5_events_amph)/bin5_duration_amph)*300,
                                     (np.sum(bin6_events_amph)/bin6_duration_amph)*300]
             # event_per_speed_amph_all.append(event_per_speed_amph)
-            # print(event_per_speed_amph)
 
             # event_per_speed_dict[experiment] = [event_per_speed_ctrl, event_per_speed_amph]
 
@@ -105,20 +100,27 @@ def event_per_speed():
                 D2_event_per_speed_ctrl.append(event_per_speed_ctrl)
                 D2_event_per_speed_amph.append(event_per_speed_amph)
 
-    print(len(D1_event_per_speed_ctrl))
-    print(len(D1_event_per_speed_amph))
-    print(len(D2_event_per_speed_ctrl))
-    print(len(D2_event_per_speed_amph))
-
-    plt.figure(figsize=(6, 4))
-    plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='d1-ctrl')
-    plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='d2-amph')
+    plt.figure(figsize=(4, 8))
+    ax = plt.subplot(2, 1, 1)
+    plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='D1 ctrl', color='k')
+    plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='D2 amph')
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14'];
     plt.xticks(x_default, x_new);
     plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title("D1 SPNs")
+    plt.legend()
+
+    ax = plt.subplot(2, 1, 2)
+    plt.plot(np.mean(D2_event_per_speed_ctrl, axis=0), label='D2 ctrl', color='k')
+    plt.plot(np.mean(D2_event_per_speed_amph, axis=0), label='D2 amph')
+    x_default = [0, 1, 2, 3, 4, 5];
+    x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14'];
+    plt.xticks(x_default, x_new);
+    plt.xlabel('Locomotor speed bin (cm/s)')
+    plt.ylabel('Ca event rate (event/min)')
+    plt.title("D2 SPNs")
     plt.legend()
     plt.show()
 

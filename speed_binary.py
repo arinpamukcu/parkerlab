@@ -15,6 +15,8 @@ def event_per_speed():
     for drug in drugs:
 
         experiments, animal_ids = get_animal_id(drug, dose)
+        print(experiments)
+        print(animal_ids)
 
         for experiment in experiments:
             print(experiment)
