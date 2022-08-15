@@ -5,19 +5,19 @@ import numpy as np
 from scipy.io import loadmat
 
 
-def get_dir(drug, dose, animal_id):
+def get_dir(drug, dose, experiment):
     calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_JP'
-    calcium_ctrl_path = os.path.join(calcium_dir, drug, dose, animal_id, 'veh_drug.mat')
-    calcium_amph_path = os.path.join(calcium_dir, drug, dose, animal_id + '_amph', 'amph_drug.mat')
+    calcium_ctrl_path = os.path.join(calcium_dir, drug, dose, experiment, 'veh_drug.mat')
+    calcium_amph_path = os.path.join(calcium_dir, drug, dose, experiment + '_amph', 'amph_drug.mat')
 
     return calcium_ctrl_path, calcium_amph_path
 
 
-def get_data(drug, dose, animal_id):
+def get_data(drug, dose, experiment):
     # reshape
     # ctrl: 15 min * 60 sec * 5 Hz sampling rate = 4500
     # amph: 45 min * 60 sec * 5 Hz sampling rate = 13500
-    calcium_ctrl_path, calcium_amph_path = get_dir(drug, dose, animal_id)
+    calcium_ctrl_path, calcium_amph_path = get_dir(drug, dose, experiment)
 
     mat_ctrl = loadmat(calcium_ctrl_path)
     speed_ctrl = mat_ctrl['veh_drug']['speed_traces_5hz'][0][0][0, :4500]
@@ -41,4 +41,4 @@ def get_data(drug, dose, animal_id):
     # print("time during ctrl: " + str(time_ctrl))
     # print("time during amph: " + str(time_amph))
 
-    return speed_ctrl, speed_amph, eventmean_ctrl, eventmean_amph, neuron
+    return speed_ctrl, speed_amph, calcium_ctrl_events, calcium_amph_events, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph

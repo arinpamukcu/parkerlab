@@ -25,7 +25,8 @@ def event_per_speed():
         for experiment in experiments:
             print(experiment)
 
-            speed_ctrl, speed_amph, eventmean_ctrl, eventmean_amph, neuron = get_data(drug, dose, experiment)
+            speed_ctrl, speed_amph, calcium_ctrl_events, calcium_amph_events, \
+            eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
             bin1_events_ctrl, bin2_events_ctrl, bin3_events_ctrl, bin4_events_ctrl, bin5_events_ctrl, bin6_events_ctrl = (
                 [] for i in range(6))

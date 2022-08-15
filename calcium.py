@@ -1,23 +1,23 @@
 # TO-DO: add preprocessing: take the derivative of the normalized Ca traces and remove any negative values
+
 import os
 import pandas as pd
 import numpy as np
 from scipy.signal import find_peaks
 
-
-def get_calcium_dir(drug, dose, animal_id):
+def get_calcium_dir(drug, dose, experiment):
     calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
-    calcium_file = animal_id + '_neurons_dv.csv'
-    calcium_path = os.path.join(calcium_dir, drug, dose, animal_id, calcium_file)
+    calcium_file = experiment + '_neurons_dv.csv'
+    calcium_path = os.path.join(calcium_dir, drug, dose, experiment, calcium_file)
 
     return calcium_path
 
 
-def get_calcium_data(drug, dose, animal_id):
+def get_calcium_data(drug, dose, experiment):
     # reshape
     # ctrl: 15 min * 60 sec * 5 Hz sampling rate = 4500
     # amph: 45 min * 60 sec * 5 Hz sampling rate = 13500
-    calcium = pd.read_csv(get_calcium_dir(drug, dose, animal_id), header=None)
+    calcium = pd.read_csv(get_calcium_dir(drug, dose, experiment), header=None)
     calcium_ctrl = np.array(calcium.iloc[:, :4500])
     calcium_amph = np.array(calcium.iloc[:, 4500:18000])
 
@@ -36,8 +36,8 @@ def get_calcium_data(drug, dose, animal_id):
     return calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph
 
 
-def binarize_calcium(drug, dose, animal_id):
-    calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, animal_id)
+def binarize_calcium(drug, dose, experiment):
+    calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
 
     # binarize
     events_ctrl = np.zeros((neuron, time_ctrl))
@@ -62,4 +62,4 @@ def binarize_calcium(drug, dose, animal_id):
     # eventcount_ctrl_total = np.sum(np.array(events_ctrl))
     # eventcount_amph_total = np.sum(np.array(events_amph))
 
-    return eventcount_ctrl, eventcount_amph
+    return events_ctrl, events_amph
