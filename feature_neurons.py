@@ -2,7 +2,7 @@ from data import *
 # from mars import *
 # from calcium import *
 
-def speed_neurons(drug, dose, experiment):
+def get_speed_neurons(drug, dose, experiment):
     speed_ctrl, speed_amph, calcium_ctrl_events, calcium_amph_events, \
     eventmean_ctrl, eventmean_amph, neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
@@ -14,9 +14,10 @@ def speed_neurons(drug, dose, experiment):
                 event_time.append(frame)
         if all(np.mean(speed_ctrl[time:time + 5]) >= 0.5 for time in event_time) is True:
             speed_neurons.append(calcium_ctrl_events[neuron, :])
-            # print(neuron)
 
-    print(len(speed_neurons))
+    speed_neurons = np.array(speed_neurons)
+
+    return speed_neurons
 
 # def speed_neurons(drug, dose, experiment):
 #     calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)

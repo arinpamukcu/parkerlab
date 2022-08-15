@@ -4,15 +4,20 @@
 
 from data import *
 from info import *
+from feature_neurons import *
+import matplotlib.pyplot as plt
 
 def event_trig_avg():
 
-    # drugs = ['Clozapine']
-    drugs = get_drug()
+    spike_trig_avg_all = []
+
+    drugs = ['Clozapine']
+    # drugs = get_drug()
     dose = 'Vehicle'
     for drug in drugs:
 
         experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
+        spike_trig_avg_perdrug = []
 
         for experiment in experiments:
             print(experiment)
@@ -20,37 +25,47 @@ def event_trig_avg():
             speed_ctrl, speed_amph, calcium_ctrl_events, calcium_amph_events, \
             eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
-            bin1_events_ctrl, bin2_events_ctrl = ([] for i in range(2))
-            bin1_events_amph, bin2_events_amph = ([] for i in range(2))
-            bin1_duration_ctrl, bin2_duration_ctrl = (0 for i in range(2))
-            bin1_duration_amph, bin2_duration_amph = (0 for i in range(2))
+            # if you just want to use speed neurons for your analysis
+            speed_neurons = get_speed_neurons(drug, dose, experiment)
+            print(len(speed_neurons))
 
-            for t in range(0, len(speed_ctrl)):
-                if speed_ctrl[t] <= 1:
-                    bin1_events_ctrl.append(eventmean_ctrl[t])
-                    bin1_duration_ctrl += 1
-                if 1 < speed_ctrl[t]:
-                    bin2_events_ctrl.append(eventmean_ctrl[t])
-                    bin2_duration_ctrl += 1
+            # remove events in first 25 and last 25 frames (is this okay to do?)
+            window = 25
+            window_zeros = np.zeros((len(speed_neurons), window))
+            speed_neurons_modified = np.hstack((window_zeros, speed_neurons[:, window:-window]))
+            speed_neurons_modified = np.hstack((speed_neurons_modified, window_zeros))
 
-            event_per_speed_ctrl = [(np.sum(bin1_events_ctrl)/bin1_duration_ctrl)*300,
-                                    (np.sum(bin2_events_ctrl)/bin2_duration_ctrl)*300]
+            # find spike triggered average per neuron and per all
+            spike_trig_avg_peranimal = []
 
-            for t in range(0, len(speed_amph)):
-                if speed_amph[t] <= 1:
-                    bin1_events_amph.append(eventmean_amph[t])
-                    bin1_duration_amph += 1
-                if 1 < speed_amph[t] < 14:
-                    bin2_events_amph.append(eventmean_amph[t])
-                    bin2_duration_amph += 1
+            for neuron in range(0, len(speed_neurons_modified)):
+                spike_trig = []
+                for frame in range(0, time_ctrl):
+                    if speed_neurons_modified[neuron, frame] == 1:
+                        spike_trig.append(speed_ctrl[frame-25:frame+26])
 
-            event_per_speed_amph = [(np.sum(bin1_events_amph)/bin1_duration_amph)*300,
-                                    (np.sum(bin2_events_amph)/bin2_duration_amph)*300]
+                spike_trig_avg = np.mean(spike_trig, axis=0)
+                spike_trig_avg_peranimal.append(spike_trig_avg)
 
-            event_per_speed_concat = np.concatenate((event_per_speed_ctrl, event_per_speed_amph), axis=0)
-            event_per_speed_dict[experiment] = event_per_speed_concat
+            spike_trig_avg_peranimal = np.mean(spike_trig_avg_peranimal, axis=0)
+            spike_trig_avg_perdrug.append(spike_trig_avg_peranimal)
 
-            print(event_per_speed_concat)
+        spike_trig_avg_perdrug = np.mean(spike_trig_avg_perdrug, axis=0)
+        spike_trig_avg_all.append(spike_trig_avg_perdrug)
+
+    spike_trig_avg_all = np.mean(spike_trig_avg_all, axis=0)
+
+    plt.figure(figsize=(6, 4))
+    plt.plot(spike_trig_avg_all, color='k')
+    x_default = [0, 25, 50];
+    x_new = ['-25', '0', '+25'];
+    plt.xticks(x_default, x_new);
+    plt.ylim((0, 5))
+    plt.xlabel('Frames from event time at 0')
+    plt.ylabel('Speed (cm/s)')
+    plt.title("Event triggered average")
+    plt.legend()
+    plt.show()
 
     return
 
