@@ -4,10 +4,10 @@ from data import *
 
 def speed_neurons(drug, dose, experiment):
     speed_ctrl, speed_amph, calcium_ctrl_events, calcium_amph_events, \
-    eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+    eventmean_ctrl, eventmean_amph, neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
     speed_neurons = []
-    for neuron in range(0, neuron):
+    for neuron in range(0, neuron_count):
         event_time = []
         for frame in range(0, time_ctrl):
             if calcium_ctrl_events[neuron, frame] == 1:
