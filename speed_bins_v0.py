@@ -3,7 +3,7 @@
 # bin: <0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
 
 from mars import *
-from calcium_old import *
+from calcium import *
 from info import *
 from time import sleep
 from progressbar import progressbar
@@ -24,7 +24,7 @@ def event_per_speed():
         for experiment in experiments:
             print(experiment)
 
-            calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
+            # calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
             eventcount_ctrl, eventcount_amph = binarize_calcium(drug, dose, experiment)
 
             feature_count, feature_names, features_ctrl, features_amph = mars_features(drug, dose, experiment)
