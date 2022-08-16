@@ -1,3 +1,4 @@
+Created by Arin Pamukcu, PhD on August 2022
 
 def perform_glm():
     timeSplit = 1500

@@ -1,6 +1,7 @@
+Created by Arin Pamukcu, PhD on August 2022
+
 import os
 import numpy as np
-
 
 def get_mars_dir(drug, dose, experiment):
     behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'

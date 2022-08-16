@@ -1,6 +1,4 @@
-# y-axis: Ca event rate (event/min)
-# x-axis: Locomotor speed bin (cm/s)
-# bin: <0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
+Created by Arin Pamukcu, PhD on August 2022
 
 from data import *
 from info import *
@@ -41,7 +39,7 @@ def event_trig_avg():
             for neuron in range(0, len(speed_neurons_modified)):
                 spike_trig = []
                 for frame in range(0, time_ctrl):
-                    if speed_neurons_modified[neuron, frame] == 1:
+                    if speed_neurons_modified[neuron, frame] == 1: #if speed neurons have an event
                         spike_trig.append(speed_ctrl[frame-25:frame+26])
 
                 spike_trig_avg = np.mean(spike_trig, axis=0)

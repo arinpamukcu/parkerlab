@@ -1,3 +1,5 @@
+Created by Arin Pamukcu, PhD on August 2022
+
 # y-axis: Ca event rate (event/min)
 # x-axis: Locomotor speed bin (cm/s)
 # bin: <0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14

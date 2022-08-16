@@ -1,3 +1,5 @@
+Created by Arin Pamukcu, PhD on August 2022
+
 # TO-DO: add preprocessing: take the derivative of the normalized Ca traces and remove any negative values
 
 import os

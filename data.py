@@ -1,4 +1,5 @@
-# TO-DO: add preprocessing: take the derivative of the normalized Ca traces and remove any negative values
+Created by Arin Pamukcu, PhD on August 2022
+
 import os
 import pandas as pd
 import numpy as np
