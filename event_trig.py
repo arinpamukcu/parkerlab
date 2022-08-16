@@ -1,4 +1,4 @@
-Created by Arin Pamukcu, PhD on August 2022
+# Created by Arin Pamukcu, PhD on August 2022
 
 from data import *
 from info import *
@@ -13,6 +13,7 @@ def event_trig_avg():
     # drugs = get_drug()
     dose = 'Vehicle'
     for drug in drugs:
+        print(drug)
 
         experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
         spike_trig_avg_perdrug = []
@@ -52,12 +53,13 @@ def event_trig_avg():
         spike_trig_avg_all.append(spike_trig_avg_perdrug)
 
     spike_trig_avg_all = np.mean(spike_trig_avg_all, axis=0)
+    print(spike_trig_avg_all)
 
     plt.figure(figsize=(6, 4))
     plt.plot(spike_trig_avg_all, color='k')
-    x_default = [0, 25, 50];
-    x_new = ['-25', '0', '+25'];
-    plt.xticks(x_default, x_new);
+    x_default = [0, 25, 50]
+    x_new = ['-25', '0', '+25']
+    plt.xticks(x_default, x_new)
     plt.ylim((0, 5))
     plt.xlabel('Frames from event time at 0')
     plt.ylabel('Speed (cm/s)')

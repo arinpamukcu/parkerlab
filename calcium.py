@@ -1,4 +1,4 @@
-Created by Arin Pamukcu, PhD on August 2022
+# Created by Arin Pamukcu, PhD on August 2022
 
 # TO-DO: add preprocessing: take the derivative of the normalized Ca traces and remove any negative values
 
@@ -7,8 +7,13 @@ import pandas as pd
 import numpy as np
 from scipy.signal import find_peaks
 
+# path for pc
+# calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
+
+# path for mac
+calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium'
+
 def get_calcium_dir(drug, dose, experiment):
-    calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
     calcium_file = experiment + '_neurons_dv.csv'
     calcium_path = os.path.join(calcium_dir, drug, dose, experiment, calcium_file)
 

@@ -1,13 +1,14 @@
-Created by Arin Pamukcu, PhD on August 2022
+# Created by Arin Pamukcu, PhD on August 2022
 
 import os
 
-# iterate over files in
-# that directory
+# path for pc
+# calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
+
+# path for mac
+calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium'
 
 def get_drug():
-
-    calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
 
     drugs = []
     for folder in next(os.walk(calcium_dir))[1]:
@@ -19,7 +20,6 @@ def get_drug():
 
 def get_dose(drug):
 
-    calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
     temp_path = os.path.join(calcium_dir, drug)
 
     doses = []
@@ -32,7 +32,6 @@ def get_dose(drug):
 
 def get_animal_id(drug, dose):
 
-    calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
     temp_path = os.path.join(calcium_dir, drug, dose)
 
     D1_animals = ['m085', 'm040', 'm298', 'm404', 'f487', 'f694', 'f857', 'f859', 'm794', 'm797', 'm795']

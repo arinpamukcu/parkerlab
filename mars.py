@@ -1,10 +1,15 @@
-Created by Arin Pamukcu, PhD on August 2022
+# Created by Arin Pamukcu, PhD on August 2022
 
 import os
 import numpy as np
 
+# path for pc
+# behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
+
+# path for mac
+behavior_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Behavior'
+
 def get_mars_dir(drug, dose, experiment):
-    behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
 
     animal_id_amph = experiment + '_amph'
 
