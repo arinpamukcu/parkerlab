@@ -34,7 +34,6 @@ def event_trig_avg():
             window_zeros = np.zeros((len(speed_neurons), window))
             speed_neurons_modified = np.hstack((window_zeros, speed_neurons[:, window:-window]))
             speed_neurons_modified = np.hstack((speed_neurons_modified, window_zeros))
-            print(len(speed_neurons_modified))
 
             # find spike triggered average per neuron and per all
             spike_trig_avg_peranimal = []
