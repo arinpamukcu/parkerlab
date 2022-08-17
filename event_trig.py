@@ -27,14 +27,14 @@ def event_trig_avg():
 
             # if you just want to use speed neurons for your analysis
             speed_neurons = get_speed_neurons(drug, dose, experiment)
-            print(len(speed_neurons))
+            # print(len(speed_neurons))
 
             # remove events in first 25 and last 25 frames (is this okay to do?)
             window = 25
             window_zeros = np.zeros((len(speed_neurons), window))
             speed_neurons_modified = np.hstack((window_zeros, speed_neurons[:, window:-window]))
             speed_neurons_modified = np.hstack((speed_neurons_modified, window_zeros))
-            print(len(speed_neurons))
+            # print(len(speed_neurons))
 
             # find spike triggered average per neuron and per all
             spike_trig_avg_peranimal = []
@@ -43,10 +43,9 @@ def event_trig_avg():
                 spike_trig = []
                 for frame in range(0, time_ctrl):
                     if speed_neurons_modified[neuron, frame] == 1: #if speed neurons have an event
-                        print("yes")
                         spike_trig.append(speed_ctrl[frame-25:frame+26])
 
-                pdb.set_trace()
+                # pdb.set_trace()
                 spike_trig_avg = np.mean(spike_trig, axis=0)
                 spike_trig_avg_peranimal.append(spike_trig_avg)
 
