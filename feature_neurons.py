@@ -14,7 +14,9 @@ def get_speed_neurons(drug, dose, experiment):
         for frame in range(0, time_ctrl):
             if calcium_ctrl_events[neuron, frame] == 1:
                 event_time.append(frame)
-        if all(np.mean(speed_ctrl[time:time + 5]) >= 0.5 for time in event_time) is True:
+        # look for those neurons that have events (event_time is not just 0)
+        # if average of speed at the current frame up until 5 frames later is more than 0.5 cm/s
+        if len(event_time) is not 0 and all(np.mean(speed_ctrl[time:time + 5]) >= 0.5 for time in event_time) is True:
             speed_neurons.append(calcium_ctrl_events[neuron, :])
 
     speed_neurons = np.array(speed_neurons)

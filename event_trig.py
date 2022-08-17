@@ -4,6 +4,7 @@ from data import *
 from info import *
 from feature_neurons import *
 import matplotlib.pyplot as plt
+import pdb
 
 def event_trig_avg():
 
@@ -33,6 +34,7 @@ def event_trig_avg():
             window_zeros = np.zeros((len(speed_neurons), window))
             speed_neurons_modified = np.hstack((window_zeros, speed_neurons[:, window:-window]))
             speed_neurons_modified = np.hstack((speed_neurons_modified, window_zeros))
+            print(len(speed_neurons))
 
             # find spike triggered average per neuron and per all
             spike_trig_avg_peranimal = []
@@ -41,8 +43,10 @@ def event_trig_avg():
                 spike_trig = []
                 for frame in range(0, time_ctrl):
                     if speed_neurons_modified[neuron, frame] == 1: #if speed neurons have an event
+                        print("yes")
                         spike_trig.append(speed_ctrl[frame-25:frame+26])
 
+                pdb.set_trace()
                 spike_trig_avg = np.mean(spike_trig, axis=0)
                 spike_trig_avg_peranimal.append(spike_trig_avg)
 
