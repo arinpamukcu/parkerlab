@@ -11,7 +11,7 @@ behavior_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Be
 
 def get_mars_dir(drug, dose, experiment):
 
-    animal_id_amph = experiment + '_amph'
+    experiment_amph = experiment + '_amph'
 
     mars_ctrl_output = 'Control\output_v1_8'
     mars_amph_output = 'Amph\output_v1_8'
@@ -19,13 +19,13 @@ def get_mars_dir(drug, dose, experiment):
     mars_ctrl_file = experiment + '_raw_feat_top_v1_8.npz'
     mars_amph_file = experiment + '_amph_raw_feat_top_v1_8.npz'
 
-    mars_ctrl_dir = os.path.join(behavior_dir, drug, dose, mars_ctrl_output, animal_id, mars_ctrl_file)
-    mars_amph_dir = os.path.join(behavior_dir, drug, dose, mars_amph_output, animal_id_amph, mars_amph_file)
+    mars_ctrl_dir = os.path.join(behavior_dir, drug, dose, mars_ctrl_output, experiment, mars_ctrl_file)
+    mars_amph_dir = os.path.join(behavior_dir, drug, dose, mars_amph_output, experiment_amph, mars_amph_file)
 
     return mars_ctrl_dir, mars_amph_dir
 
 
-def mars_features(drug, dose, experiment):
+def mars_data(drug, dose, experiment):
 
     mars_ctrl_dir, mars_amph_dir = get_mars_dir(drug, dose, experiment)
 
@@ -46,3 +46,14 @@ def mars_features(drug, dose, experiment):
 
     return feature_count, feature_names, features_ctrl, features_amph
 
+
+def mars_feature(drug, dose, experiment):
+
+    feature_count, feature_names, features_ctrl, features_amph = mars_data(drug, dose, experiment)
+
+    for ft in range(0, feature_count):
+        if feature_names[ft] == 'speed':
+            mars_speed_ctrl = features_ctrl[:, ft]
+            mars_speed_amph = features_ctrl[:, ft]
+
+        if feature_names[ft]

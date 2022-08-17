@@ -23,6 +23,7 @@ def get_speed_neurons(drug, dose, experiment):
 
     return speed_neurons
 
+# if you use our old data format:
 # def speed_neurons(drug, dose, experiment):
 #     calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
 #     events_ctrl, events_amph = binarize_calcium(drug, dose, animal_id)
