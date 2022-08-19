@@ -5,10 +5,10 @@ import math
 import numpy as np
 
 # path for pc
-# behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
+behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
 
-# path for mac
-behavior_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Behavior'
+# # path for mac
+# behavior_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Behavior'
 
 def get_mars_dir(drug, dose, experiment):
 
@@ -55,14 +55,15 @@ def mars_feature(drug, dose, experiment):
     for ft in range(0, feature_count):
         if feature_names[ft] == 'speed':
             mars_speed_ctrl = features_ctrl[:, ft]
-            mars_speed_amph = features_ctrl[:, ft]
+            mars_speed_amph = features_amph[:, ft]
 
-        if feature_names[ft] == 'angle_head_body_l'
-            mars_left_angle_ctrl = features_ctrl[:, ft]*(180)/math.pi
-            mars_left_angle_amph = features_ctrl[:, ft]*(180)/math.pi
+        if feature_names[ft] == 'angle_head_body_l':
+            mars_left_angle_ctrl = features_ctrl[:, ft] * 180/math.pi #convert from radians to degrees
+            mars_left_angle_amph = features_amph[:, ft] * 180/math.pi
 
-        if feature_names[ft] == 'angle_head_body_r'
-            mars_left_angle_ctrl = features_ctrl[:, ft]*(180)/math.pi
-            mars_left_angle_amph = features_ctrl[:, ft]*(180)/math.pi
+        if feature_names[ft] == 'angle_head_body_r':
+            mars_right_angle_ctrl = features_ctrl[:, ft] * 180/math.pi
+            mars_right_angle_amph = features_amph[:, ft] * 180/math.pi
 
-    return mars_speed_ctrl, mars_speed_amph, mars_left_angle_ctrl, mars_left_angle_amph
+    return mars_speed_ctrl, mars_speed_amph, \
+           mars_left_angle_ctrl, mars_left_angle_amph, mars_right_angle_ctrl, mars_right_angle_amph
