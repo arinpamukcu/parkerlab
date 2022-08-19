@@ -51,7 +51,8 @@ def event_trig_avg():
         spike_trig_avg_perdrug = np.nanmean(spike_trig_avg_perdrug, axis=0)
         spike_trig_avg_all.append(spike_trig_avg_perdrug)
 
-    spike_trig_avg_all = np.mean(spike_trig_avg_all, axis=0)
+    # pdb.set_trace()
+    spike_trig_avg_all = np.nanmean(spike_trig_avg_all, axis=0)
 
     plt.figure(figsize=(6, 4))
     plt.plot(spike_trig_avg_all, color='k')
