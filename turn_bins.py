@@ -9,12 +9,13 @@ from info import *
 from mars import *
 import numpy as np
 import matplotlib.pyplot as plt
+import pdb
 
 def event_per_left_turn():
-    D1_event_per_speed_ctrl = []
-    D1_event_per_speed_amph = []
-    D2_event_per_speed_ctrl = []
-    D2_event_per_speed_amph = []
+    D1_event_per_turn_ctrl = []
+    D1_event_per_turn_amph = []
+    D2_event_per_turn_ctrl = []
+    D2_event_per_turn_amph = []
 
     drugs = ['Clozapine']
     # drugs = get_drug()
@@ -95,17 +96,19 @@ def event_per_left_turn():
                                     (np.sum(bin6_events_amph)/bin6_duration_amph)*300]
 
             if experiment in D1_folders:
-                D1_event_per_speed_ctrl.append(event_per_turn_ctrl)
-                D1_event_per_speed_amph.append(event_per_turn_amph)
+                D1_event_per_turn_ctrl.append(event_per_turn_ctrl)
+                D1_event_per_turn_amph.append(event_per_turn_amph)
 
             elif experiment in D2_folders:
-                D2_event_per_speed_ctrl.append(event_per_turn_ctrl)
-                D2_event_per_speed_amph.append(event_per_turn_amph)
+                D2_event_per_turn_ctrl.append(event_per_turn_ctrl)
+                D2_event_per_turn_amph.append(event_per_turn_amph)
+
+            # pdb.set_trace()
 
     plt.figure(figsize=(4, 8))
     ax = plt.subplot(2, 1, 1)
-    plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='D1 ctrl', color='k')
-    plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='D1 amph', color='b')
+    plt.plot(np.mean(D1_event_per_turn_ctrl, axis=0), label='D1 ctrl', color='k')
+    plt.plot(np.mean(D1_event_per_turn_amph, axis=0), label='D1 amph', color='b')
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['30', '60', '90', '120', '150', '180'];
     plt.xticks(x_default, x_new);
@@ -116,8 +119,8 @@ def event_per_left_turn():
     plt.legend()
 
     ax = plt.subplot(2, 1, 2)
-    plt.plot(np.mean(D2_event_per_speed_ctrl, axis=0), label='D2 ctrl', color='k')
-    plt.plot(np.mean(D2_event_per_speed_amph, axis=0), label='D2 amph', color='r')
+    plt.plot(np.mean(D2_event_per_turn_ctrl, axis=0), label='D2 ctrl', color='k')
+    plt.plot(np.mean(D2_event_per_turn_amph, axis=0), label='D2 amph', color='r')
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['30', '60', '90', '120', '150', '180'];
     plt.xticks(x_default, x_new);
@@ -132,10 +135,10 @@ def event_per_left_turn():
 
 
 # def event_per_right_turn():
-#     D1_event_per_speed_ctrl = []
-#     D1_event_per_speed_amph = []
-#     D2_event_per_speed_ctrl = []
-#     D2_event_per_speed_amph = []
+#     D1_event_per_turn_ctrl = []
+#     D1_event_per_turn_amph = []
+#     D2_event_per_turn_ctrl = []
+#     D2_event_per_turn_amph = []
 #
 #     drugs = ['Clozapine']
 #     # drugs = get_drug()
@@ -216,17 +219,17 @@ def event_per_left_turn():
 #                                     (np.sum(bin6_events_amph)/bin6_duration_amph)*300]
 #
 #             if experiment in D1_folders:
-#                 D1_event_per_speed_ctrl.append(event_per_turn_ctrl)
-#                 D1_event_per_speed_amph.append(event_per_turn_amph)
+#                 D1_event_per_turn_ctrl.append(event_per_turn_ctrl)
+#                 D1_event_per_turn_amph.append(event_per_turn_amph)
 #
 #             elif experiment in D2_folders:
-#                 D2_event_per_speed_ctrl.append(event_per_turn_ctrl)
-#                 D2_event_per_speed_amph.append(event_per_turn_amph)
+#                 D2_event_per_turn_ctrl.append(event_per_turn_ctrl)
+#                 D2_event_per_turn_amph.append(event_per_turn_amph)
 #
 #     plt.figure(figsize=(4, 8))
 #     ax = plt.subplot(2, 1, 1)
-#     plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='D1 ctrl', color='k')
-#     plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='D1 amph', color='b')
+#     plt.plot(np.mean(D1_event_per_turn_ctrl, axis=0), label='D1 ctrl', color='k')
+#     plt.plot(np.mean(D1_event_per_turn_amph, axis=0), label='D1 amph', color='b')
 #     x_default = [0, 1, 2, 3, 4, 5];
 #     x_new = ['30', '60', '90', '120', '150', '180'];
 #     plt.xticks(x_default, x_new);
@@ -237,8 +240,8 @@ def event_per_left_turn():
 #     plt.legend()
 #
 #     ax = plt.subplot(2, 1, 2)
-#     plt.plot(np.mean(D2_event_per_speed_ctrl, axis=0), label='D2 ctrl', color='k')
-#     plt.plot(np.mean(D2_event_per_speed_amph, axis=0), label='D2 amph', color='r')
+#     plt.plot(np.mean(D2_event_per_turn_ctrl, axis=0), label='D2 ctrl', color='k')
+#     plt.plot(np.mean(D2_event_per_turn_amph, axis=0), label='D2 amph', color='r')
 #     x_default = [0, 1, 2, 3, 4, 5];
 #     x_new = ['30', '60', '90', '120', '150', '180'];
 #     plt.xticks(x_default, x_new);

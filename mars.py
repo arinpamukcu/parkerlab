@@ -3,6 +3,7 @@
 import os
 import math
 import numpy as np
+import pdb
 
 # path for pc
 behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
@@ -57,13 +58,14 @@ def mars_feature(drug, dose, experiment):
             mars_speed_ctrl = features_ctrl[:, ft]
             mars_speed_amph = features_amph[:, ft]
 
-        if feature_names[ft] == 'angle_head_body_l':
-            mars_left_angle_ctrl = features_ctrl[:, ft] * 180/math.pi #convert from radians to degrees
-            mars_left_angle_amph = features_amph[:, ft] * 180/math.pi
+        elif feature_names[ft] == 'angle_head_body_l':
+            mars_left_angle_ctrl = (features_ctrl[:, ft]+math.pi) * 180/math.pi #convert from radians to degrees
+            mars_left_angle_amph = (features_amph[:, ft]+math.pi) * 180/math.pi
 
-        if feature_names[ft] == 'angle_head_body_r':
+        elif feature_names[ft] == 'angle_head_body_r':
             mars_right_angle_ctrl = features_ctrl[:, ft] * 180/math.pi
             mars_right_angle_amph = features_amph[:, ft] * 180/math.pi
 
     return mars_speed_ctrl, mars_speed_amph, \
-           mars_left_angle_ctrl, mars_left_angle_amph, mars_right_angle_ctrl, mars_right_angle_amph
+           mars_left_angle_ctrl, mars_left_angle_amph, \
+           mars_right_angle_ctrl, mars_right_angle_amph
