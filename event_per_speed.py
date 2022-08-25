@@ -10,12 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def event_per_speed():
-    # event_per_speed_dict = {}
-    D1_event_per_speed_ctrl = []
-    D1_event_per_speed_amph = []
-    D2_event_per_speed_ctrl = []
-    D2_event_per_speed_amph = []
-
     # drugs = ['Clozapine']
     drugs = get_drug()
     dose = 'Vehicle'
@@ -24,11 +18,16 @@ def event_per_speed():
 
         experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
 
+        D1_event_per_speed_ctrl = []
+        D1_event_per_speed_amph = []
+        D2_event_per_speed_ctrl = []
+        D2_event_per_speed_amph = []
+
         for experiment in experiments:
             print(experiment)
 
-            speed_ctrl, speed_amph, calcium_ctrl_events, calcium_amph_events, \
-            eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            speed_ctrl, speed_amph, _, _, _, _, \
+            eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
 
             bin1_events_ctrl, bin2_events_ctrl, bin3_events_ctrl, bin4_events_ctrl, bin5_events_ctrl, bin6_events_ctrl = (
                 [] for i in range(6))
@@ -103,7 +102,7 @@ def event_per_speed():
                 D2_event_per_speed_ctrl.append(event_per_speed_ctrl)
                 D2_event_per_speed_amph.append(event_per_speed_amph)
 
-    plt.figure(figsize=(4, 8))
+    plt.figure(figsize=(6, 8))
     ax = plt.subplot(2, 1, 1)
     plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='D1 ctrl', color='k')
     plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='D1 amph', color='b')
