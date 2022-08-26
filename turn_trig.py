@@ -5,14 +5,13 @@ from info import *
 from mars import *
 from speed_neurons import *
 import matplotlib.pyplot as plt
-import pdb
 
 def turn_trig_ctrl():
     D1_turn_trig_avg_ctrl_all = []
     D2_turn_trig_avg_ctrl_all = []
 
-    # drugs = get_drug()
-    drugs = ['Clozapine']
+    drugs = get_drug()
+    # drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
         print(drug)
@@ -75,8 +74,8 @@ def turn_trig_amph():
     D1_turn_trig_avg_amph_all = []
     D2_turn_trig_avg_amph_all = []
 
-    # drugs = get_drug()
-    drugs = ['Clozapine']
+    drugs = get_drug()
+    # drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
         print(drug + '_amph')
@@ -140,7 +139,7 @@ def turn_trig_plot():
     D1_turn_trig_avg_ctrl_all, D2_turn_trig_avg_ctrl_all = turn_trig_ctrl()
     D1_turn_trig_avg_amph_all, D2_turn_trig_avg_amph_all = turn_trig_amph()
 
-    plt.figure(figsize=(6, 8))
+    plt.figure(figsize=(6, 10))
     ax = plt.subplot(2, 1, 1)
     # plt.plot(D1_turn_trig_avg_ctrl_all, color='k', label='D1 ctrl')
     plt.plot(D2_turn_trig_avg_ctrl_all, color='k', label='D2 ctrl')
@@ -148,7 +147,7 @@ def turn_trig_plot():
     x_new = ['-25', '0', '+25']
     plt.xticks(x_default, x_new)
     plt.xlabel('Time (5hz) from left turn bout at time at 0')
-    plt.ylabel('Speed (cm/s)')
+    plt.ylabel('Turn (degrees)')
     plt.title('Left turn trig avg CTRL')
     plt.legend()
 
@@ -159,7 +158,7 @@ def turn_trig_plot():
     x_new = ['-25', '0', '+25']
     plt.xticks(x_default, x_new)
     plt.xlabel('Time (5hz) from left turn bout at time at 0')
-    plt.ylabel('Speed (cm/s)')
+    plt.ylabel('Turn (degrees)')
     plt.title('Left turn trig avg AMPH')
     plt.legend()
     plt.show()
