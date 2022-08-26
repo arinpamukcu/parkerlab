@@ -9,7 +9,7 @@ from info import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-def event_per_speed():
+def data():
     # drugs = ['Clozapine']
     drugs = get_drug()
     dose = 'Vehicle'
@@ -102,10 +102,37 @@ def event_per_speed():
                 D2_event_per_speed_ctrl.append(event_per_speed_ctrl)
                 D2_event_per_speed_amph.append(event_per_speed_amph)
 
+    return D1_event_per_speed_ctrl, D1_event_per_speed_amph, D2_event_per_speed_ctrl, D2_event_per_speed_amph
+            # D1_event_per_speed_ctrl_sem, D1_event_per_speed_amph_sem, D2_event_per_speed_ctrl_sem, D2_event_per_speed_amph_sem
+
+
+def plot():
+
+    # D1_event_per_speed_ctrl, D1_event_per_speed_amph, D1_event_per_speed_ctrl_sem, D1_event_per_speed_amph_sem, \
+    # D2_event_per_speed_ctrl, D2_event_per_speed_amph, D2_event_per_speed_ctrl_sem, D2_event_per_speed_amph_sem = data()
+    #
+    # D1_ctrl_yerr_hi = D1_event_per_speed_ctrl + D1_event_per_speed_ctrl_sem
+    # D1_ctrl_yerr_lo = D1_event_per_speed_ctrl - D1_event_per_speed_ctrl_sem
+    #
+    # D1_amph_yerr_hi = D1_event_per_speed_amph + D1_event_per_speed_amph_sem
+    # D1_amph_yerr_lo = D1_event_per_speed_amph - D1_event_per_speed_amph_sem
+    #
+    # D2_ctrl_yerr_hi = D2_event_per_speed_ctrl + D2_event_per_speed_ctrl_sem
+    # D2_ctrl_yerr_lo = D2_event_per_speed_ctrl - D2_event_per_speed_ctrl_sem
+    #
+    # D2_amph_yerr_hi = D2_event_per_speed_amph + D2_event_per_speed_amph_sem
+    # D2_amph_yerr_lo = D2_event_per_speed_amph - D2_event_per_speed_amph_sem
+    #
+    # x = range(51)
+
+    D1_event_per_speed_ctrl, D1_event_per_speed_amph, D2_event_per_speed_ctrl, D2_event_per_speed_amph = data()
+
     plt.figure(figsize=(6, 10))
     ax = plt.subplot(2, 1, 1)
     plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='D1 ctrl', color='k')
+    # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
     plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='D1 amph', color='b')
+    # plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14'];
     plt.xticks(x_default, x_new);
@@ -117,7 +144,9 @@ def event_per_speed():
 
     ax = plt.subplot(2, 1, 2)
     plt.plot(np.mean(D2_event_per_speed_ctrl, axis=0), label='D2 ctrl', color='k')
+    # plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
     plt.plot(np.mean(D2_event_per_speed_amph, axis=0), label='D2 amph', color='r')
+    # plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14'];
     plt.xticks(x_default, x_new);

@@ -6,12 +6,12 @@ from speed_neurons import *
 import matplotlib.pyplot as plt
 import pdb
 
-def spike_trig_ctrl():
+def ctrl():
     D1_spike_trig_avg_ctrl_all = []
     D2_spike_trig_avg_ctrl_all = []
 
-    # drugs = get_drug()
-    drugs = ['Clozapine']
+    drugs = get_drug()
+    # drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
         print(drug)
@@ -67,15 +67,19 @@ def spike_trig_ctrl():
     D1_spike_trig_avg_ctrl_all = np.nanmean(D1_spike_trig_avg_ctrl_all, axis=0)
     D2_spike_trig_avg_ctrl_all = np.nanmean(D2_spike_trig_avg_ctrl_all, axis=0)
 
-    return D1_spike_trig_avg_ctrl_all, D2_spike_trig_avg_ctrl_all
+    D1_spike_trig_avg_ctrl_sem = np.std(D1_spike_trig_avg_ctrl_all, axis=0) / np.sqrt(len(D1_spike_trig_avg_ctrl_all))
+    D2_spike_trig_avg_ctrl_sem = np.std(D2_spike_trig_avg_ctrl_all, axis=0) / np.sqrt(len(D2_spike_trig_avg_ctrl_all))
+
+    return D1_spike_trig_avg_ctrl_all, D2_spike_trig_avg_ctrl_all, \
+           D1_spike_trig_avg_ctrl_sem, D2_spike_trig_avg_ctrl_sem
 
 
-def spike_trig_amph():
+def amph():
     D1_spike_trig_avg_amph_all = []
     D2_spike_trig_avg_amph_all = []
 
-    # drugs = get_drug()
-    drugs = ['Clozapine']
+    drugs = get_drug()
+    # drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
         print(drug + '_amph')
@@ -132,37 +136,59 @@ def spike_trig_amph():
     D1_spike_trig_avg_amph_all = np.nanmean(D1_spike_trig_avg_amph_all, axis=0)
     D2_spike_trig_avg_amph_all = np.nanmean(D2_spike_trig_avg_amph_all, axis=0)
 
-    return D1_spike_trig_avg_amph_all, D2_spike_trig_avg_amph_all
+    D1_spike_trig_avg_amph_sem = np.std(D1_spike_trig_avg_amph_all, axis=0) / np.sqrt(len(D1_spike_trig_avg_amph_all))
+    D2_spike_trig_avg_amph_sem = np.std(D2_spike_trig_avg_amph_all, axis=0) / np.sqrt(len(D2_spike_trig_avg_amph_all))
+
+    return D1_spike_trig_avg_amph_all, D2_spike_trig_avg_amph_all, \
+           D1_spike_trig_avg_amph_sem, D2_spike_trig_avg_amph_sem
 
 
-def spike_trig_plot():
+def plot():
+    D1_spike_trig_avg_ctrl_all, D2_spike_trig_avg_ctrl_all, \
+    D1_spike_trig_avg_ctrl_sem, D2_spike_trig_avg_ctrl_sem = ctrl()
 
-    D1_spike_trig_avg_ctrl_all, D2_spike_trig_avg_ctrl_all = spike_trig_ctrl()
-    D1_spike_trig_avg_amph_all, D2_spike_trig_avg_amph_all = spike_trig_amph()
+    D1_spike_trig_avg_amph_all, D2_spike_trig_avg_amph_all, \
+    D1_spike_trig_avg_amph_sem, D2_spike_trig_avg_amph_sem = amph()
+
+    D1_ctrl_yerr_hi = D1_spike_trig_avg_ctrl_all + D1_spike_trig_avg_ctrl_sem
+    D1_ctrl_yerr_lo = D1_spike_trig_avg_ctrl_all - D1_spike_trig_avg_ctrl_sem
+
+    D2_ctrl_yerr_hi = D2_spike_trig_avg_ctrl_all + D2_spike_trig_avg_ctrl_sem
+    D2_ctrl_yerr_lo = D2_spike_trig_avg_ctrl_all - D2_spike_trig_avg_ctrl_sem
+
+    D1_amph_yerr_hi = D1_spike_trig_avg_amph_all + D1_spike_trig_avg_amph_sem
+    D1_amph_yerr_lo = D1_spike_trig_avg_amph_all - D1_spike_trig_avg_amph_sem
+
+    D2_amph_yerr_hi = D2_spike_trig_avg_amph_all + D2_spike_trig_avg_amph_sem
+    D2_amph_yerr_lo = D2_spike_trig_avg_amph_all - D2_spike_trig_avg_amph_sem
+
+    x = range(51)
 
     plt.figure(figsize=(6, 8))
     ax = plt.subplot(2, 1, 1)
     # plt.plot(D1_spike_trig_avg_ctrl_all, color='k', label='D1 ctrl')
+    # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
     plt.plot(D2_spike_trig_avg_ctrl_all, color='k', label='D2 ctrl')
+    plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
     x_default = [0, 25, 50]
     x_new = ['-25', '0', '+25']
     plt.xticks(x_default, x_new)
-    # plt.ylim((0, 5))
     plt.xlabel('Time (5hz) from Ca event at time at 0')
     plt.ylabel('Speed (cm/s)')
-    plt.title('Ca event trig avg CTRL')
+    plt.title('Ca event triggered speed average in CTRL')
     plt.legend()
 
     ax = plt.subplot(2, 1, 2)
     # plt.plot(D1_spike_trig_avg_amph_all, color='b', label='D1 amph')
+    # plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='k', alpha=0.2)
     plt.plot(D2_spike_trig_avg_amph_all, color='r', label='D2 amph')
+    plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
     x_default = [0, 25, 50]
     x_new = ['-25', '0', '+25']
     plt.xticks(x_default, x_new)
-    # plt.ylim((0, 5))
     plt.xlabel('Time (5hz) from Ca event at time at 0')
     plt.ylabel('Speed (cm/s)')
-    plt.title('Ca event trig avg AMPH')
+    plt.title('Ca event triggered speed average in AMPH')
     plt.legend()
     plt.show()
 
