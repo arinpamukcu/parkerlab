@@ -36,7 +36,7 @@ def ctrl():
             # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
             speed_ctrl_frames = []
             for frame in range(0, len(speed_ctrl_modified) - 4):
-                if 0.5 < speed_ctrl_modified[frame] < speed_ctrl_modified[frame + 1] < speed_ctrl_modified[frame + 2] < \
+                if 1 < speed_ctrl_modified[frame] < speed_ctrl_modified[frame + 1] < speed_ctrl_modified[frame + 2] < \
                         speed_ctrl_modified[frame + 3] < speed_ctrl_modified[frame + 4]:
                     frame = frame + window
                     speed_ctrl_frames.append(frame)
@@ -101,7 +101,7 @@ def amph():
             # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
             speed_amph_frames = []
             for frame in range(0, len(speed_amph_modified) - 4):
-                if 0.5 < speed_amph_modified[frame] < speed_amph_modified[frame + 1] < speed_amph_modified[frame + 2] < \
+                if 1 < speed_amph_modified[frame] < speed_amph_modified[frame + 1] < speed_amph_modified[frame + 2] < \
                         speed_amph_modified[frame + 3] < speed_amph_modified[frame + 4]:
                     frame = frame + window
                     speed_amph_frames.append(frame)
@@ -161,10 +161,10 @@ def plot():
 
     plt.figure(figsize=(6, 9))
     ax = plt.subplot(2, 1, 1)
-    # plt.plot(D1_speed_trig_dff_ctrl_all, color='k', label='D1 ctrl')
-    # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
-    plt.plot(D2_speed_trig_dff_ctrl_all, color='k', label='D2 ctrl')
-    plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
+    plt.plot(D1_speed_trig_dff_ctrl_all, color='k', label='D1 ctrl')
+    plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
+    # plt.plot(D2_speed_trig_dff_ctrl_all, color='k', label='D2 ctrl')
+    # plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
     x_default = [0, 25, 50]
     x_new = ['-25', '0', '+25']
     plt.xticks(x_default, x_new)
@@ -174,11 +174,11 @@ def plot():
     plt.legend()
 
     ax = plt.subplot(2, 1, 2)
-    # plt.plot(D1_speed_trig_dff_amph_all, color='b', label='D1 amph')
-    # plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
-    plt.plot(D2_speed_trig_dff_amph_all, color='r', label='D2 amph')
-    plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
-    x_default = [0, 25, 50]
+    plt.plot(D1_speed_trig_dff_amph_all, color='b', label='D1 amph')
+    plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
+    # plt.plot(D2_speed_trig_dff_amph_all, color='r', label='D2 amph')
+    # plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
+    # x_default = [0, 25, 50]
     x_new = ['-25', '0', '+25']
     plt.xticks(x_default, x_new)
     plt.xlabel('Time (5hz) from speed bout at time at 0')
