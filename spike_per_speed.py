@@ -130,9 +130,7 @@ def plot():
     plt.figure(figsize=(6, 9.5))
     plt.subplot(211)
     plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='D1 ctrl', color='k')
-    # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
     plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='D1 amph', color='b')
-    # plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14'];
     plt.xticks(x_default, x_new);
@@ -145,9 +143,7 @@ def plot():
 
     plt.subplot(212)
     plt.plot(np.mean(D2_event_per_speed_ctrl, axis=0), label='D2 ctrl', color='k')
-    # plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
     plt.plot(np.mean(D2_event_per_speed_amph, axis=0), label='D2 amph', color='r')
-    # plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14'];
     plt.xticks(x_default, x_new);
