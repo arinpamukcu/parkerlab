@@ -22,7 +22,7 @@ def ctrl():
         for experiment in experiments:
             print(experiment)
 
-            speed_ctrl, speed_amph, calcium_ctrl_dff, calcium_amph_dff, _, _, _, _, \
+            speed_ctrl, speed_amph, _, _, _, _, eventmean_ctrl, eventmean_amph, \
             neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
             # if you just want to use speed neurons for your analysis
@@ -41,13 +41,10 @@ def ctrl():
                     frame = frame + window
                     speed_ctrl_frames.append(frame)
 
-            # find average Ca event of neurons
-            calcium_ctrl_mean = np.mean(calcium_ctrl_dff, axis=0)
-
             # find average Ca event of neurons at those frames
             speed_trig_dff_ctrl = []
             for frame in speed_ctrl_frames:
-                speed_trig_dff_ctrl.append((calcium_ctrl_mean[frame - 25:frame + 26]))
+                speed_trig_dff_ctrl.append((eventmean_ctrl[frame - 25:frame + 26]))
 
             speed_trig_dff_ctrl_peranimal = np.mean(speed_trig_dff_ctrl, axis=0)
 
@@ -90,7 +87,7 @@ def amph():
         for experiment in experiments:
             print(experiment + '_amph')
 
-            speed_ctrl, speed_amph, calcium_ctrl_dff, calcium_amph_dff, _, _, _, _, \
+            speed_ctrl, speed_amph, _, _, _, _, eventmean_ctrl, eventmean_amph, \
             neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
             # remove events in first 25 and last 25 frames (is this okay to do?)
@@ -106,13 +103,10 @@ def amph():
                     frame = frame + window
                     speed_amph_frames.append(frame)
 
-            # find average Ca event of neurons
-            calcium_amph_mean = np.mean(calcium_amph_dff, axis=0)
-
             # find average Ca event of neurons at those frames
             speed_trig_dff_amph = []
             for frame in speed_amph_frames:
-                speed_trig_dff_amph.append((calcium_amph_mean[frame - 25:frame + 26]))
+                speed_trig_dff_amph.append((eventmean_amph[frame - 25:frame + 26]))
 
             speed_trig_dff_ctrl_peranimal = np.mean(speed_trig_dff_amph, axis=0)
 
