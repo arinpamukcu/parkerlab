@@ -26,19 +26,21 @@ def ctrl():
             _, _, calcium_ctrl_dff, _, _, _, _, _, \
             neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
-            _, _, mars_left_angle_ctrl, mars_left_angle_amph, _, _ = mars_feature(drug, dose, experiment)
+            _, _, mars_left_angle_ctrl, mars_left_angle_amph, \
+            mars_right_angle_ctrl, mars_right_angle_amph = mars_feature(drug, dose, experiment)
 
             # remove events in first 25 and last 25 frames (is this okay to do?)
             window = 25
-            mars_left_angle_ctrl_modified = mars_left_angle_ctrl[window:-window]
+            # mars_turn_ctrl_modified = mars_left_angle_ctrl[window:-window]
+            mars_turn_ctrl_modified = mars_right_angle_ctrl[window:-window]
 
             # find left turn triggered Ca event dff average per neuron and per animal
             # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
             turn_ctrl_frames = []
-            for frame in range(0, len(mars_left_angle_ctrl_modified) - 4):
-                if mars_left_angle_ctrl_modified[frame] > mars_left_angle_ctrl_modified[frame + 1] > \
-                        mars_left_angle_ctrl_modified[frame + 2] > mars_left_angle_ctrl_modified[frame + 3] > \
-                        mars_left_angle_ctrl_modified[frame + 4]:
+            for frame in range(0, len(mars_turn_ctrl_modified) - 4):
+                if mars_turn_ctrl_modified[frame] > mars_turn_ctrl_modified[frame + 1] > \
+                        mars_turn_ctrl_modified[frame + 2] > mars_turn_ctrl_modified[frame + 3] > \
+                        mars_turn_ctrl_modified[frame + 4]:
                     frame = frame + window
                     turn_ctrl_frames.append(frame)
 
@@ -94,19 +96,21 @@ def amph():
             _, _, _, calcium_amph_dff, _, _, _, _, \
             neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
-            _, _, mars_left_angle_ctrl, mars_left_angle_amph, _, _ = mars_feature(drug, dose, experiment)
+            _, _, mars_left_angle_ctrl, mars_left_angle_amph, \
+            mars_right_angle_ctrl, mars_right_angle_amph, = mars_feature(drug, dose, experiment)
 
             # remove events in first 25 and last 25 frames (is this okay to do?)
             window = 25
-            mars_left_angle_amph_modified = mars_left_angle_amph[window:-window]
+            # mars_turn_amph_modified = mars_left_angle_amph[window:-window]
+            mars_turn_amph_modified = mars_right_angle_amph[window:-window]
 
             # find left turn triggered Ca event dff average per neuron and per animal
             # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
             turn_amph_frames = []
-            for frame in range(0, len(mars_left_angle_amph_modified) - 4):
-                if mars_left_angle_amph_modified[frame] > mars_left_angle_amph_modified[frame + 1] > \
-                        mars_left_angle_amph_modified[frame + 2] > mars_left_angle_amph_modified[frame + 3] > \
-                        mars_left_angle_amph_modified[frame + 4]:
+            for frame in range(0, len(mars_turn_amph_modified) - 4):
+                if mars_turn_amph_modified[frame] > mars_turn_amph_modified[frame + 1] > \
+                        mars_turn_amph_modified[frame + 2] > mars_turn_amph_modified[frame + 3] > \
+                        mars_turn_amph_modified[frame + 4]:
                     frame = frame + window
                     turn_amph_frames.append(frame)
 
@@ -164,31 +168,32 @@ def plot():
 
     x = range(51)
 
-    plt.figure(figsize=(6, 9))
-    ax = plt.subplot(2, 1, 1)
-    plt.plot(D1_turn_trig_dff_ctrl_all, color='k', label='D1 ctrl')
-    plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
-    # plt.plot(D2_turn_trig_dff_ctrl_all, color='k', label='D2 ctrl')
-    # plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
-    x_default = [0, 25, 50]
-    x_new = ['-25', '0', '+25']
+    plt.figure(figsize=(5, 9))
+    plt.subplot(211)
+    # plt.plot(D1_turn_trig_dff_ctrl_all, color='k', label='D1 ctrl')
+    # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
+    plt.plot(D2_turn_trig_dff_ctrl_all, color='k', label='D2 ctrl')
+    plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
+    x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
-    plt.xlabel('Time (5hz) from left turn bout at time at 0')
+    plt.xlabel('Time (s) from left turn bout')
     plt.ylabel('Ca activity (dff)')
-    plt.title('Left turn triggered Ca activity in CTRL')
+    plt.title('CTRL')
+    plt.suptitle('Left turn triggered Ca activity')
     plt.legend()
 
-    ax = plt.subplot(2, 1, 2)
-    plt.plot(D1_turn_trig_dff_amph_all, color='b', label='D1 amph')
-    plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
-    # plt.plot(D2_turn_trig_dff_amph_all, color='r', label='D2 amph')
-    # plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
-    x_default = [0, 25, 50]
-    x_new = ['-25', '0', '+25']
+    plt.subplot(212)
+    # plt.plot(D1_turn_trig_dff_amph_all, color='b', label='D1 amph')
+    # plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
+    plt.plot(D2_turn_trig_dff_amph_all, color='r', label='D2 amph')
+    plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
+    x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
-    plt.xlabel('Time (5hz) from left turn bout at time at 0')
+    plt.xlabel('Time (s) from left turn bout')
     plt.ylabel('Ca activity (dff)')
-    plt.title('Left turn triggered Ca activity in AMPH')
+    plt.title('AMPH')
     plt.legend()
     plt.show()
 

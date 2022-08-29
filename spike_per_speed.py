@@ -127,8 +127,8 @@ def plot():
 
     D1_event_per_speed_ctrl, D1_event_per_speed_amph, D2_event_per_speed_ctrl, D2_event_per_speed_amph = data()
 
-    plt.figure(figsize=(6, 10))
-    ax = plt.subplot(2, 1, 1)
+    plt.figure(figsize=(5, 9))
+    plt.subplot(211)
     plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='D1 ctrl', color='k')
     # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
     plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='D1 amph', color='b')
@@ -139,10 +139,11 @@ def plot():
     plt.ylim((0, 2.5))
     plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
-    plt.title("D1 SPNs")
+    plt.title('D1 SPNs')
+    plt.suptitle('Ca spike per speed bout')
     plt.legend()
 
-    ax = plt.subplot(2, 1, 2)
+    plt.subplot(212)
     plt.plot(np.mean(D2_event_per_speed_ctrl, axis=0), label='D2 ctrl', color='k')
     # plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
     plt.plot(np.mean(D2_event_per_speed_amph, axis=0), label='D2 amph', color='r')
@@ -153,7 +154,7 @@ def plot():
     plt.ylim((0, 2.5))
     plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
-    plt.title("D2 SPNs")
+    plt.title('D2 SPNs')
     plt.legend()
     plt.show()
 

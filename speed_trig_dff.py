@@ -159,31 +159,32 @@ def plot():
 
     x = range(51)
 
-    plt.figure(figsize=(6, 9))
-    ax = plt.subplot(2, 1, 1)
+    plt.figure(figsize=(5, 9))
+    plt.subplot(211)
     plt.plot(D1_speed_trig_dff_ctrl_all, color='k', label='D1 ctrl')
     plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
     # plt.plot(D2_speed_trig_dff_ctrl_all, color='k', label='D2 ctrl')
     # plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
-    x_default = [0, 25, 50]
-    x_new = ['-25', '0', '+25']
+    x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
-    plt.xlabel('Time (5hz) from speed bout at time at 0')
+    plt.xlabel('Time (s) from speed bout (> 1 cm/s)')
     plt.ylabel('Ca activity (dff)')
-    plt.title('Speed triggered Ca activity average in CTRL')
+    plt.title('CTRL')
+    plt.suptitle('Speed triggered Ca activity')
     plt.legend()
 
-    ax = plt.subplot(2, 1, 2)
+    plt.subplot(212)
     plt.plot(D1_speed_trig_dff_amph_all, color='b', label='D1 amph')
     plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
     # plt.plot(D2_speed_trig_dff_amph_all, color='r', label='D2 amph')
     # plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
-    # x_default = [0, 25, 50]
-    x_new = ['-25', '0', '+25']
+    x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
-    plt.xlabel('Time (5hz) from speed bout at time at 0')
+    plt.xlabel('Time (s) from speed bout (> 1 cm/s)')
     plt.ylabel('Ca activity (dff)')
-    plt.title('Speed triggered Ca activity average in AMPH')
+    plt.title('AMPH')
     plt.legend()
     plt.show()
 

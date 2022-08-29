@@ -103,29 +103,30 @@ def event_per_left_turn():
                 D2_event_per_left_turn_ctrl.append(event_per_left_turn_ctrl)
                 D2_event_per_left_turn_amph.append(event_per_left_turn_amph)
 
-    plt.figure(figsize=(4, 8))
-    ax = plt.subplot(2, 1, 1)
+    plt.figure(figsize=(5, 9))
+    plt.subplot(211)
     plt.plot(np.mean(D1_event_per_left_turn_ctrl, axis=0), label='D1 ctrl', color='k')
     plt.plot(np.mean(D1_event_per_left_turn_amph, axis=0), label='D1 amph', color='b')
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['30', '60', '90', '120', '150', '180'];
     plt.xticks(x_default, x_new);
     plt.ylim((0, 2.5))
-    plt.xlabel('Left turn bin (degrees°)')
+    plt.xlabel('Left turn bin (degrees)')
     plt.ylabel('Ca event rate (event/min)')
-    plt.title("D1 SPNs")
+    plt.title('D1 SPNs')
+    plt.suptitle('Ca spike per left turn bout')
     plt.legend()
 
-    ax = plt.subplot(2, 1, 2)
+    plt.subplot(212)
     plt.plot(np.mean(D2_event_per_left_turn_ctrl, axis=0), label='D2 ctrl', color='k')
     plt.plot(np.mean(D2_event_per_left_turn_amph, axis=0), label='D2 amph', color='r')
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['30', '60', '90', '120', '150', '180'];
     plt.xticks(x_default, x_new);
     plt.ylim((0, 2.5))
-    plt.xlabel('Left turn bin (degrees°)')
+    plt.xlabel('Left turn bin (degrees)')
     plt.ylabel('Ca event rate (event/min)')
-    plt.title("D2 SPNs")
+    plt.title('D2 SPNs')
     plt.legend()
     plt.show()
 
@@ -224,29 +225,30 @@ def event_per_right_turn():
                 D2_event_per_right_turn_ctrl.append(event_per_right_turn_ctrl)
                 D2_event_per_right_turn_amph.append(event_per_right_turn_amph)
 
-    plt.figure(figsize=(4, 8))
-    ax = plt.subplot(2, 1, 1)
+    plt.figure(figsize=(5, 9))
+    plt.subplot(211)
     plt.plot(np.mean(D1_event_per_right_turn_ctrl, axis=0), label='D1 ctrl', color='k')
     plt.plot(np.mean(D1_event_per_right_turn_amph, axis=0), label='D1 amph', color='b')
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['30', '60', '90', '120', '150', '180'];
     plt.xticks(x_default, x_new);
     plt.ylim((0, 2.5))
-    plt.xlabel('Right turn bin (degrees°)')
+    plt.xlabel('Right turn bin (degrees)')
     plt.ylabel('Ca event rate (event/min)')
-    plt.title("D1 SPNs")
+    plt.title('D1 SPNs')
+    plt.suptitle('Ca spike per right turn bout')
     plt.legend()
 
-    ax = plt.subplot(2, 1, 2)
+    plt.subplot(212)
     plt.plot(np.mean(D2_event_per_right_turn_ctrl, axis=0), label='D2 ctrl', color='k')
     plt.plot(np.mean(D2_event_per_right_turn_amph, axis=0), label='D2 amph', color='r')
     x_default = [0, 1, 2, 3, 4, 5];
     x_new = ['30', '60', '90', '120', '150', '180'];
     plt.xticks(x_default, x_new);
     plt.ylim((0, 2.5))
-    plt.xlabel('Right turn bin (degrees°)')
+    plt.xlabel('Right turn bin (degrees)')
     plt.ylabel('Ca event rate (event/min)')
-    plt.title("D2 SPNs")
+    plt.title('D2 SPNs')
     plt.legend()
     plt.show()
 
