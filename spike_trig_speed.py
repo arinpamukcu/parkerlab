@@ -29,7 +29,7 @@ def ctrl():
             # if you just want to use speed neurons for your analysis
             _, _, _, speed_neuron_ctrl_events, speed_neuron_amph_events = get_speed_neurons(drug, dose, experiment)
 
-            # remove events in first 25 and last 25 frames (is this okay to do?)
+            # remove events in first 25 and last 25 frames
             window = 25
             window_zeros = np.zeros((len(speed_neuron_ctrl_events), window))
             speed_neuron_ctrl_modified = np.hstack((window_zeros, speed_neuron_ctrl_events[:, window:-window]))
@@ -97,7 +97,7 @@ def amph():
             # if you just want to use speed neurons for your analysis
             _, _, _, speed_neuron_ctrl_events, speed_neuron_amph_events = get_speed_neurons(drug, dose, experiment)
 
-            # remove events in first 25 and last 25 frames (is this okay to do?)
+            # remove events in first 25 and last 25 frames
             window = 25
             window_zeros = np.zeros((len(speed_neuron_ctrl_events), window))
 

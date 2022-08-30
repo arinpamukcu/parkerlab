@@ -93,7 +93,7 @@ def amph():
             speed_ctrl, speed_amph, calcium_ctrl_dff, calcium_amph_dff, _, _, _, _, \
             neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
-            # remove events in first 25 and last 25 frames (is this okay to do?)
+            # remove events in first 25 and last 25 frames
             window = 25
             speed_amph_modified = speed_amph[window:-window]  # 4450
 

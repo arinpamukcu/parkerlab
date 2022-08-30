@@ -93,7 +93,7 @@ def amph():
             # find event/min instead of event/frame
             eventmean_amph = eventmean_amph * 300
 
-            # remove events in first 25 and last 25 frames (is this okay to do?)
+            # remove events in first 25 and last 25 frames
             window = 25
             speed_amph_modified = speed_amph[window:-window]  # 4450
 

@@ -32,7 +32,7 @@ def ctrl():
             _, _, mars_left_angle_ctrl, mars_left_angle_amph, \
             mars_right_angle_ctrl, mars_right_angle_amph = mars_feature(drug, dose, experiment)
 
-            # remove events in first 25 and last 25 frames (is this okay to do?)
+            # remove events in first 25 and last 25 frames
             window = 25
             # mars_turn_ctrl_modified = mars_left_angle_ctrl[window:-window]
             mars_turn_ctrl_modified = mars_right_angle_ctrl[window:-window]
@@ -102,7 +102,7 @@ def amph():
             _, _, mars_left_angle_ctrl, mars_left_angle_amph, \
             mars_right_angle_ctrl, mars_right_angle_amph, = mars_feature(drug, dose, experiment)
 
-            # remove events in first 25 and last 25 frames (is this okay to do?)
+            # remove events in first 25 and last 25 frames
             window = 25
             # mars_turn_amph_modified = mars_left_angle_amph[window:-window]
             mars_turn_amph_modified = mars_right_angle_amph[window:-window]
