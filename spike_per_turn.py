@@ -28,7 +28,7 @@ def event_per_left_turn():
         for experiment in experiments:
             print(experiment)
 
-            _, _, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            _, _, _, _, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
             _, _, mars_left_angle_ctrl, mars_left_angle_amph, _, _ = mars_feature(drug, dose, experiment)
 
@@ -103,9 +103,7 @@ def event_per_left_turn():
                 D2_event_per_left_turn_ctrl.append(event_per_left_turn_ctrl)
                 D2_event_per_left_turn_amph.append(event_per_left_turn_amph)
 
-    return D1_event_per_left_turn_ctrl, D1_event_per_left_turn_amph, \
-           D2_event_per_left_turn_ctrl, D2_event_per_left_turn_amph
-
+    return D1_event_per_left_turn_ctrl, D1_event_per_left_turn_amph, D2_event_per_left_turn_ctrl, D2_event_per_left_turn_amph
 
 def event_per_right_turn():
     D1_event_per_right_turn_ctrl = []
@@ -124,7 +122,7 @@ def event_per_right_turn():
         for experiment in experiments:
             print(experiment)
 
-            _, _, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            _, _, _, _, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
             _, _, _, _, mars_right_angle_ctrl, mars_right_angle_amph = mars_feature(drug, dose, experiment)
 
@@ -199,8 +197,7 @@ def event_per_right_turn():
                 D2_event_per_right_turn_ctrl.append(event_per_right_turn_ctrl)
                 D2_event_per_right_turn_amph.append(event_per_right_turn_amph)
 
-    return D1_event_per_right_turn_ctrl, D1_event_per_right_turn_amph, \
-           D2_event_per_right_turn_ctrl, D2_event_per_right_turn_amph
+    return D1_event_per_right_turn_ctrl, D1_event_per_right_turn_amph, D2_event_per_right_turn_ctrl, D2_event_per_right_turn_amph
 
 def plot():
 
