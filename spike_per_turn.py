@@ -26,7 +26,7 @@ def event_per_left_turn():
         experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
 
         for experiment in experiments:
-            print(experiment)
+            print(experiment + '_left')
 
             _, _, _, _, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
@@ -120,7 +120,7 @@ def event_per_right_turn():
         experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
 
         for experiment in experiments:
-            print(experiment)
+            print(experiment + '_right')
 
             _, _, _, _, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
