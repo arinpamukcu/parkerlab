@@ -225,7 +225,7 @@ def event_per_right_turn():
                 D2_event_per_right_turn_ctrl.append(event_per_right_turn_ctrl)
                 D2_event_per_right_turn_amph.append(event_per_right_turn_amph)
 
-    plt.figure(figsize=(6, 9.5))
+    plt.figure(figsize=(5, 9))
     plt.subplot(211)
     plt.plot(np.mean(D1_event_per_right_turn_ctrl, axis=0), label='D1 ctrl', color='k')
     plt.plot(np.mean(D1_event_per_right_turn_amph, axis=0), label='D1 amph', color='b')

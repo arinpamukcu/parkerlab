@@ -159,7 +159,7 @@ def plot():
 
     x = range(51)
 
-    plt.figure(figsize=(6, 9.5))
+    plt.figure(figsize=(5, 9))
     plt.subplot(211)
     plt.plot(D1_speed_trig_dff_ctrl_all, color='k', label='D1 ctrl')
     plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
@@ -168,6 +168,7 @@ def plot():
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
+    plt.axvline(x=25, color="grey", linestyle=":")
     plt.xlabel('Time (s) from speed bout (> 1 cm/s)')
     plt.ylabel('Ca activity (dff)')
     plt.title('CTRL')
@@ -182,14 +183,14 @@ def plot():
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
+    plt.axvline(x=25, color="grey", linestyle=":")
     plt.xlabel('Time (s) from speed bout (> 1 cm/s)')
     plt.ylabel('Ca activity (dff)')
     plt.title('AMPH')
     plt.legend()
     plt.show()
 
-
-    plt.figure(figsize=(6, 9.5))
+    plt.figure(figsize=(5, 9))
     plt.subplot(211)
     # plt.plot(D1_speed_trig_dff_ctrl_all, color='k', label='D1 ctrl')
     # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
@@ -198,6 +199,7 @@ def plot():
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
+    plt.axvline(x=25, color="grey", linestyle=":")
     plt.xlabel('Time (s) from speed bout (> 1 cm/s)')
     plt.ylabel('Ca activity (dff)')
     plt.title('CTRL')
@@ -212,6 +214,7 @@ def plot():
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
+    plt.axvline(x=25, color="grey", linestyle=":")
     plt.xlabel('Time (s) from speed bout (> 1 cm/s)')
     plt.ylabel('Ca activity (dff)')
     plt.title('AMPH')

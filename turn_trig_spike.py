@@ -26,6 +26,9 @@ def ctrl():
             _, _, _, _, _, _, eventmean_ctrl, eventmean_amph, \
             neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
+            # find event/min instead of event/frame
+            eventmean_ctrl = eventmean_ctrl*300
+
             _, _, mars_left_angle_ctrl, mars_left_angle_amph, \
             mars_right_angle_ctrl, mars_right_angle_amph = mars_feature(drug, dose, experiment)
 
@@ -92,6 +95,9 @@ def amph():
 
             _, _, _, _, _, _, eventmean_ctrl, eventmean_amph, \
             neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
+
+            # find event/min instead of event/frame
+            eventmean_amph = eventmean_amph * 300
 
             _, _, mars_left_angle_ctrl, mars_left_angle_amph, \
             mars_right_angle_ctrl, mars_right_angle_amph, = mars_feature(drug, dose, experiment)
@@ -162,7 +168,7 @@ def plot():
 
     x = range(51)
 
-    plt.figure(figsize=(6, 9.5))
+    plt.figure(figsize=(5, 9))
     plt.subplot(211)
     plt.plot(D1_turn_trig_dff_ctrl_all, color='k', label='D1 ctrl')
     plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
@@ -171,10 +177,11 @@ def plot():
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
-    plt.xlabel('Time (s) from left turn bout')
-    plt.ylabel('Ca activity (dff)')
+    plt.axvline(x=25, color="grey", linestyle=":")
+    plt.xlabel('Time (s) from turn bout')
+    plt.ylabel('Ca event rate (event/min)')
     plt.title('CTRL')
-    plt.suptitle('Left turn triggered Ca activity')
+    plt.suptitle('Right turn triggered Ca activity')
     plt.legend()
 
     plt.subplot(212)
@@ -185,14 +192,14 @@ def plot():
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
-    plt.xlabel('Time (s) from left turn bout')
-    plt.ylabel('Ca activity (dff)')
+    plt.axvline(x=25, color="grey", linestyle=":")
+    plt.xlabel('Time (s) from turn bout')
+    plt.ylabel('Ca event rate (event/min)')
     plt.title('AMPH')
     plt.legend()
     plt.show()
 
-
-    plt.figure(figsize=(6, 9.5))
+    plt.figure(figsize=(5, 9))
     plt.subplot(211)
     # plt.plot(D1_turn_trig_dff_ctrl_all, color='k', label='D1 ctrl')
     # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
@@ -201,10 +208,11 @@ def plot():
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
-    plt.xlabel('Time (s) from left turn bout')
-    plt.ylabel('Ca activity (dff)')
+    plt.axvline(x=25, color="grey", linestyle=":")
+    plt.xlabel('Time (s) from turn bout')
+    plt.ylabel('Ca event rate (event/min)')
     plt.title('CTRL')
-    plt.suptitle('Left turn triggered Ca activity')
+    plt.suptitle('Right turn triggered Ca activity')
     plt.legend()
 
     plt.subplot(212)
@@ -215,8 +223,9 @@ def plot():
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
-    plt.xlabel('Time (s) from left turn bout')
-    plt.ylabel('Ca activity (dff)')
+    plt.axvline(x=25, color="grey", linestyle=":")
+    plt.xlabel('Time (s) from turn bout')
+    plt.ylabel('Ca event rate (event/min)')
     plt.title('AMPH')
     plt.legend()
     plt.show()

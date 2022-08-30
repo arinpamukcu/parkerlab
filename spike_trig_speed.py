@@ -164,7 +164,7 @@ def plot():
 
     x = range(51)
 
-    plt.figure(figsize=(6, 9.5))
+    plt.figure(figsize=(5, 9))
     plt.subplot(211)
     plt.plot(D1_spike_trig_avg_ctrl_all, color='k', label='D1 ctrl')
     plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
@@ -195,8 +195,7 @@ def plot():
     plt.legend()
     plt.show()
 
-
-    plt.figure(figsize=(6, 9.5))
+    plt.figure(figsize=(5, 9))
     plt.subplot(211)
     # plt.plot(D1_spike_trig_avg_ctrl_all, color='k', label='D1 ctrl')
     # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)

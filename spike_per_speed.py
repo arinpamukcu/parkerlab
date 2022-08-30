@@ -127,7 +127,7 @@ def plot():
 
     D1_event_per_speed_ctrl, D1_event_per_speed_amph, D2_event_per_speed_ctrl, D2_event_per_speed_amph = data()
 
-    plt.figure(figsize=(6, 9.5))
+    plt.figure(figsize=(5, 9))
     plt.subplot(211)
     plt.plot(np.mean(D1_event_per_speed_ctrl, axis=0), label='D1 ctrl', color='k')
     plt.plot(np.mean(D1_event_per_speed_amph, axis=0), label='D1 amph', color='b')
