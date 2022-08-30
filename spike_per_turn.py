@@ -103,34 +103,8 @@ def event_per_left_turn():
                 D2_event_per_left_turn_ctrl.append(event_per_left_turn_ctrl)
                 D2_event_per_left_turn_amph.append(event_per_left_turn_amph)
 
-    plt.figure(figsize=(5, 9))
-    plt.subplot(211)
-    plt.plot(np.mean(D1_event_per_left_turn_ctrl, axis=0), label='D1 ctrl', color='k')
-    plt.plot(np.mean(D1_event_per_left_turn_amph, axis=0), label='D1 amph', color='b')
-    x_default = [0, 1, 2, 3, 4, 5];
-    x_new = ['30', '60', '90', '120', '150', '180'];
-    plt.xticks(x_default, x_new);
-    plt.ylim((0, 2.5))
-    plt.xlabel('Left turn bin (degrees)')
-    plt.ylabel('Ca event rate (event/min)')
-    plt.title('D1 SPNs')
-    plt.suptitle('Ca spike per left turn bout')
-    plt.legend()
-
-    plt.subplot(212)
-    plt.plot(np.mean(D2_event_per_left_turn_ctrl, axis=0), label='D2 ctrl', color='k')
-    plt.plot(np.mean(D2_event_per_left_turn_amph, axis=0), label='D2 amph', color='r')
-    x_default = [0, 1, 2, 3, 4, 5];
-    x_new = ['30', '60', '90', '120', '150', '180'];
-    plt.xticks(x_default, x_new);
-    plt.ylim((0, 2.5))
-    plt.xlabel('Left turn bin (degrees)')
-    plt.ylabel('Ca event rate (event/min)')
-    plt.title('D2 SPNs')
-    plt.legend()
-    plt.show()
-
-    return
+    return D1_event_per_left_turn_ctrl, D1_event_per_left_turn_amph, \
+           D2_event_per_left_turn_ctrl, D2_event_per_left_turn_amph
 
 
 def event_per_right_turn():
@@ -225,6 +199,44 @@ def event_per_right_turn():
                 D2_event_per_right_turn_ctrl.append(event_per_right_turn_ctrl)
                 D2_event_per_right_turn_amph.append(event_per_right_turn_amph)
 
+    return D1_event_per_right_turn_ctrl, D1_event_per_right_turn_amph, \
+           D2_event_per_right_turn_ctrl, D2_event_per_right_turn_amph
+
+def plot():
+
+    D1_event_per_left_turn_ctrl, D1_event_per_left_turn_amph, \
+    D2_event_per_left_turn_ctrl, D2_event_per_left_turn_amph = event_per_left_turn()
+
+    D1_event_per_right_turn_ctrl, D1_event_per_right_turn_amph, \
+    D2_event_per_right_turn_ctrl, D2_event_per_right_turn_amph = event_per_right_turn()
+
+    plt.figure(figsize=(5, 9))
+    plt.subplot(211)
+    plt.plot(np.mean(D1_event_per_left_turn_ctrl, axis=0), label='D1 ctrl', color='k')
+    plt.plot(np.mean(D1_event_per_left_turn_amph, axis=0), label='D1 amph', color='b')
+    x_default = [0, 1, 2, 3, 4, 5];
+    x_new = ['30', '60', '90', '120', '150', '180'];
+    plt.xticks(x_default, x_new);
+    plt.ylim((0, 2.5))
+    plt.xlabel('Turn bin (degrees)')
+    plt.ylabel('Ca event rate (event/min)')
+    plt.title('D1 SPNs')
+    plt.suptitle('Ca activity per left turn bout')
+    plt.legend()
+
+    plt.subplot(212)
+    plt.plot(np.mean(D2_event_per_left_turn_ctrl, axis=0), label='D2 ctrl', color='k')
+    plt.plot(np.mean(D2_event_per_left_turn_amph, axis=0), label='D2 amph', color='r')
+    x_default = [0, 1, 2, 3, 4, 5];
+    x_new = ['30', '60', '90', '120', '150', '180'];
+    plt.xticks(x_default, x_new);
+    plt.ylim((0, 2.5))
+    plt.xlabel('Turn bin (degrees)')
+    plt.ylabel('Ca event rate (event/min)')
+    plt.title('D2 SPNs')
+    plt.legend()
+    plt.show()
+
     plt.figure(figsize=(5, 9))
     plt.subplot(211)
     plt.plot(np.mean(D1_event_per_right_turn_ctrl, axis=0), label='D1 ctrl', color='k')
@@ -233,10 +245,10 @@ def event_per_right_turn():
     x_new = ['30', '60', '90', '120', '150', '180'];
     plt.xticks(x_default, x_new);
     plt.ylim((0, 2.5))
-    plt.xlabel('Right turn bin (degrees)')
+    plt.xlabel('Turn bin (degrees)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D1 SPNs')
-    plt.suptitle('Ca spike per right turn bout')
+    plt.suptitle('Ca activity per right turn bout')
     plt.legend()
 
     plt.subplot(212)
@@ -246,10 +258,9 @@ def event_per_right_turn():
     x_new = ['30', '60', '90', '120', '150', '180'];
     plt.xticks(x_default, x_new);
     plt.ylim((0, 2.5))
-    plt.xlabel('Right turn bin (degrees)')
+    plt.xlabel('Turn bin (degrees)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D2 SPNs')
     plt.legend()
     plt.show()
 
-    return
