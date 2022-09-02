@@ -10,8 +10,8 @@ def ctrl():
     D1_turn_trig_dff_ctrl_all = []
     D2_turn_trig_dff_ctrl_all = []
 
-    drugs = get_drug()
-    # drugs = ['Clozapine']
+    # drugs = get_drug()
+    drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
         print(drug)
@@ -31,8 +31,8 @@ def ctrl():
 
             # remove events in first 25 and last 25 frames
             window = 25
-            # mars_turn_ctrl_modified = mars_left_angle_ctrl[window:-window]
-            mars_turn_ctrl_modified = mars_right_angle_ctrl[window:-window]
+            mars_turn_ctrl_modified = mars_left_angle_ctrl[window:-window]
+            # mars_turn_ctrl_modified = mars_right_angle_ctrl[window:-window]
 
             # find left turn triggered Ca event dff average per neuron and per animal
             # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
@@ -80,8 +80,8 @@ def amph():
     D1_turn_trig_dff_amph_all = []
     D2_turn_trig_dff_amph_all = []
 
-    drugs = get_drug()
-    # drugs = ['Clozapine']
+    # drugs = get_drug()
+    drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
         print(drug + '_amph')
@@ -101,8 +101,8 @@ def amph():
 
             # remove events in first 25 and last 25 frames
             window = 25
-            # mars_turn_amph_modified = mars_left_angle_amph[window:-window]
-            mars_turn_amph_modified = mars_right_angle_amph[window:-window]
+            mars_turn_amph_modified = mars_left_angle_amph[window:-window]
+            # mars_turn_amph_modified = mars_right_angle_amph[window:-window]
 
             # find left turn triggered Ca event dff average per neuron and per animal
             # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
@@ -181,7 +181,7 @@ def plot():
     plt.xlabel('Time (s) from turn bout')
     plt.ylabel('Ca activity (dff)')
     plt.title('CTRL')
-    plt.suptitle('Right turn triggered Ca activity')
+    plt.suptitle('Left turn triggered Ca activity')
     plt.legend()
 
     plt.subplot(212)
@@ -212,7 +212,7 @@ def plot():
     plt.xlabel('Time (s) from turn bout')
     plt.ylabel('Ca activity (dff)')
     plt.title('CTRL')
-    plt.suptitle('Right turn triggered Ca activity')
+    plt.suptitle('Left turn triggered Ca activity')
     plt.legend()
 
     plt.subplot(212)

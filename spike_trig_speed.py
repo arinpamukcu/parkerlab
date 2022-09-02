@@ -10,9 +10,9 @@ def ctrl():
     D1_spike_trig_avg_ctrl_all = []
     D2_spike_trig_avg_ctrl_all = []
 
-    drugs = get_drug()
-    # drugs = ['Clozapine']
-    dose = 'Vehicle'
+    # drugs = get_drug()
+    drugs = ['Clozapine']
+    dose = 'HighDose'
     for drug in drugs:
         print(drug)
 
@@ -78,9 +78,9 @@ def amph():
     D1_spike_trig_avg_amph_all = []
     D2_spike_trig_avg_amph_all = []
 
-    drugs = get_drug()
-    # drugs = ['Clozapine']
-    dose = 'Vehicle'
+    # drugs = get_drug()
+    drugs = ['Clozapine']
+    dose = 'HighDose'
     for drug in drugs:
         print(drug + '_amph')
 
@@ -168,8 +168,6 @@ def plot():
     plt.subplot(211)
     plt.plot(D1_spike_trig_avg_ctrl_all, color='k', label='D1 ctrl')
     plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
-    # plt.plot(D2_spike_trig_avg_ctrl_all, color='k', label='D2 ctrl')
-    # plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
@@ -183,8 +181,6 @@ def plot():
     plt.subplot(212)
     plt.plot(D1_spike_trig_avg_amph_all, color='b', label='D1 amph')
     plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
-    # plt.plot(D2_spike_trig_avg_amph_all, color='r', label='D2 amph')
-    # plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     x_new = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5']
     plt.xticks(x_default, x_new)
@@ -197,8 +193,6 @@ def plot():
 
     plt.figure(figsize=(5, 9))
     plt.subplot(211)
-    # plt.plot(D1_spike_trig_avg_ctrl_all, color='k', label='D1 ctrl')
-    # plt.fill_between(x, D1_ctrl_yerr_hi, D1_ctrl_yerr_lo, color='k', alpha=0.2)
     plt.plot(D2_spike_trig_avg_ctrl_all, color='k', label='D2 ctrl')
     plt.fill_between(x, D2_ctrl_yerr_hi, D2_ctrl_yerr_lo, color='k', alpha=0.2)
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
@@ -212,8 +206,6 @@ def plot():
     plt.legend()
 
     plt.subplot(212)
-    # plt.plot(D1_spike_trig_avg_amph_all, color='b', label='D1 amph')
-    # plt.fill_between(x, D1_amph_yerr_hi, D1_amph_yerr_lo, color='b', alpha=0.2)
     plt.plot(D2_spike_trig_avg_amph_all, color='r', label='D2 amph')
     plt.fill_between(x, D2_amph_yerr_hi, D2_amph_yerr_lo, color='r', alpha=0.2)
     x_default = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
