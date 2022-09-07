@@ -10,9 +10,9 @@ def ctrl():
     D1_turn_trig_speed_ctrl_all = []
     D2_turn_trig_speed_ctrl_all = []
 
-    # drugs = get_drug()
-    drugs = ['Clozapine']
-    dose = 'HighDose'
+    drugs = get_drug()
+    # drugs = ['Clozapine']
+    dose = 'Vehicle'
     for drug in drugs:
         print(drug)
 
@@ -77,9 +77,9 @@ def amph():
     D1_turn_trig_speed_amph_all = []
     D2_turn_trig_speed_amph_all = []
 
-    # drugs = get_drug()
-    drugs = ['Clozapine']
-    dose = 'HighDose'
+    drugs = get_drug()
+    # drugs = ['Clozapine']
+    dose = 'Vehicle'
     for drug in drugs:
         print(drug + '_amph')
 

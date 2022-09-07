@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pdb
 
-def event_per_left_turn():
+def left_turn():
     D1_event_per_left_turn_ctrl = []
     D1_event_per_left_turn_amph = []
     D2_event_per_left_turn_ctrl = []
@@ -103,9 +103,10 @@ def event_per_left_turn():
                 D2_event_per_left_turn_ctrl.append(event_per_left_turn_ctrl)
                 D2_event_per_left_turn_amph.append(event_per_left_turn_amph)
 
-    return D1_event_per_left_turn_ctrl, D1_event_per_left_turn_amph, D2_event_per_left_turn_ctrl, D2_event_per_left_turn_amph
+    return D1_event_per_left_turn_ctrl, D1_event_per_left_turn_amph, \
+           D2_event_per_left_turn_ctrl, D2_event_per_left_turn_amph
 
-def event_per_right_turn():
+def right_turn():
     D1_event_per_right_turn_ctrl = []
     D1_event_per_right_turn_amph = []
     D2_event_per_right_turn_ctrl = []
@@ -197,15 +198,16 @@ def event_per_right_turn():
                 D2_event_per_right_turn_ctrl.append(event_per_right_turn_ctrl)
                 D2_event_per_right_turn_amph.append(event_per_right_turn_amph)
 
-    return D1_event_per_right_turn_ctrl, D1_event_per_right_turn_amph, D2_event_per_right_turn_ctrl, D2_event_per_right_turn_amph
+    return D1_event_per_right_turn_ctrl, D1_event_per_right_turn_amph, \
+           D2_event_per_right_turn_ctrl, D2_event_per_right_turn_amph
 
 def plot():
 
     D1_event_per_left_turn_ctrl, D1_event_per_left_turn_amph, \
-    D2_event_per_left_turn_ctrl, D2_event_per_left_turn_amph = event_per_left_turn()
+    D2_event_per_left_turn_ctrl, D2_event_per_left_turn_amph = left_turn()
 
     D1_event_per_right_turn_ctrl, D1_event_per_right_turn_amph, \
-    D2_event_per_right_turn_ctrl, D2_event_per_right_turn_amph = event_per_right_turn()
+    D2_event_per_right_turn_ctrl, D2_event_per_right_turn_amph = right_turn()
 
     plt.figure(figsize=(5, 9))
     plt.subplot(211)

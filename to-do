@@ -1,0 +1,19 @@
+things to work on:
+- turn_trig_speed
+- speed_trig_turn
+- event_trig_turn
+
+histograms for behaviors
+- turning (combined left and right)
+- left turn
+- right turn
+- speed
+- acceleration
+
+pie chart for time spent doing actions:
+- grooming (binary)
+- rearing (binary)
+- speed (discretized)
+- acceleration (discretized)
+- turning (discretized)
+
