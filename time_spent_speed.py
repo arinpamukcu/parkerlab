@@ -7,7 +7,7 @@ from mars import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-def speed:
+def speed():
     # drugs = ['Clozapine']
     drugs = get_drug()
     dose = 'Vehicle'
