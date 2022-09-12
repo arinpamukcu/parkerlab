@@ -6,6 +6,7 @@ from mars import *
 from speed_neurons import *
 import matplotlib.pyplot as plt
 
+
 def ctrl():
     D1_speed_trig_turn_ctrl_all = []
     D2_speed_trig_turn_ctrl_all = []
@@ -34,7 +35,7 @@ def ctrl():
             speed_ctrl_modified = speed_ctrl[window:-window]  # 4450
 
             # find left turn triggered Ca event dff average per neuron and per animal
-            # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
+            # find frames where speed increases for five consecutive frames (i.e. 1 second)
             speed_ctrl_frames = []
             for frame in range(0, len(speed_ctrl_modified) - 4):
                 if 1 < speed_ctrl_modified[frame] < speed_ctrl_modified[frame + 1] < speed_ctrl_modified[frame + 2] < \
@@ -99,7 +100,7 @@ def amph():
             speed_amph_modified = speed_amph[window:-window]  # 4450
 
             # find left turn triggered Ca event dff average per neuron and per animal
-            # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
+            # find frames where speed increases for five consecutive frames (i.e. 1 second)
             speed_amph_frames = []
             for frame in range(0, len(speed_amph_modified) - 4):
                 if 1 < speed_amph_modified[frame] < speed_amph_modified[frame + 1] < speed_amph_modified[frame + 2] < \

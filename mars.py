@@ -54,18 +54,42 @@ def mars_feature(drug, dose, experiment):
     feature_count, feature_names, features_ctrl, features_amph = mars_data(drug, dose, experiment)
 
     for ft in range(0, feature_count):
-        if feature_names[ft] == 'speed':
+        if feature_names[ft] == 'm0_top_speed':
             mars_speed_ctrl = features_ctrl[:, ft]
             mars_speed_amph = features_amph[:, ft]
 
-        elif feature_names[ft] == 'angle_head_body_l':
-            mars_left_angle_ctrl = (features_ctrl[:, ft]+math.pi) * 180/math.pi #convert from radians to degrees
-            mars_left_angle_amph = (features_amph[:, ft]+math.pi) * 180/math.pi
+        elif feature_names[ft] == 'm0_top_acceleration_head':
+            mars_acc_ctrl = features_ctrl[:, ft]
+            mars_acc_amph = features_amph[:, ft]
 
-        elif feature_names[ft] == 'angle_head_body_r':
-            mars_right_angle_ctrl = features_ctrl[:, ft] * 180/math.pi
-            mars_right_angle_amph = features_amph[:, ft] * 180/math.pi
+        elif feature_names[ft] == 'top_m0_angle_nose_neck_tail':
+            mars_angle_nnt_ctrl = np.sin(features_ctrl[:, ft])
+            mars_angle_nnt_amph = np.sin(features_amph[:, ft])
 
-    return mars_speed_ctrl, mars_speed_amph, \
-           mars_left_angle_ctrl, mars_left_angle_amph, \
-           mars_right_angle_ctrl, mars_right_angle_amph
+        elif feature_names[ft] == 'top_m0_angle_to_center':
+            mars_angle_center_ctrl = features_ctrl[:, ft]
+            mars_angle_center_amph = features_amph[:, ft]
+
+    return mars_speed_ctrl, mars_speed_amph, mars_acc_ctrl, mars_acc_amph, \
+           mars_angle_nnt_ctrl, mars_angle_nnt_amph, mars_angle_center_ctrl, mars_angle_center_amph
+
+# def mars_feature(drug, dose, experiment):
+#
+#     feature_count, feature_names, features_ctrl, features_amph = mars_data(drug, dose, experiment)
+#
+#     for ft in range(0, feature_count):
+#         if feature_names[ft] == 'speed':
+#             mars_speed_ctrl = features_ctrl[:, ft]
+#             mars_speed_amph = features_amph[:, ft]
+#
+#         elif feature_names[ft] == 'angle_head_body_l':
+#             mars_left_angle_ctrl = (features_ctrl[:, ft]+math.pi) * 180/math.pi #convert from radians to degrees
+#             mars_left_angle_amph = (features_amph[:, ft]+math.pi) * 180/math.pi
+#
+#         elif feature_names[ft] == 'angle_head_body_r':
+#             mars_right_angle_ctrl = features_ctrl[:, ft] * 180/math.pi
+#             mars_right_angle_amph = features_amph[:, ft] * 180/math.pi
+#
+#     return mars_speed_ctrl, mars_speed_amph, \
+#            mars_left_angle_ctrl, mars_left_angle_amph, \
+#            mars_right_angle_ctrl, mars_right_angle_amph

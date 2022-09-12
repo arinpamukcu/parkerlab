@@ -25,4 +25,10 @@ def speed():
 
             _, _, _, _, mars_right_angle_ctrl, mars_right_angle_amph = mars_feature(drug, dose, experiment)
 
+            speed_ctrl_frames = []
+            for frame in range(0, len(speed_ctrl) - 4):
+                if 1 < speed_ctrl[frame] < speed_ctrl[frame + 1] < speed_ctrl[frame + 2] < \
+                        speed_ctrl[frame + 3] < speed_ctrl[frame + 4]:
+                    speed_ctrl_frames.append(frame)
+
     return
