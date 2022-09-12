@@ -20,7 +20,7 @@ def speed():
             print(experiment + '_right')
 
             speed_ctrl, speed_amph, _, _, _, _, \
-            eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            _, _, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
             _, _, _, _, mars_right_angle_ctrl, mars_right_angle_amph = mars_feature(drug, dose, experiment)
 

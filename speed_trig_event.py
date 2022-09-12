@@ -9,8 +9,8 @@ def ctrl():
     D1_speed_trig_event_ctrl_all = []
     D2_speed_trig_event_ctrl_all = []
 
-    drugs = get_drug()
-    # drugs = ['Clozapine']
+    # drugs = get_drug()
+    drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
         print(drug)
@@ -36,16 +36,14 @@ def ctrl():
             # find left turn triggered Ca event dff average per neuron and per animal
             # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
             speed_ctrl_frames = []
+            speed_trig_event_ctrl = []
             for frame in range(0, len(speed_ctrl_modified) - 4):
                 if 1 < speed_ctrl_modified[frame] < speed_ctrl_modified[frame + 1] < speed_ctrl_modified[frame + 2] < \
                         speed_ctrl_modified[frame + 3] < speed_ctrl_modified[frame + 4]:
                     frame = frame + window
                     speed_ctrl_frames.append(frame)
-
-            # find average Ca event of neurons at those frames
-            speed_trig_event_ctrl = []
-            for frame in speed_ctrl_frames:
-                speed_trig_event_ctrl.append((eventmean_ctrl[frame - 25:frame + 26]))
+                    # find average Ca event of neurons at those frames
+                    speed_trig_event_ctrl.append((eventmean_ctrl[frame - 25:frame + 26]))
 
             speed_trig_event_ctrl_peranimal = np.mean(speed_trig_event_ctrl, axis=0)
 
@@ -75,8 +73,8 @@ def amph():
     D1_speed_trig_event_amph_all = []
     D2_speed_trig_event_amph_all = []
 
-    drugs = get_drug()
-    # drugs = ['Clozapine']
+    # drugs = get_drug()
+    drugs = ['Clozapine']
     dose = 'Vehicle'
     for drug in drugs:
         print(drug + '_amph')
@@ -102,16 +100,14 @@ def amph():
             # find left turn triggered Ca event dff average per neuron and per animal
             # find frames where angle gets smaller for five consecutive frames (i.e. 1 second)
             speed_amph_frames = []
+            speed_trig_event_amph = []
             for frame in range(0, len(speed_amph_modified) - 4):
                 if 1 < speed_amph_modified[frame] < speed_amph_modified[frame + 1] < speed_amph_modified[frame + 2] < \
                         speed_amph_modified[frame + 3] < speed_amph_modified[frame + 4]:
                     frame = frame + window
                     speed_amph_frames.append(frame)
-
-            # find average Ca event of neurons at those frames
-            speed_trig_event_amph = []
-            for frame in speed_amph_frames:
-                speed_trig_event_amph.append((eventmean_amph[frame - 25:frame + 26]))
+                    # find average Ca event of neurons at those frames
+                    speed_trig_event_amph.append((eventmean_amph[frame - 25:frame + 26]))
 
             speed_trig_event_ctrl_peranimal = np.mean(speed_trig_event_amph, axis=0)
 
