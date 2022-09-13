@@ -25,8 +25,7 @@ def ctrl():
         for experiment in experiments:
             print(experiment)
 
-            speed_ctrl, speed_amph, _, _, _, _, _, _, \
-            neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            speed_ctrl, _, _, _, _, _, neuron_count, time_ctrl, _ = get_data(drug, dose, experiment)
 
             _, _, mars_left_angle_ctrl, _, mars_right_angle_ctrl, _ = mars_feature(drug, dose, experiment)
 
@@ -88,8 +87,7 @@ def amph():
         for experiment in experiments:
             print(experiment + '_amph')
 
-            speed_ctrl, speed_amph, _, _, _, _, _, _, \
-            neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            _, speed_amph, _, _, _, _, neuron_count, _, time_amph = get_data(drug, dose, experiment)
 
             _, _, _, mars_left_angle_amph, _, mars_right_angle_amph = mars_feature(drug, dose, experiment)
 

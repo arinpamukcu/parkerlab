@@ -93,8 +93,7 @@ def amph():
         for experiment in experiments:
             print(experiment + '_amph')
 
-            _, _, _, _, _, _, eventmean_ctrl, eventmean_amph, \
-            neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            _, _, _, _, _, eventmean_amph, neuron_count, _, time_amph = get_data(drug, dose, experiment)
 
             # find event/min instead of event/frame
             eventmean_amph = eventmean_amph * 300

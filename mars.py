@@ -18,8 +18,8 @@ def get_mars_dir(drug, dose, experiment):
     mars_ctrl_output = 'Control\output_v1_8'
     mars_amph_output = 'Amph\output_v1_8'
 
-    mars_ctrl_file = experiment + '_raw_feat_top_v1_8.npz'
-    mars_amph_file = experiment + '_amph_raw_feat_top_v1_8.npz'
+    mars_ctrl_file = experiment + '_custom_feat_top_v1_8.npz'
+    mars_amph_file = experiment + '_amph_custom_feat_top_v1_8.npz'
 
     mars_ctrl_dir = os.path.join(behavior_dir, drug, dose, mars_ctrl_output, experiment, mars_ctrl_file)
     mars_amph_dir = os.path.join(behavior_dir, drug, dose, mars_amph_output, experiment_amph, mars_amph_file)
@@ -58,20 +58,19 @@ def mars_feature(drug, dose, experiment):
             mars_speed_ctrl = features_ctrl[:, ft]
             mars_speed_amph = features_amph[:, ft]
 
-        elif feature_names[ft] == 'm0_top_acceleration_head':
+        if feature_names[ft] == 'm0_top_acceleration_head':
             mars_acc_ctrl = features_ctrl[:, ft]
             mars_acc_amph = features_amph[:, ft]
 
-        elif feature_names[ft] == 'top_m0_angle_nose_neck_tail':
-            mars_angle_nnt_ctrl = np.sin(features_ctrl[:, ft])
-            mars_angle_nnt_amph = np.sin(features_amph[:, ft])
+        if feature_names[ft] == 'top_m0_angle_nose_neck_tail':
+            mars_turn_angle_ctrl = np.sin(features_ctrl[:, ft])*180
+            mars_turn_angle_amph = np.sin(features_amph[:, ft])*180
 
-        elif feature_names[ft] == 'top_m0_angle_to_center':
-            mars_angle_center_ctrl = features_ctrl[:, ft]
-            mars_angle_center_amph = features_amph[:, ft]
+        if feature_names[ft] == 'top_m0_angle_to_center':
+            mars_center_angle_ctrl = features_ctrl[:, ft]
+            mars_center_angle_amph = features_amph[:, ft]
 
-    return mars_speed_ctrl, mars_speed_amph, mars_acc_ctrl, mars_acc_amph, \
-           mars_angle_nnt_ctrl, mars_angle_nnt_amph, mars_angle_center_ctrl, mars_angle_center_amph
+    return mars_turn_angle_ctrl, mars_turn_angle_amph, mars_center_angle_ctrl, mars_center_angle_amph
 
 # def mars_feature(drug, dose, experiment):
 #

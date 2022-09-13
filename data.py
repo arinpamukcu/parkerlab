@@ -27,14 +27,12 @@ def get_data(drug, dose, experiment):
     speed_ctrl = mat_ctrl['veh_drug']['speed_traces_5hz'][0][0][0, :4500]
     calcium_ctrl_dff = mat_ctrl['veh_drug']['dff_traces_5hz'][0][0][:, :4500]
     calcium_ctrl_events = mat_ctrl['veh_drug']['events_5hz'][0][0][:, :4500]
-    eventsum_ctrl = np.mean(np.array(calcium_ctrl_events), axis=0)
     eventmean_ctrl = np.mean(np.array(calcium_ctrl_events), axis=0)
 
     mat_amph = loadmat(calcium_amph_path)
     speed_amph = mat_amph['amph_drug']['speed_traces_5hz'][0][0][0, :13500]
     calcium_amph_dff = mat_amph['amph_drug']['dff_traces_5hz'][0][0][:, :13500]
     calcium_amph_events = mat_amph['amph_drug']['events_5hz'][0][0][:, :13500]
-    eventsum_amph = np.mean(np.array(calcium_amph_events), axis=0)
     eventmean_amph = np.mean(np.array(calcium_amph_events), axis=0)
 
     # define
@@ -46,6 +44,6 @@ def get_data(drug, dose, experiment):
     # print("time during amph: " + str(time_amph))
 
     return speed_ctrl, speed_amph, \
-           calcium_ctrl_dff, calcium_amph_dff, \
-           calcium_ctrl_events, calcium_amph_events, eventmean_ctrl, eventmean_amph, \
+           calcium_ctrl_events, calcium_amph_events, \
+           eventmean_ctrl, eventmean_amph, \
            neuron_count, time_ctrl, time_amph
