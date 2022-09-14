@@ -225,7 +225,7 @@ def plot():
     # left_turn_duration_ctrl_all, left_turn_duration_ctrl_sem, \
     # left_turn_duration_amph_all, left_turn_duration_amph_sem = turn_data()
 
-    plt.figure(figsize=(5, 9))
+    plt.figure(figsize=(8, 4))
     # plt.subplot(211)
     plt.bar('nospeed_ctrl', nospeed_duration_ctrl, yerr=nospeed_duration_ctrl_sem)
     plt.bar('lospeed_ctrl', lospeed_duration_ctrl, yerr=lospeed_duration_ctrl_sem)
