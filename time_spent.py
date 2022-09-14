@@ -182,7 +182,7 @@ def plot():
     plt.title('Time spent for speed')
     plt.legend()
 
-    plt.subplot(211)
+    plt.subplot(212)
     plt.bar('right_ctrl', right_turn_duration_ctrl_all, yerr=right_turn_duration_ctrl_sem)
     plt.bar('left_ctrl', left_turn_duration_ctrl_all, yerr=left_turn_duration_ctrl_sem)
     plt.bar('right_amph', right_turn_duration_amph_all, yerr=right_turn_duration_amph_sem)
