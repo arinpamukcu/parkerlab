@@ -74,7 +74,7 @@ def speed_data():
         experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
 
         for experiment in experiments:
-            print(experiment)
+            print(experiment + '_speed')
 
             speed_ctrl, speed_amph, _, _, _, _, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
@@ -125,7 +125,7 @@ def turn_data():
         experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
 
         for experiment in experiments:
-            print(experiment)
+            print(experiment + '_turn')
 
             _, _, _, _, _, _, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
@@ -160,23 +160,37 @@ def turn_data():
            left_turn_duration_amph, left_turn_duration_amph_sem
 
 
-def plot_speed():
+def plot():
 
     speed_duration_ctrl, speed_duration_ctrl_sem, \
     speed_duration_amph, speed_duration_amph_sem, \
     acc_duration_ctrl_, acc_duration_ctrl_sem, \
     acc_duration_amph, acc_duration_amph_sem = speed_data()
 
-    plt.bar('speed_ctrl', speed_duration_ctrl, yerr = speed_duration_ctrl_sem)
-    plt.bar('acc_ctrl', acc_duration_ctrl_, yerr = acc_duration_ctrl_sem)
+    right_turn_duration_ctrl_all, right_turn_duration_ctrl_sem, \
+    right_turn_duration_amph_all, right_turn_duration_amph_sem, \
+    left_turn_duration_ctrl_all, left_turn_duration_ctrl_sem, \
+    left_turn_duration_amph_all, left_turn_duration_amph_sem = turn_data()
 
-    plt.bar('speed_amph', speed_duration_amph, yerr = speed_duration_amph_sem)
-    plt.bar('acc_amph', acc_duration_amph, yerr = acc_duration_amph_sem)
-
-    plt.xlabel('Frames from left turn time at 0')
-    plt.ylabel('Turn (degree)')
-    plt.title("Left turn triggered average")
+    plt.figure(figsize=(5, 9))
+    plt.subplot(211)
+    plt.bar('speed_ctrl', speed_duration_ctrl, yerr=speed_duration_ctrl_sem)
+    plt.bar('acc_ctrl', acc_duration_ctrl_, yerr=acc_duration_ctrl_sem)
+    plt.bar('speed_amph', speed_duration_amph, yerr=speed_duration_amph_sem)
+    plt.bar('acc_amph', acc_duration_amph, yerr=acc_duration_amph_sem)
+    plt.ylabel('Time (frames in 5Hz)')
+    plt.title('Time spent for speed')
     plt.legend()
+
+    plt.subplot(211)
+    plt.bar('right_ctrl', right_turn_duration_ctrl_all, yerr=right_turn_duration_ctrl_sem)
+    plt.bar('left_ctrl', left_turn_duration_ctrl_all, yerr=left_turn_duration_ctrl_sem)
+    plt.bar('right_amph', right_turn_duration_amph_all, yerr=right_turn_duration_amph_sem)
+    plt.bar('left_amph', left_turn_duration_amph_all, yerr=left_turn_duration_amph_sem)
+    plt.ylabel('Time (frames in 5Hz)')
+    plt.title('Time spent for turn')
+    plt.legend()
+
     plt.show()
 
     return
