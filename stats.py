@@ -55,9 +55,7 @@ def get_speed(speed_data, time):
     return nospeed_time, lospeed_time, midspeed_time, hispeed_time, acc_time
 
 
-def get_data():
-    drug = 'Clozapine'
-    dose = 'LowDose'
+def get_metrics(drug, dose):
     experiments, animals, _, _ = get_animal_id(drug, dose)
 
     data_ctrl = {}
@@ -101,25 +99,35 @@ def get_data():
     data_amph['midspeed'] = midspeed_amph_peranimal
     data_amph['hispeed'] = hispeed_amph_peranimal
     data_amph['acc'] = acc_amph_peranimal
-    #
-    data_ctrl_mean = {}
-    data_ctrl_sem = {}
-    for val in data_ctrl.keys():
-        data_ctrl_mean[val] = np.mean(data_ctrl[val])
-        data_ctrl_sem[val] = np.std(data_ctrl[val], axis=0) / np.sqrt(len(data_ctrl[val]))
 
-    data_amph_mean = {}
-    data_amph_sem = {}
-    for val in data_amph.keys():
-        data_amph_mean[val] = np.mean(data_amph[val])
-        data_amph_sem[val] = np.std(data_amph[val], axis=0) / np.sqrt(len(data_amph[val]))
+    return data_ctrl, data_amph
 
-    return data_ctrl_mean, data_ctrl_sem, data_amph_mean, data_amph_sem
+
+def get_alldata():
+
+    drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
+    doses = ['Vehicle', 'LowDose', 'HighDose']
+
+    alldata = {}
+    for drug in drugs:
+        for dose in doses:
+            data_ctrl, data_amph = get_metrics(drug, dose)
+            _, animals, _, _ = get_animal_id(drug, dose)
+            for animal in animals:
+                if dose == 'Vehicle':
+                    for metric in data_ctrl.keys():
+                        alldata[dose][drug]['ctrl'][animal][metric].append(data_ctrl[metric])
+                    for metric in data_amph.keys():
+                        alldata[dose][drug]['amph'][animal][metric].append(data_amph[metric])
+                else:
+                    alldata[dose][drug] = temp
+
+    return alldata
 
 
 def plot():
 
-    data_ctrl_mean, data_ctrl_sem, data_amph_mean, data_amph_sem = get_data()
+    data_ctrl_mean, data_ctrl_sem, data_amph_mean, data_amph_sem = get_metrics()
 
     plt.figure(figsize=(18, 6))
     plt.bar('nospeed_ctrl', data_ctrl_mean['nospeed'], yerr=data_ctrl_sem['nospeed'], color='k')
