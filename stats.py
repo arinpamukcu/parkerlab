@@ -158,6 +158,8 @@ def get_alldata():
                 alldata[drug][dose]['amph'][animal] = {}
                 # alldata[drug][dose]['ctrl'][animal] = data_ctrl
                 # alldata[drug][dose]['amph'][animal] = data_amph
+
+                # todo: fix this so Vehicle has data from all drugs
                 if dose == 'Vehicle':
                     for metric in data_ctrl.keys():
                         alldata[dose]['ctrl'][animal][metric] = data_ctrl[metric]
@@ -173,6 +175,8 @@ def get_alldata():
 
 
 def plot():
+
+    # todo: fix this so it computes mean and sem and plots only selected data from alldata
 
     data_ctrl_mean, data_ctrl_sem, data_amph_mean, data_amph_sem = get_metrics()
 
