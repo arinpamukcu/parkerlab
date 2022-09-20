@@ -78,7 +78,7 @@ def amph():
     for drug in drugs:
         print(drug + '_amph')
 
-        experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
+        experiments, _, D1_folders, D2_folders = get_animal_id(drug, dose)
 
         D1_speed_trig_event_amph_perdrug = []
         D2_speed_trig_event_amph_perdrug = []

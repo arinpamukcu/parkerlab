@@ -16,7 +16,7 @@ def ctrl():
     for drug in drugs:
         print(drug)
 
-        experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
+        experiments, _, D1_folders, D2_folders = get_animal_id(drug, dose)
         D1_spike_trig_avg_ctrl_perdrug = []
         D2_spike_trig_avg_ctrl_perdrug = []
 

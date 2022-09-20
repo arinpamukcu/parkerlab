@@ -3,7 +3,7 @@
 import os
 
 # path for pc
-calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
+calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_JP'
 
 # # path for mac
 # calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium'
@@ -38,22 +38,23 @@ def get_animal_id(drug, dose):
     D2_animals = ['m971', 'm972', 'm106', 'm120', 'm377', 'm380', 'f414', 'f480', 'm483', 'm485']
 
     experiments = []
-    animal_ids = []
+    animals = []
     D1_folders = []
     D2_folders = []
 
     try:
         for folder in next(os.walk(temp_path))[1]:
-            experiments.append(folder)
+            if folder[-4:] != 'amph':
+                experiments.append(folder)
 
-            animal_id = folder[9:13]
-            animal_ids.append(animal_id)
+                animal = folder[9:13]
+                animals.append(animal)
 
-            if animal_id in D1_animals:
-                D1_folders.append(folder)
-            elif animal_id in D2_animals:
-                D2_folders.append(folder)
+                if animal in D1_animals:
+                    D1_folders.append(folder)
+                elif animal in D2_animals:
+                    D2_folders.append(folder)
     except StopIteration:
         pass
 
-    return experiments, D1_folders, D2_folders
+    return experiments, animals, D1_folders, D2_folders

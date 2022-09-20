@@ -46,7 +46,7 @@ def data():
 
     for drug in drugs:
 
-        experiments, D1_folders, D2_folders = get_animal_id(drug, dose)
+        experiments, _, D1_folders, D2_folders = get_animal_id(drug, dose)
 
         D1_event_per_speed_ctrl = []
         D1_event_per_speed_amph = []
