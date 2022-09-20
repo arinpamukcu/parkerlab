@@ -6,6 +6,7 @@ from info import *
 from mars import *
 import numpy as np
 import matplotlib.pyplot as plt
+import pdb
 
 def get_speed(speed_data, time):
 
@@ -110,17 +111,27 @@ def get_alldata():
 
     alldata = {}
     for drug in drugs:
+        alldata[drug] = {}
         for dose in doses:
+            print(drug, dose)
+            alldata[drug][dose] = {}
+            alldata[drug][dose]['ctrl'] = {}
+            alldata[drug][dose]['amph'] = {}
             data_ctrl, data_amph = get_metrics(drug, dose)
             _, animals, _, _ = get_animal_id(drug, dose)
             for animal in animals:
+                alldata[drug][dose]['ctrl'][animal] = {}
+                alldata[drug][dose]['amph'][animal] = {}
                 if dose == 'Vehicle':
                     for metric in data_ctrl.keys():
-                        alldata[dose][drug]['ctrl'][animal][metric].append(data_ctrl[metric])
+                        alldata[drug][dose]['ctrl'][animal][metric] = data_ctrl[metric]
                     for metric in data_amph.keys():
-                        alldata[dose][drug]['amph'][animal][metric].append(data_amph[metric])
+                        alldata[drug][dose]['amph'][animal][metric] = data_amph[metric]
                 else:
-                    alldata[dose][drug] = temp
+                    alldata[drug][dose]['ctrl'][animal] = data_ctrl
+                    alldata[drug][dose]['amph'][animal] = data_amph
+
+    pdb.set_trace()
 
     return alldata
 
