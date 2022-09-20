@@ -56,6 +56,37 @@ def get_speed(speed_data, time):
     return nospeed_time, lospeed_time, midspeed_time, hispeed_time, acc_time
 
 
+def get_turns(turn_data, time):
+    right_turn = []
+    left_turn = []
+    straight = []
+
+    for fr in range(0, len(turn_data) - 5):
+        if turn_data[fr] > 30 and turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
+            right_turn.append(fr)
+        elif turn_data[fr] < -30 and turn_data[fr] < turn_data[fr + 1] < turn_data[fr + 2] < turn_data[fr + 3] < turn_data[fr + 4]:
+            left_turn.append(fr)
+        elif -30 < turn_data[fr] < 30:
+            straight.append(fr)
+
+    right_turn_frames = np.zeros(time)
+    for fr in range(len(right_turn)):
+        right_turn_frames[right_turn[fr]] = 1
+    right_turn_time = np.sum(right_turn_frames)
+
+    left_turn_frames = np.zeros(time)
+    for fr in range(len(left_turn)):
+        left_turn_frames[left_turn[fr]] = 1
+    left_turn_time = np.sum(left_turn_frames)/5
+
+    straight_frames = np.zeros(time)
+    for fr in range(len(left_turn)):
+        straight_frames[left_turn[fr]] = 1
+    straight_time = np.sum(straight_frames) / 5
+
+    return right_turn_time, left_turn_time, straight_time
+
+
 def get_metrics(drug, dose):
     experiments, animals, _, _ = get_animal_id(drug, dose)
 
@@ -72,10 +103,13 @@ def get_metrics(drug, dose):
 
         # get values for speed or turn
         speed_ctrl, speed_amph, _, _, _, _, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+        turn_angle_ctrl, turn_angle_amph, _, _ = mars_feature(drug, dose, experiment)
 
         # get values for each animal for that drug & dose
         nospeed_ctrl, lospeed_ctrl, midspeed_ctrl, hispeed_ctrl, acc_ctrl = get_speed(speed_ctrl, time_ctrl)
         nospeed_amph, lospeed_amph, midspeed_amph, hispeed_amph, acc_amph = get_speed(speed_amph, time_amph)
+        right_turn_ctrl, left_turn_ctrl, straight_ctrl = get_turns(turn_angle_ctrl, time_ctrl)
+        right_turn_amph, left_turn_amph, straight_amph = get_turns(turn_angle_amph, time_amph)
 
         # append values for each animal to a list
         nospeed_ctrl_peranimal.append(nospeed_ctrl)
@@ -122,11 +156,13 @@ def get_alldata():
             for animal in animals:
                 alldata[drug][dose]['ctrl'][animal] = {}
                 alldata[drug][dose]['amph'][animal] = {}
+                # alldata[drug][dose]['ctrl'][animal] = data_ctrl
+                # alldata[drug][dose]['amph'][animal] = data_amph
                 if dose == 'Vehicle':
                     for metric in data_ctrl.keys():
-                        alldata[drug][dose]['ctrl'][animal][metric] = data_ctrl[metric]
+                        alldata[dose]['ctrl'][animal][metric] = data_ctrl[metric]
                     for metric in data_amph.keys():
-                        alldata[drug][dose]['amph'][animal][metric] = data_amph[metric]
+                        alldata[dose]['amph'][animal][metric] = data_amph[metric]
                 else:
                     alldata[drug][dose]['ctrl'][animal] = data_ctrl
                     alldata[drug][dose]['amph'][animal] = data_amph
