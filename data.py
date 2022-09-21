@@ -39,9 +39,6 @@ def get_data(drug, dose, experiment):
     neuron_count = np.size(calcium_ctrl_dff, 0)
     time_ctrl = np.size(calcium_ctrl_dff, 1)
     time_amph = np.size(calcium_amph_dff, 1)
-    # print("neuron count: " + str(neuron))
-    # print("time during ctrl: " + str(time_ctrl))
-    # print("time during amph: " + str(time_amph))
 
     return speed_ctrl, speed_amph, \
            calcium_ctrl_events, calcium_amph_events, \

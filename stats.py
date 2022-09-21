@@ -93,12 +93,10 @@ def get_metrics(drug, dose):
     data_ctrl = {}
     data_amph = {}
 
-    nospeed_ctrl_peranimal, lospeed_ctrl_peranimal, midspeed_ctrl_peranimal, hispeed_ctrl_peranimal, \
-    acc_ctrl_peranimal = ([] for i in range(5))
-    nospeed_amph_peranimal, lospeed_amph_peranimal, midspeed_amph_peranimal, hispeed_amph_peranimal, \
-    acc_amph_peranimal = ([] for i in range(5))
+    for experiment, animal in zip(experiments, animals):
+        data_ctrl[animal] = {}
+        data_amph[animal] = {}
 
-    for experiment in experiments:
         print(experiment)
 
         # get values for speed or turn
@@ -112,36 +110,33 @@ def get_metrics(drug, dose):
         right_turn_amph, left_turn_amph, straight_amph = get_turns(turn_angle_amph, time_amph)
 
         # append values for each animal to a list
-        nospeed_ctrl_peranimal.append(nospeed_ctrl)
-        lospeed_ctrl_peranimal.append(lospeed_ctrl)
-        midspeed_ctrl_peranimal.append(midspeed_ctrl)
-        hispeed_ctrl_peranimal.append(hispeed_ctrl)
-        acc_ctrl_peranimal.append(acc_ctrl)
-        nospeed_amph_peranimal.append(nospeed_amph)
-        lospeed_amph_peranimal.append(lospeed_amph)
-        midspeed_amph_peranimal.append(midspeed_amph)
-        hispeed_amph_peranimal.append(hispeed_amph)
-        acc_amph_peranimal.append(acc_amph)
+        data_ctrl[animal]['nospeed'] = nospeed_ctrl
+        data_ctrl[animal]['lospeed'] = lospeed_ctrl
+        data_ctrl[animal]['midspeed'] = midspeed_ctrl
+        data_ctrl[animal]['hispeed'] = hispeed_ctrl
+        data_ctrl[animal]['acc'] = acc_ctrl
+        data_ctrl[animal]['right_turn'] = right_turn_ctrl
+        data_ctrl[animal]['left_turn'] = left_turn_ctrl
+        data_ctrl[animal]['straight'] = straight_ctrl
 
-    # make a dictionary of values for each animal for that drug & dose
-    data_ctrl['nospeed'] = nospeed_ctrl_peranimal
-    data_ctrl['lospeed'] = lospeed_ctrl_peranimal
-    data_ctrl['midspeed'] = midspeed_ctrl_peranimal
-    data_ctrl['hispeed'] = hispeed_ctrl_peranimal
-    data_ctrl['acc'] = acc_ctrl_peranimal
-    data_amph['nospeed'] = nospeed_amph_peranimal
-    data_amph['lospeed'] = lospeed_amph_peranimal
-    data_amph['midspeed'] = midspeed_amph_peranimal
-    data_amph['hispeed'] = hispeed_amph_peranimal
-    data_amph['acc'] = acc_amph_peranimal
+        data_amph[animal]['nospeed'] = nospeed_amph
+        data_amph[animal]['lospeed'] = lospeed_amph
+        data_amph[animal]['midspeed'] = midspeed_amph
+        data_amph[animal]['hispeed'] = hispeed_amph
+        data_amph[animal]['acc'] = acc_amph
+        data_amph[animal]['right_turn'] = right_turn_amph
+        data_amph[animal]['left_turn'] = left_turn_amph
+        data_amph[animal]['straight'] = straight_amph
 
     return data_ctrl, data_amph
 
 
 def get_alldata():
 
-    drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
-    doses = ['Vehicle', 'LowDose', 'HighDose']
+    # drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
+    # doses = ['Vehicle', 'LowDose', 'HighDose']
+    drugs = ['Clozapine', 'Haloperidol']
+    doses = ['Vehicle', 'HighDose']
 
     alldata = {}
     for drug in drugs:
@@ -153,46 +148,29 @@ def get_alldata():
             alldata[drug][dose]['amph'] = {}
             data_ctrl, data_amph = get_metrics(drug, dose)
             _, animals, _, _ = get_animal_id(drug, dose)
-            for animal in animals:
-                alldata[drug][dose]['ctrl'][animal] = {}
-                alldata[drug][dose]['amph'][animal] = {}
-                # alldata[drug][dose]['ctrl'][animal] = data_ctrl
-                # alldata[drug][dose]['amph'][animal] = data_amph
+            alldata[drug][dose]['ctrl'] = data_ctrl
+            alldata[drug][dose]['amph'] = data_amph
 
-                # todo: fix this so Vehicle has data from all drugs
-                if dose == 'Vehicle':
-                    for metric in data_ctrl.keys():
-                        alldata[dose]['ctrl'][animal][metric] = data_ctrl[metric]
-                    for metric in data_amph.keys():
-                        alldata[dose]['amph'][animal][metric] = data_amph[metric]
-                else:
-                    alldata[drug][dose]['ctrl'][animal] = data_ctrl
-                    alldata[drug][dose]['amph'][animal] = data_amph
+    # pdb.set_trace()
+    # print(alldata['Clozapine']['Vehicle']['ctrl']['m085'])
 
-    pdb.set_trace()
-
-    return alldata
+    return alldata['Clozapine']['Vehicle']['ctrl']['m085']
 
 
-def plot():
+def plot(drug, dose, bases=['ctrl', 'amph'],
+         metrics=['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc']):
 
-    # todo: fix this so it computes mean and sem and plots only selected data from alldata
-
-    data_ctrl_mean, data_ctrl_sem, data_amph_mean, data_amph_sem = get_metrics()
+    alldata = get_alldata()
 
     plt.figure(figsize=(18, 6))
-    plt.bar('nospeed_ctrl', data_ctrl_mean['nospeed'], yerr=data_ctrl_sem['nospeed'], color='k')
-    plt.bar('lospeed_ctrl', data_ctrl_mean['lospeed'], yerr=data_ctrl_sem['lospeed'], color='k')
-    plt.bar('midspeed_ctrl', data_ctrl_mean['midspeed'], yerr=data_ctrl_sem['midspeed'], color='k')
-    plt.bar('hispeed_ctrl', data_ctrl_mean['hispeed'], yerr=data_ctrl_sem['hispeed'], color='k')
-    plt.bar('acc_ctrl', data_ctrl_mean['acc'], yerr=data_ctrl_sem['acc'], color='k')
-    plt.bar('nospeed_amph', data_amph_mean['nospeed'], yerr=data_amph_sem['nospeed'], color='m')
-    plt.bar('lospeed_amph', data_amph_mean['lospeed'], yerr=data_amph_sem['lospeed'], color='m')
-    plt.bar('midspeed_amph', data_amph_mean['midspeed'], yerr=data_amph_sem['midspeed'], color='m')
-    plt.bar('hispeed_amph', data_amph_mean['hispeed'], yerr=data_amph_sem['hispeed'], color='m')
-    plt.bar('acc_amph', data_amph_mean['acc'], yerr=data_amph_sem['acc'], color='m')
+    for base in bases:
+        for metric in metrics:
+            x = [alldata[drug][dose][base][a][metric] for a in alldata[drug][dose][base].keys()]
+            mean = np.mean(x)
+            sem = np.std(x, axis=0) / np.sqrt(len(x))
+            plt.bar(metric, mean, yerr=sem, color='k')
     plt.ylabel('Time (s)')
-    plt.title('MP-10, LowDose')
+    plt.title(drug, dose)
     plt.legend()
     plt.show()
 
