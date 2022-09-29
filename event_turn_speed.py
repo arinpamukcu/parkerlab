@@ -12,29 +12,33 @@ import matplotlib.pyplot as plt
 import pdb
 
 def speed_bins(speed_data, turn_data, speed, eventmean_data):
-    nospeed_events, lospeed_events, midspeed_events, hispeed_events, acc_events = ([] for i in range(5))
-    nospeed_duration, lospeed_duration, midspeed_duration, hispeed_duration, acc_duration = (0 for i in range(5))
+    farleft_events, left_events, straight_events, right_events, farright_events = ([] for i in range(5))
+    farleft_duration, left_duration, straight_duration, right_duration,farright_duration = (0 for i in range(5))
 
     for fr in range(0, len(turn_data)):
-        if turn_angle-5 < turn_data[fr] < turn_angle+5 and speed_data[fr] < 1:
-            nospeed_events.append(eventmean_data[fr])
-            nospeed_duration += 1
-        if turn_angle-5 < turn_data[fr] < turn_angle+5 and 1 < speed_data[fr] <= 5:
-            lospeed_events.append(eventmean_data[fr])
-            lospeed_duration += 1
-        if turn_angle-5 < turn_data[fr] < turn_angle+5 and 5 < speed_data[fr] <= 10:
-            midspeed_events.append(eventmean_data[fr])
-            midspeed_duration += 1
-        if turn_angle-5 < turn_data[fr] < turn_angle+5 and 10 < speed_data[fr]:
-            hispeed_events.append(eventmean_data[fr])
-            hispeed_duration += 1
+        if speed_data[fr] < speed and -65 < turn_data[fr] < -55:
+            farleft_events.append(eventmean_data[fr])
+            farleft_duration += 1
+        if speed_data[fr] < speed and -35 < turn_data[fr] < -25:
+            left_events.append(eventmean_data[fr])
+            left_duration += 1
+        if speed_data[fr] < speed and -5 < turn_data[fr] < 5:
+            straight_events.append(eventmean_data[fr])
+            straight_duration += 1
+        if speed_data[fr] < speed and 25 < turn_data[fr] < 35:
+            right_events.append(eventmean_data[fr])
+            right_duration += 1
+        if speed_data[fr] < speed and 25 < turn_data[fr] < 35:
+            farright_events.append(eventmean_data[fr])
+            farright_duration += 1
 
-    event_per_speed = [(np.sum(nospeed_events) / nospeed_duration) * 300,
-                       (np.sum(lospeed_events) / lospeed_duration) * 300,
-                       (np.sum(midspeed_events) / midspeed_duration) * 300,
-                       (np.sum(hispeed_events) / hispeed_duration) * 300]
+    event_turn_speed = [(np.sum(farleft_events) / farleft_duration) * 300,
+                       (np.sum(left_events) / left_duration) * 300,
+                       (np.sum(straight_events) / straight_duration) * 300,
+                       (np.sum(right_events) / right_duration) * 300,
+                       (np.sum(farright_events) / farright_duration) * 300]
 
-    return event_per_speed
+    return event_turn_speed
 
 def data_ctrl():
     drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
@@ -44,8 +48,8 @@ def data_ctrl():
 
         experiments, _, D1_folders, D2_folders = get_animal_id(drug, dose)
 
-        D1_eps_ctrl = {}
-        D2_eps_ctrl = {}
+        D1_ets_ctrl = {}
+        D2_ets_ctrl = {}
 
         for experiment in experiments:
             print(experiment)
@@ -53,24 +57,24 @@ def data_ctrl():
             speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
             turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
-            eps_ctrl_0 = speed_bins(speed_ctrl, turn_ctrl, 0, eventmean_ctrl)
-            eps_ctrl_30 = speed_bins(speed_ctrl, turn_ctrl, 30, eventmean_ctrl)
-            eps_ctrl_60 = speed_bins(speed_ctrl, turn_ctrl, 60, eventmean_ctrl)
+            ets_ctrl_0 = speed_bins(speed_ctrl, turn_ctrl, 1, eventmean_ctrl)
+            ets_ctrl_30 = speed_bins(speed_ctrl, turn_ctrl, 1, eventmean_ctrl)
+            ets_ctrl_60 = speed_bins(speed_ctrl, turn_ctrl, 1, eventmean_ctrl)
 
             if experiment in D1_folders:
-                D1_eps_ctrl['0'] = eps_ctrl_0
-                D1_eps_ctrl['30'] = eps_ctrl_30
-                D1_eps_ctrl['60'] = eps_ctrl_60
+                D1_ets_ctrl['0'] = ets_ctrl_0
+                D1_ets_ctrl['30'] = ets_ctrl_30
+                D1_ets_ctrl['60'] = ets_ctrl_60
 
             elif experiment in D2_folders:
-                D2_eps_ctrl['0'] = eps_ctrl_0
-                D2_eps_ctrl['30'] = eps_ctrl_30
-                D2_eps_ctrl['60'] = eps_ctrl_60
+                D2_ets_ctrl['0'] = ets_ctrl_0
+                D2_ets_ctrl['30'] = ets_ctrl_30
+                D2_ets_ctrl['60'] = ets_ctrl_60
 
-    pickle.dump(D1_eps_ctrl, open("D1_eps_ctrl.pkl", "wb"))
-    pickle.dump(D2_eps_ctrl, open("D2_eps_ctrl.pkl", "wb"))
+    pickle.dump(D1_ets_ctrl, open("D1_ets_ctrl.pkl", "wb"))
+    pickle.dump(D2_ets_ctrl, open("D2_ets_ctrl.pkl", "wb"))
 
-    return D1_eps_ctrl, D2_eps_ctrl
+    return D1_ets_ctrl, D2_ets_ctrl
 
 
 def data_amph():
@@ -81,8 +85,8 @@ def data_amph():
 
         experiments, _, D1_folders, D2_folders = get_animal_id(drug, dose)
 
-        D1_eps_amph = {}
-        D2_eps_amph = {}
+        D1_ets_amph = {}
+        D2_ets_amph = {}
 
         for experiment in experiments:
             print(experiment + '_amph')
@@ -90,43 +94,43 @@ def data_amph():
             speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
             turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
-            eps_amph_0 = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
-            eps_amph_30 = speed_bins(speed_amph, turn_amph, 30, eventmean_amph)
-            eps_amph_60 = speed_bins(speed_amph, turn_amph, 60, eventmean_amph)
+            ets_amph_0 = speed_bins(speed_amph, turn_amph, 1, eventmean_amph)
+            ets_amph_30 = speed_bins(speed_amph, turn_amph, 1, eventmean_amph)
+            ets_amph_60 = speed_bins(speed_amph, turn_amph, 1, eventmean_amph)
 
             if experiment in D1_folders:
-                D1_eps_amph['0'] = eps_amph_0
-                D1_eps_amph['30'] = eps_amph_30
-                D1_eps_amph['60'] = eps_amph_60
+                D1_ets_amph['0'] = ets_amph_0
+                D1_ets_amph['30'] = ets_amph_30
+                D1_ets_amph['60'] = ets_amph_60
 
             elif experiment in D2_folders:
-                D2_eps_amph['0'] = eps_amph_0
-                D2_eps_amph['30'] = eps_amph_30
-                D2_eps_amph['60'] = eps_amph_60
+                D2_ets_amph['0'] = ets_amph_0
+                D2_ets_amph['30'] = ets_amph_30
+                D2_ets_amph['60'] = ets_amph_60
 
-    pickle.dump(D1_eps_amph, open("D1_eps_amph.pkl", "wb"))
-    pickle.dump(D2_eps_amph, open("D2_eps_amph.pkl", "wb"))
+    pickle.dump(D1_ets_amph, open("D1_ets_amph.pkl", "wb"))
+    pickle.dump(D2_ets_amph, open("D2_ets_amph.pkl", "wb"))
 
-    return D1_eps_amph, D2_eps_amph
+    return D1_ets_amph, D2_ets_amph
 
 
 def plot():
 
-    # D1_event_per_speed_ctrl, D2_event_per_speed_ctrl = data_ctrl()
-    D1_eps_ctrl = pickle.load(open("D1_eps_ctrl.pkl", "rb"))
-    D2_eps_ctrl = pickle.load(open("D2_eps_ctrl.pkl", "rb"))
-    # D1_eps_amph, D2_eps_amph = data_amph()
-    D1_eps_amph = pickle.load(open("D1_eps_amph.pkl", "rb"))
-    D2_eps_amph = pickle.load(open("D2_eps_amph.pkl", "rb"))
+    # D1_ets_ctrl, D2_ets_ctrl = data_ctrl()
+    D1_ets_ctrl = pickle.load(open("D1_ets_ctrl.pkl", "rb"))
+    D2_ets_ctrl = pickle.load(open("D2_ets_ctrl.pkl", "rb"))
+    # D1_ets_amph, D2_ets_amph = data_amph()
+    D1_ets_amph = pickle.load(open("D1_ets_amph.pkl", "rb"))
+    D2_ets_amph = pickle.load(open("D2_ets_amph.pkl", "rb"))
 
     plt.figure(figsize=(5, 9))
     plt.subplot(211)
-    plt.plot(D1_eps_ctrl['0'], label='D1 ctrl 0', color='k')
-    plt.plot(D1_eps_ctrl['30'], label='D1 ctrl 30', color='k', linestyle='--')
-    plt.plot(D1_eps_ctrl['60'], label='D1 ctrl 60', color='k', linestyle=':')
-    plt.plot(D1_eps_amph['0'], label='D1 amph 0', color='b')
-    plt.plot(D1_eps_amph['30'], label='D1 amph 30', color='b', linestyle='--')
-    plt.plot(D1_eps_amph['60'], label='D1 amph 60', color='b', linestyle=':')
+    plt.plot(D1_ets_ctrl['0'], label='D1 ctrl 0', color='k')
+    plt.plot(D1_ets_ctrl['30'], label='D1 ctrl 30', color='k', linestyle='--')
+    plt.plot(D1_ets_ctrl['60'], label='D1 ctrl 60', color='k', linestyle=':')
+    plt.plot(D1_ets_amph['0'], label='D1 amph 0', color='b')
+    plt.plot(D1_ets_amph['30'], label='D1 amph 30', color='b', linestyle='--')
+    plt.plot(D1_ets_amph['60'], label='D1 amph 60', color='b', linestyle=':')
     x_default = [0, 1, 2, 3];
     x_new = ['<1', '1-5', '5-10', '>10'];
     plt.xticks(x_default, x_new);
@@ -138,12 +142,12 @@ def plot():
     plt.legend()
 
     plt.subplot(212)
-    plt.plot(D2_eps_ctrl['0'], label='D2 ctrl 0', color='k')
-    plt.plot(D2_eps_ctrl['30'], label='D2 ctrl 30', color='k', linestyle='--')
-    plt.plot(D2_eps_ctrl['60'], label='D2 ctrl 60', color='k', linestyle=':')
-    plt.plot(D2_eps_amph['0'], label='D2 amph 0', color='r')
-    plt.plot(D2_eps_amph['30'], label='D2 amph 30', color='r', linestyle='--')
-    plt.plot(D2_eps_amph['60'], label='D2 amph 60', color='r', linestyle=':')
+    plt.plot(D2_ets_ctrl['0'], label='D2 ctrl 0', color='k')
+    plt.plot(D2_ets_ctrl['30'], label='D2 ctrl 30', color='k', linestyle='--')
+    plt.plot(D2_ets_ctrl['60'], label='D2 ctrl 60', color='k', linestyle=':')
+    plt.plot(D2_ets_amph['0'], label='D2 amph 0', color='r')
+    plt.plot(D2_ets_amph['30'], label='D2 amph 30', color='r', linestyle='--')
+    plt.plot(D2_ets_amph['60'], label='D2 amph 60', color='r', linestyle=':')
     x_default = [0, 1, 2, 3];
     x_new = ['<1', '1-5', '5-10', '>10'];
     plt.xticks(x_default, x_new);
