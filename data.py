@@ -4,11 +4,11 @@ import os
 import numpy as np
 from scipy.io import loadmat
 
-#  path for pc
-calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_JP'
+# #  path for pc
+# calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_JP'
 
 # # path for mac
-# calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_JP'
+calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_JP'
 
 def get_dir(drug, dose, experiment):
     calcium_ctrl_path = os.path.join(calcium_dir, drug, dose, experiment, 'veh_drug.mat')

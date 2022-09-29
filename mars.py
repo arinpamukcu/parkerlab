@@ -5,18 +5,18 @@ import math
 import numpy as np
 import pdb
 
-# path for pc
-behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
+# # path for pc
+# behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
 
-# # path for mac
-# behavior_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Behavior'
+# path for mac
+behavior_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Behavior'
 
 def get_mars_dir(drug, dose, experiment):
 
     experiment_amph = experiment + '_amph'
 
-    mars_ctrl_output = 'Control\output_v1_8'
-    mars_amph_output = 'Amph\output_v1_8'
+    mars_ctrl_output = 'Control/output_v1_8'
+    mars_amph_output = 'Amph/output_v1_8'
 
     mars_ctrl_file = experiment + '_custom_feat_top_v1_8.npz'
     mars_amph_file = experiment + '_amph_custom_feat_top_v1_8.npz'

@@ -44,15 +44,17 @@ def get_turns(turn_data, eventmean_data):
 
     right_turn_events, left_turn_events, straight_events = ([] for i in range(3))
     right_turn_duration, left_turn_duration, straight_duration = (0 for i in range(3))
+    turn_dt = turn_data[1:] - turn_data[:-1]
 
-    for fr in range(0, len(turn_data) - 5):
-        if turn_data[fr] > 20 and turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
+    for fr in range(2, len(turn_data) - 2):
+        if turn_data[fr] > 10 and mean(turn_dt[fr-2:fr+2]) > 0: #turn_dt(max(fr-2,0):min(fr+2,len(turn_dt))
             right_turn_events.append(eventmean_data[fr])
             right_turn_duration += 1
-        elif turn_data[fr] < -20 and turn_data[fr] < turn_data[fr + 1] < turn_data[fr + 2] < turn_data[fr + 3] < turn_data[fr + 4]:
+        elif turn_data[fr] < -10 and mean(turn_dt[fr-2:fr+2]) < 0:
             left_turn_events.append(eventmean_data[fr])
             left_turn_duration += 1
-        elif -20 < turn_data[fr] < 20:
+        elif -10 < turn_data[fr] < 10:
+        # elif -10 < turn_data[fr] < 10 and -0.1 < mean(turn_dt[fr - 2:fr + 2]) < 0.1:
             straight_events.append(eventmean_data[fr])
             straight_duration += 1
 
@@ -128,7 +130,7 @@ def get_alldata():
 
     # pdb.set_trace()
 
-    pickle.dump(alldata, open("fname.pkl", "wb"))
+    pickle.dump(alldata, open("alldata.pkl", "wb"))
     # alldata = pickle.load(open("fname.pkl", "rb"))
 
     return alldata
@@ -141,7 +143,7 @@ def plot_timespent(drugs, dose):
 
     # D1_animals, D2_animals = D1_D2_names()
 
-    alldata = pickle.load(open("fname.pkl", "rb"))
+    alldata = pickle.load(open("alldata.pkl", "rb"))
     # alldata = get_alldata()
 
     plt.figure(figsize=(10, 6))
