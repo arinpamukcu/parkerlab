@@ -188,7 +188,7 @@ def plot():
 
     plt.subplot(212)
     plt.plot(D2_est_ctrl_0_mean, label='D2 ctrl 0°', color='k')
-    plt.fill_between(x, D2_est_ctrl_0_mean + D2_est_ctrl_0_sem, D2_est_ctrl_0_sem - D2_est_ctrl_0_sem, color='k', alpha=0.2)
+    plt.fill_between(x, D2_est_ctrl_0_mean + D2_est_ctrl_0_sem, D2_est_ctrl_0_mean - D2_est_ctrl_0_sem, color='k', alpha=0.2)
     plt.plot(D2_est_ctrl_30_mean, label='D2 ctrl 30°', color='k', linestyle='--')
     plt.fill_between(x, D2_est_ctrl_30_mean + D2_est_ctrl_30_sem, D2_est_ctrl_30_mean - D2_est_ctrl_30_sem, color='k', alpha=0.2)
     plt.plot(D2_est_ctrl_60_mean, label='D2 ctrl 60°', color='k', linestyle=':')

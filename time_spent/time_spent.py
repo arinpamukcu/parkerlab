@@ -57,7 +57,7 @@ def get_speed(speed_data, time):
 
 def get_data():
     drug = 'Clozapine'
-    dose = 'LowDose'
+    dose = 'Vehicle'
     experiments, animals, _, _ = get_animal_id(drug, dose)
 
     data_ctrl = {}
@@ -133,7 +133,7 @@ def plot():
     plt.bar('hispeed_amph', data_amph_mean['hispeed'], yerr=data_amph_sem['hispeed'], color='m')
     plt.bar('acc_amph', data_amph_mean['acc'], yerr=data_amph_sem['acc'], color='m')
     plt.ylabel('Time (s)')
-    plt.title('MP-10, LowDose')
+    plt.title('Clozapine, Vehicle')
     plt.legend()
     plt.show()
 

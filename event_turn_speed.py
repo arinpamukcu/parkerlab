@@ -12,31 +12,31 @@ import matplotlib.pyplot as plt
 import pdb
 
 def speed_bins(speed_data, turn_data, speed, eventmean_data):
-    farleft_events, left_events, straight_events, right_events, farright_events = ([] for i in range(5))
-    farleft_duration, left_duration, straight_duration, right_duration,farright_duration = (0 for i in range(5))
+    left60_events, left30_events, straight_events, right30_events, right60_events = ([] for i in range(5))
+    left60_duration, left30_duration, straight_duration, right30_duration, right60_duration = (0 for i in range(5))
 
     for fr in range(0, len(turn_data)):
         if speed_data[fr] < speed and -70 < turn_data[fr] < -50:
-            farleft_events.append(eventmean_data[fr])
-            farleft_duration += 1
+            left60_events.append(eventmean_data[fr])
+            left60_duration += 1
         if speed_data[fr] < speed and -40 < turn_data[fr] < -20:
-            left_events.append(eventmean_data[fr])
-            left_duration += 1
+            left30_events.append(eventmean_data[fr])
+            left30_duration += 1
         if speed_data[fr] < speed and -10 < turn_data[fr] < 10:
             straight_events.append(eventmean_data[fr])
             straight_duration += 1
         if speed_data[fr] < speed and 20 < turn_data[fr] < 40:
-            right_events.append(eventmean_data[fr])
-            right_duration += 1
+            right30_events.append(eventmean_data[fr])
+            right30_duration += 1
         if speed_data[fr] < speed and 50 < turn_data[fr] < 70:
-            farright_events.append(eventmean_data[fr])
-            farright_duration += 1
+            right60_events.append(eventmean_data[fr])
+            right60_duration += 1
 
-    event_turn_speed = [(np.sum(farleft_events) / farleft_duration) * 300,
-                       (np.sum(left_events) / left_duration) * 300,
-                       (np.sum(straight_events) / straight_duration) * 300,
-                       (np.sum(right_events) / right_duration) * 300,
-                       (np.sum(farright_events) / farright_duration) * 300]
+    event_turn_speed = [(np.sum(left60_events) / left60_duration) * 300,
+                        (np.sum(left30_events) / left30_duration) * 300,
+                        (np.sum(straight_events) / straight_duration) * 300,
+                        (np.sum(right30_events) / right30_duration) * 300,
+                        (np.sum(right60_events) / right60_duration) * 300]
 
     return event_turn_speed
 
@@ -72,10 +72,10 @@ def data_ctrl():
     D1_ets_ctrl_sem = np.nanstd(D1_ets_ctrl, axis=0) / np.sqrt(len(D1_ets_ctrl))
     D2_ets_ctrl_sem = np.nanstd(D2_ets_ctrl, axis=0) / np.sqrt(len(D2_ets_ctrl))
 
-    pickle.dump(D1_ets_ctrl_mean, open("D1_ets_ctrl_mean.pkl", "wb"))
-    pickle.dump(D1_ets_ctrl_sem, open("D1_ets_ctrl_sem.pkl", "wb"))
-    pickle.dump(D2_ets_ctrl_mean, open("D2_ets_ctrl_mean.pkl", "wb"))
-    pickle.dump(D2_ets_ctrl_sem, open("D2_ets_ctrl_sem.pkl", "wb"))
+    # pickle.dump(D1_ets_ctrl_mean, open("D1_ets_ctrl_mean.pkl", "wb"))
+    # pickle.dump(D1_ets_ctrl_sem, open("D1_ets_ctrl_sem.pkl", "wb"))
+    # pickle.dump(D2_ets_ctrl_mean, open("D2_ets_ctrl_mean.pkl", "wb"))
+    # pickle.dump(D2_ets_ctrl_sem, open("D2_ets_ctrl_sem.pkl", "wb"))
 
     return D1_ets_ctrl_mean, D2_ets_ctrl_mean, D1_ets_ctrl_sem, D2_ets_ctrl_sem
 
@@ -112,10 +112,10 @@ def data_amph():
     D1_ets_amph_sem = np.nanstd(D1_ets_amph, axis=0) / np.sqrt(len(D1_ets_amph))
     D2_ets_amph_sem = np.nanstd(D2_ets_amph, axis=0) / np.sqrt(len(D2_ets_amph))
 
-    pickle.dump(D1_ets_amph_mean, open("D1_ets_amph_mean.pkl", "wb"))
-    pickle.dump(D1_ets_amph_sem, open("D1_ets_amph_sem.pkl", "wb"))
-    pickle.dump(D2_ets_amph_mean, open("D2_ets_amph_mean.pkl", "wb"))
-    pickle.dump(D2_ets_amph_sem, open("D2_ets_amph_sem.pkl", "wb"))
+    # pickle.dump(D1_ets_amph_mean, open("D1_ets_amph_mean.pkl", "wb"))
+    # pickle.dump(D1_ets_amph_sem, open("D1_ets_amph_sem.pkl", "wb"))
+    # pickle.dump(D2_ets_amph_mean, open("D2_ets_amph_mean.pkl", "wb"))
+    # pickle.dump(D2_ets_amph_sem, open("D2_ets_amph_sem.pkl", "wb"))
 
     return D1_ets_amph_mean, D2_ets_amph_mean, D1_ets_amph_sem, D2_ets_amph_sem
 
@@ -123,17 +123,9 @@ def data_amph():
 def plot():
 
     D1_ets_ctrl_mean, D2_ets_ctrl_mean, D1_ets_ctrl_sem, D2_ets_ctrl_sem = data_ctrl()
-    # D1_ets_ctrl_mean = pickle.load(open("D1_ets_ctrl_mean.pkl", "rb"))
-    # D1_ets_ctrl_sem = pickle.load(open("D1_ets_ctrl_sem.pkl", "rb"))
-    # D2_ets_ctrl_mean = pickle.load(open("D2_ets_ctrl_mean.pkl", "rb"))
-    # D2_ets_ctrl_sem = pickle.load(open("D2_ets_ctrl_sem.pkl", "rb"))
     D1_ets_amph_mean, D2_ets_amph_mean, D1_ets_amph_sem, D2_ets_amph_sem = data_amph()
-    # D1_ets_amph_mean = pickle.load(open("D1_ets_amph_mean.pkl", "rb"))
-    # D1_ets_amph_sem = pickle.load(open("D1_ets_amph_sem.pkl", "rb"))
-    # D2_ets_amph_mean = pickle.load(open("D2_ets_amph_mean.pkl", "rb"))
-    # D2_ets_amph_sem = pickle.load(open("D2_ets_amph_sem.pkl", "rb"))
 
-    x=range(5)
+    x = range(5)
 
     plt.figure(figsize=(5, 9))
     plt.subplot(211)
@@ -142,13 +134,13 @@ def plot():
     plt.plot(D1_ets_amph_mean, label='D1 amph', color='b')
     plt.fill_between(x, D1_ets_amph_mean + D1_ets_amph_sem, D1_ets_amph_mean - D1_ets_amph_sem, color='b', alpha=0.2)
     x_default = [0, 1, 2, 3, 4];
-    x_new = ['right 60', 'right 30', 'straight 0', 'left 30', 'left 60'];
+    x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
     plt.xticks(x_default, x_new);
-    plt.ylim((0, 1.5))
+    plt.ylim((0, 2))
     # plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D1 SPNs')
-    plt.suptitle('Ca events for speed=1cm/s')
+    plt.suptitle('Ca events for speed: 0-1 cm/s')
     plt.legend()
 
     plt.subplot(212)
@@ -157,9 +149,9 @@ def plot():
     plt.plot(D2_ets_amph_mean, label='D2 amph', color='r')
     plt.fill_between(x, D2_ets_amph_mean + D2_ets_amph_sem, D2_ets_amph_mean - D2_ets_amph_sem, color='r', alpha=0.2)
     x_default = [0, 1, 2, 3, 4];
-    x_new = ['right 60', 'right 30', 'straight 0', 'left 30', 'left 60'];
+    x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
     plt.xticks(x_default, x_new);
-    plt.ylim((0, 1.5))
+    plt.ylim((0, 2))
     # plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D2 SPNs')
