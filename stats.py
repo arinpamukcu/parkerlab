@@ -47,14 +47,14 @@ def get_turns(turn_data, eventmean_data):
     turn_dt = turn_data[1:] - turn_data[:-1]
 
     for fr in range(2, len(turn_data) - 2):
-        if turn_data[fr] > 10 and mean(turn_dt[fr-2:fr+2]) > 0: #turn_dt(max(fr-2,0):min(fr+2,len(turn_dt))
+        if turn_data[fr] > 10 and np.mean(turn_dt[fr-2:fr+2]) > 0: #turn_dt(max(fr-2,0):min(fr+2,len(turn_dt))
             right_turn_events.append(eventmean_data[fr])
             right_turn_duration += 1
-        elif turn_data[fr] < -10 and mean(turn_dt[fr-2:fr+2]) < 0:
+        elif turn_data[fr] < -10 and np.mean(turn_dt[fr-2:fr+2]) < 0:
             left_turn_events.append(eventmean_data[fr])
             left_turn_duration += 1
         elif -10 < turn_data[fr] < 10:
-        # elif -10 < turn_data[fr] < 10 and -0.1 < mean(turn_dt[fr - 2:fr + 2]) < 0.1:
+        # elif -10 < turn_data[fr] < 10 and -0.1 < np.mean(turn_dt[fr - 2:fr + 2]) < 0.1:
             straight_events.append(eventmean_data[fr])
             straight_duration += 1
 
