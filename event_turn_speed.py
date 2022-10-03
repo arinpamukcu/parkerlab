@@ -16,19 +16,19 @@ def speed_bins(speed_data, turn_data, speed, eventmean_data):
     farleft_duration, left_duration, straight_duration, right_duration,farright_duration = (0 for i in range(5))
 
     for fr in range(0, len(turn_data)):
-        if speed_data[fr] < speed and -65 < turn_data[fr] < -55:
+        if speed_data[fr] < speed and -70 < turn_data[fr] < -50:
             farleft_events.append(eventmean_data[fr])
             farleft_duration += 1
-        if speed_data[fr] < speed and -35 < turn_data[fr] < -25:
+        if speed_data[fr] < speed and -40 < turn_data[fr] < -20:
             left_events.append(eventmean_data[fr])
             left_duration += 1
-        if speed_data[fr] < speed and -5 < turn_data[fr] < 5:
+        if speed_data[fr] < speed and -10 < turn_data[fr] < 10:
             straight_events.append(eventmean_data[fr])
             straight_duration += 1
-        if speed_data[fr] < speed and 25 < turn_data[fr] < 35:
+        if speed_data[fr] < speed and 20 < turn_data[fr] < 40:
             right_events.append(eventmean_data[fr])
             right_duration += 1
-        if speed_data[fr] < speed and 25 < turn_data[fr] < 35:
+        if speed_data[fr] < speed and 50 < turn_data[fr] < 70:
             farright_events.append(eventmean_data[fr])
             farright_duration += 1
 
@@ -41,8 +41,8 @@ def speed_bins(speed_data, turn_data, speed, eventmean_data):
     return event_turn_speed
 
 def data_ctrl():
-    # drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
-    drugs = ['Clozapine']
+    drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
+    # drugs = ['Clozapine']
     dose = 'Vehicle'
 
     D1_ets_ctrl = []
@@ -66,22 +66,23 @@ def data_ctrl():
             elif experiment in D2_folders:
                 D2_ets_ctrl.append(ets_ctrl)
 
-    D1_ets_ctrl_mean = np.mean(D1_ets_ctrl)
-    D2_ets_ctrl_mean = np.mean(D2_ets_ctrl)
+    D1_ets_ctrl_mean = np.nanmean(D1_ets_ctrl, axis=0)
+    D2_ets_ctrl_mean = np.nanmean(D2_ets_ctrl, axis=0)
 
-    D1_ets_ctrl_sem = np.std(D1_ets_ctrl) / np.sqrt(len(D1_ets_ctrl))
-    D2_ets_ctrl_sem = np.std(D2_ets_ctrl) / np.sqrt(len(D2_ets_ctrl))
+    D1_ets_ctrl_sem = np.nanstd(D1_ets_ctrl, axis=0) / np.sqrt(len(D1_ets_ctrl))
+    D2_ets_ctrl_sem = np.nanstd(D2_ets_ctrl, axis=0) / np.sqrt(len(D2_ets_ctrl))
 
     pickle.dump(D1_ets_ctrl_mean, open("D1_ets_ctrl_mean.pkl", "wb"))
     pickle.dump(D1_ets_ctrl_sem, open("D1_ets_ctrl_sem.pkl", "wb"))
     pickle.dump(D2_ets_ctrl_mean, open("D2_ets_ctrl_mean.pkl", "wb"))
     pickle.dump(D2_ets_ctrl_sem, open("D2_ets_ctrl_sem.pkl", "wb"))
 
-    return D1_ets_ctrl_mean, D1_ets_ctrl_sem, D2_ets_ctrl_mean, D2_ets_ctrl_sem
+    return D1_ets_ctrl_mean, D2_ets_ctrl_mean, D1_ets_ctrl_sem, D2_ets_ctrl_sem
 
 
 def data_amph():
-    drugs = ['Clozapine']
+    drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
+    # drugs = ['Clozapine']
     dose = 'Vehicle'
 
     D1_ets_amph = []
@@ -105,32 +106,32 @@ def data_amph():
             elif experiment in D2_folders:
                 D2_ets_amph.append(ets_amph)
 
-    D1_ets_amph_mean = np.mean(D1_ets_amph)
-    D2_ets_amph_mean = np.mean(D2_ets_amph)
+    D1_ets_amph_mean = np.nanmean(D1_ets_amph, axis=0)
+    D2_ets_amph_mean = np.nanmean(D2_ets_amph, axis=0)
 
-    D1_ets_amph_sem = np.std(D1_ets_amph) / np.sqrt(len(D1_ets_amph))
-    D2_ets_amph_sem = np.std(D2_ets_amph) / np.sqrt(len(D2_ets_amph))
+    D1_ets_amph_sem = np.nanstd(D1_ets_amph, axis=0) / np.sqrt(len(D1_ets_amph))
+    D2_ets_amph_sem = np.nanstd(D2_ets_amph, axis=0) / np.sqrt(len(D2_ets_amph))
 
     pickle.dump(D1_ets_amph_mean, open("D1_ets_amph_mean.pkl", "wb"))
     pickle.dump(D1_ets_amph_sem, open("D1_ets_amph_sem.pkl", "wb"))
     pickle.dump(D2_ets_amph_mean, open("D2_ets_amph_mean.pkl", "wb"))
     pickle.dump(D2_ets_amph_sem, open("D2_ets_amph_sem.pkl", "wb"))
 
-    return D1_ets_amph_mean, D1_ets_amph_sem, D2_ets_amph_mean, D2_ets_amph_sem
+    return D1_ets_amph_mean, D2_ets_amph_mean, D1_ets_amph_sem, D2_ets_amph_sem
 
 
 def plot():
 
-    # D1_ets_ctrl, D2_ets_ctrl = data_ctrl()
-    D1_ets_ctrl_mean = pickle.load(open("D1_ets_ctrl_mean.pkl", "rb"))
-    D1_ets_ctrl_sem = pickle.load(open("D1_ets_ctrl_sem.pkl", "rb"))
-    D2_ets_ctrl_mean = pickle.load(open("D2_ets_ctrl_mean.pkl", "rb"))
-    D2_ets_ctrl_sem = pickle.load(open("D2_ets_ctrl_sem.pkl", "rb"))
-    # D1_ets_amph, D2_ets_amph = data_amph()
-    D1_ets_amph_mean = pickle.load(open("D1_ets_amph_mean.pkl", "rb"))
-    D1_ets_amph_sem = pickle.load(open("D1_ets_amph_sem.pkl", "rb"))
-    D2_ets_amph_mean = pickle.load(open("D2_ets_amph_mean.pkl", "rb"))
-    D2_ets_amph_sem = pickle.load(open("D2_ets_amph_sem.pkl", "rb"))
+    D1_ets_ctrl_mean, D2_ets_ctrl_mean, D1_ets_ctrl_sem, D2_ets_ctrl_sem = data_ctrl()
+    # D1_ets_ctrl_mean = pickle.load(open("D1_ets_ctrl_mean.pkl", "rb"))
+    # D1_ets_ctrl_sem = pickle.load(open("D1_ets_ctrl_sem.pkl", "rb"))
+    # D2_ets_ctrl_mean = pickle.load(open("D2_ets_ctrl_mean.pkl", "rb"))
+    # D2_ets_ctrl_sem = pickle.load(open("D2_ets_ctrl_sem.pkl", "rb"))
+    D1_ets_amph_mean, D2_ets_amph_mean, D1_ets_amph_sem, D2_ets_amph_sem = data_amph()
+    # D1_ets_amph_mean = pickle.load(open("D1_ets_amph_mean.pkl", "rb"))
+    # D1_ets_amph_sem = pickle.load(open("D1_ets_amph_sem.pkl", "rb"))
+    # D2_ets_amph_mean = pickle.load(open("D2_ets_amph_mean.pkl", "rb"))
+    # D2_ets_amph_sem = pickle.load(open("D2_ets_amph_sem.pkl", "rb"))
 
     x=range(5)
 
@@ -139,11 +140,11 @@ def plot():
     plt.plot(D1_ets_ctrl_mean, label='D1 ctrl', color='k')
     plt.fill_between(x, D1_ets_ctrl_mean + D1_ets_ctrl_sem, D1_ets_ctrl_mean - D1_ets_ctrl_sem, color='k', alpha=0.2)
     plt.plot(D1_ets_amph_mean, label='D1 amph', color='b')
-    plt.fill_between(x, D1_ets_ctrl_mean + D1_ets_ctrl_sem, D1_ets_ctrl_mean - D1_ets_ctrl_sem, color='b', alpha=0.2)
+    plt.fill_between(x, D1_ets_amph_mean + D1_ets_amph_sem, D1_ets_amph_mean - D1_ets_amph_sem, color='b', alpha=0.2)
     x_default = [0, 1, 2, 3, 4];
     x_new = ['right 60', 'right 30', 'straight 0', 'left 30', 'left 60'];
     plt.xticks(x_default, x_new);
-    plt.ylim((0, 2.5))
+    plt.ylim((0, 1.5))
     # plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D1 SPNs')
@@ -152,13 +153,13 @@ def plot():
 
     plt.subplot(212)
     plt.plot(D2_ets_ctrl_mean, label='D2 ctrl', color='k')
-    plt.fill_between(x, D1_ets_amph_mean + D1_ets_amph_sem, D1_ets_amph_mean - D1_ets_amph_sem, color='k', alpha=0.2)
+    plt.fill_between(x, D2_ets_ctrl_mean + D2_ets_ctrl_sem, D2_ets_ctrl_mean - D2_ets_ctrl_sem, color='k', alpha=0.2)
     plt.plot(D2_ets_amph_mean, label='D2 amph', color='r')
-    plt.fill_between(x, D1_ets_amph_mean + D1_ets_amph_sem, D1_ets_amph_mean - D1_ets_amph_sem, color='b', alpha=0.2)
+    plt.fill_between(x, D2_ets_amph_mean + D2_ets_amph_sem, D2_ets_amph_mean - D2_ets_amph_sem, color='r', alpha=0.2)
     x_default = [0, 1, 2, 3, 4];
     x_new = ['right 60', 'right 30', 'straight 0', 'left 30', 'left 60'];
     plt.xticks(x_default, x_new);
-    plt.ylim((0, 2.5))
+    plt.ylim((0, 1.5))
     # plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D2 SPNs')

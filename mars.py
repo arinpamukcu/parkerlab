@@ -5,11 +5,11 @@ import math
 import numpy as np
 import pdb
 
-# # path for pc
-# behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
+# path for pc
+behavior_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Behavior'
 
-# path for mac
-behavior_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Behavior'
+# # path for mac
+# behavior_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Behavior'
 
 def get_mars_dir(drug, dose, experiment):
 
