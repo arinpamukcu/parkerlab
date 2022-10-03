@@ -7,7 +7,7 @@ from mars import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_speed(speed_data, time):
+def data_speed(speed_data, time):
 
     nospeed_bout = []
     lospeed_bouts = []
@@ -30,32 +30,32 @@ def get_speed(speed_data, time):
     nospeed_frames = np.zeros(time)
     for fr in range(len(nospeed_bout)):
         nospeed_frames[nospeed_bout[fr]] = 1
-    nospeed_time = np.sum(nospeed_frames)/5
+    nospeed_time = np.sum(nospeed_frames)/time
 
     lospeed_frames = np.zeros(time)
     for fr in range(len(lospeed_bouts)):
         lospeed_frames[lospeed_bouts[fr]] = 1
-    lospeed_time = np.sum(lospeed_frames)/5
+    lospeed_time = np.sum(lospeed_frames)/time
 
     midspeed_frames = np.zeros(time)
     for fr in range(len(midspeed_bouts)):
         midspeed_frames[midspeed_bouts[fr]] = 1
-    midspeed_time = np.sum(midspeed_frames)/5
+    midspeed_time = np.sum(midspeed_frames)/time
 
     hispeed_frames = np.zeros(time)
     for fr in range(len(hispeed_bouts)):
         hispeed_frames[hispeed_bouts[fr]] = 1
-    hispeed_time = np.sum(hispeed_frames)/5
+    hispeed_time = np.sum(hispeed_frames)/time
 
     acc_frames = np.zeros(time)
     for fr in range(len(acc_bouts)):
         acc_frames[acc_bouts[fr]] = 1
-    acc_time = np.sum(acc_frames)/5
+    acc_time = np.sum(acc_frames)/time
 
     return nospeed_time, lospeed_time, midspeed_time, hispeed_time, acc_time
 
 
-def get_data():
+def data_time_fraction():
     drug = 'Clozapine'
     dose = 'Vehicle'
     experiments, animals, _, _ = get_animal_id(drug, dose)
@@ -75,8 +75,8 @@ def get_data():
         speed_ctrl, speed_amph, _, _, _, _, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
 
         # get values for each animal for that drug & dose
-        nospeed_ctrl, lospeed_ctrl, midspeed_ctrl, hispeed_ctrl, acc_ctrl = get_speed(speed_ctrl, time_ctrl)
-        nospeed_amph, lospeed_amph, midspeed_amph, hispeed_amph, acc_amph = get_speed(speed_amph, time_amph)
+        nospeed_ctrl, lospeed_ctrl, midspeed_ctrl, hispeed_ctrl, acc_ctrl = data_speed(speed_ctrl, time_ctrl)
+        nospeed_amph, lospeed_amph, midspeed_amph, hispeed_amph, acc_amph = data_speed(speed_amph, time_amph)
 
         # append values for each animal to a list
         nospeed_ctrl_peranimal.append(nospeed_ctrl)
@@ -119,7 +119,7 @@ def get_data():
 
 def plot():
 
-    data_ctrl_mean, data_ctrl_sem, data_amph_mean, data_amph_sem = get_data()
+    data_ctrl_mean, data_ctrl_sem, data_amph_mean, data_amph_sem = data_time_fraction()
 
     plt.figure(figsize=(18, 6))
     plt.bar('nospeed_ctrl', data_ctrl_mean['nospeed'], yerr=data_ctrl_sem['nospeed'], color='k')
