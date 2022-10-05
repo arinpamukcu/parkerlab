@@ -32,11 +32,11 @@ def get_speed(speed_data, eventmean_data):
             hispeed_no += 1
 
     # number of behavior per behavior time, event rate (event/min) during behavior
-    nospeed = [nospeed_no/len(speed_data), np.mean(nospeed_events)*5/nospeed_no]
-    lospeed = [lospeed_no/len(speed_data), np.mean(lospeed_events)*5/lospeed_no]
-    midspeed = [midspeed_no/len(speed_data), np.mean(midspeed_events)*5/midspeed_no]
-    hispeed = [hispeed_no/len(speed_data), np.mean(hispeed_events)*5/hispeed_no]
-    acc = [acc_no/len(speed_data), np.mean(acc_events)*5/acc_no]
+    nospeed = [nospeed_no/len(speed_data), np.sum(nospeed_events)*5/nospeed_no]
+    lospeed = [lospeed_no/len(speed_data), np.sum(lospeed_events)*5/lospeed_no]
+    midspeed = [midspeed_no/len(speed_data), np.sum(midspeed_events)*5/midspeed_no]
+    hispeed = [hispeed_no/len(speed_data), np.sum(hispeed_events)*5/hispeed_no]
+    acc = [acc_no/len(speed_data), np.sum(acc_events)*5/acc_no]
 
     return nospeed, lospeed, midspeed, hispeed, acc
 
@@ -62,9 +62,9 @@ def get_turns(turn_data, eventmean_data):
 
     # frequency of behavior, event rate during behavior
     # TODO: should event rate be np.sum or np.mean?
-    right_turn = [right_turn_no/len(turn_data), np.mean(right_turn_events)*5/right_turn_no]
-    left_turn = [left_turn_no/len(turn_data), np.mean(left_turn_events)*5/left_turn_no]
-    straight = [straight_no/len(turn_data), np.mean(straight_events)*5/straight_no]
+    right_turn = [right_turn_no/len(turn_data), np.sum(right_turn_events)*5/right_turn_no]
+    left_turn = [left_turn_no/len(turn_data), np.sum(left_turn_events)*5/left_turn_no]
+    straight = [straight_no/len(turn_data), np.sum(straight_events)*5/straight_no]
 
     return right_turn, left_turn, straight
 
@@ -160,7 +160,7 @@ def plot_timespent(drug, dose):
                      alldata.keys() for a in alldata[d][dose][base].keys()]
                 mean = np.nanmean(y, axis=0)
                 sem = np.nanstd(y, axis=0) / np.sqrt(len(y))
-                plt.bar(metric + '_' + base, mean[0], yerr=sem[0], width=0.5, color='k')
+                plt.bar(metric + '_' + base, mean[0], yerr=sem[0], width=0.25, color='k')
                 plt.title('n = ' + str(len(y)))
     else:
         for base in bases:
@@ -168,7 +168,7 @@ def plot_timespent(drug, dose):
                 x = [alldata[drug][dose][base][a][metric] for a in alldata[drug][dose][base].keys()]
                 mean = np.nanmean(x, axis=0)
                 sem = np.nanstd(x, axis=0) / np.sqrt(len(x))
-                plt.bar(metric + '_' + base, mean[0], yerr=sem[0], width=0.5, color='k')
+                plt.bar(metric + '_' + base, mean[0], yerr=sem[0], width=0.25, color='k')
                 plt.title('n = ' + str(len(x)))
 
     plt.ylabel('time (s)')
@@ -182,8 +182,9 @@ def plot_timespent(drug, dose):
 
 def plot_eventrate(drug, dose):
     bases = ['ctrl', 'amph']
+    metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc', 'right_turn', 'left_turn', 'straight']
     # metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc']
-    metrics = ['right_turn', 'left_turn', 'straight']
+    # metrics = ['right_turn', 'left_turn', 'straight']
 
     D1_animals, D2_animals = D1_D2_names()
 
@@ -199,7 +200,7 @@ def plot_eventrate(drug, dose):
                      alldata.keys() for a in alldata[d][dose][base].keys() if a in D2_animals]
                 mean = np.ma.masked_invalid(y).mean(axis=0)
                 sem = np.ma.masked_invalid(y).std(axis=0) / np.sqrt(len(y))
-                plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.5, color='k')
+                plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.25, color='k')
                 plt.title('n = ' + str(len(y)))
     else:
         for base in bases:
@@ -209,11 +210,11 @@ def plot_eventrate(drug, dose):
                 # pdb.set_trace()
                 mean = np.ma.masked_invalid(x).mean(axis=0) #try mean vs np.ma.masked_invalid(x).mean()
                 sem = np.ma.masked_invalid(x).std(axis=0) / np.sqrt(len(x))
-                plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.5, color='k')
+                plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.25, color='k')
                 plt.title('n = ' + str(len(x)))
 
     plt.ylabel('event rate (event/s)')
-    plt.ylim((0, 0.2))
+    # plt.ylim((0, 0.07))
     plt.xticks(rotation=30, fontsize=8)
     plt.suptitle(drug + ', ' + dose)
     plt.show()
