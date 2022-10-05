@@ -12,30 +12,31 @@ import pdb
 def get_speed(speed_data, eventmean_data):
 
     nospeed_events, lospeed_events, midspeed_events, hispeed_events, acc_events = ([] for i in range(5))
-    nospeed_duration, lospeed_duration, midspeed_duration, hispeed_duration, acc_duration = (0 for i in range(5))
+    nospeed_no, lospeed_no, midspeed_no, hispeed_no, acc_no = (0 for i in range(5))
 
     for fr in range(0, len(speed_data) - 5):
-        if speed_data[fr] < 1:
-            nospeed_events.append(eventmean_data[fr])
-            nospeed_duration += 1
-        if 1 < speed_data[fr] <= 5:
-            lospeed_events.append(eventmean_data[fr])
-            lospeed_duration += 1
-        if 5 < speed_data[fr] <= 10:
-            midspeed_events.append(eventmean_data[fr])
-            midspeed_duration += 1
-        if 10 < speed_data[fr]:
-            hispeed_events.append(eventmean_data[fr])
-            hispeed_duration += 1
         if speed_data[fr] < 2 and (np.mean(speed_data[fr + 1:fr + 5]) - np.mean(speed_data[fr - 5:fr - 1])) > 1:
             acc_events.append(eventmean_data[fr])
-            acc_duration += 1
+            acc_no += 1
+        if speed_data[fr] <= 0.5:
+            nospeed_events.append(eventmean_data[fr])
+            nospeed_no += 1
+        elif 0.5 < speed_data[fr] <= 5:
+            lospeed_events.append(eventmean_data[fr])
+            lospeed_no += 1
+        elif 5 < speed_data[fr] <= 10:
+            midspeed_events.append(eventmean_data[fr])
+            midspeed_no += 1
+        elif 10 < speed_data[fr]:
+            hispeed_events.append(eventmean_data[fr])
+            hispeed_no += 1
 
-    nospeed = [nospeed_duration/5, np.sum(nospeed_events)*5/nospeed_duration]
-    lospeed = [lospeed_duration/5, np.sum(lospeed_events)*5/lospeed_duration]
-    midspeed = [midspeed_duration/5, np.sum(midspeed_events)*5/midspeed_duration]
-    hispeed = [hispeed_duration/5, np.sum(hispeed_events)*5/hispeed_duration]
-    acc = [acc_duration/5, np.sum(acc_events)*5/acc_duration]
+    # number of behavior per behavior time, event rate (event/min) during behavior
+    nospeed = [nospeed_no/len(speed_data), np.mean(nospeed_events)*5/nospeed_no]
+    lospeed = [lospeed_no/len(speed_data), np.mean(lospeed_events)*5/lospeed_no]
+    midspeed = [midspeed_no/len(speed_data), np.mean(midspeed_events)*5/midspeed_no]
+    hispeed = [hispeed_no/len(speed_data), np.mean(hispeed_events)*5/hispeed_no]
+    acc = [acc_no/len(speed_data), np.mean(acc_events)*5/acc_no]
 
     return nospeed, lospeed, midspeed, hispeed, acc
 
@@ -43,24 +44,26 @@ def get_speed(speed_data, eventmean_data):
 def get_turns(turn_data, eventmean_data):
 
     right_turn_events, left_turn_events, straight_events = ([] for i in range(3))
-    right_turn_duration, left_turn_duration, straight_duration = (0 for i in range(3))
+    right_turn_no, left_turn_no, straight_no = (0 for i in range(3))
     turn_dt = turn_data[1:] - turn_data[:-1]
 
     for fr in range(2, len(turn_data) - 2):
-        if turn_data[fr] > 10 and np.mean(turn_dt[fr-2:fr+2]) > 0: #turn_dt(max(fr-2,0):min(fr+2,len(turn_dt))
+        if turn_data[fr] > 10 and np.mean(turn_dt[fr-2:fr+2]) > 10:
+        # if turn_data[fr] > 10 and turn_dt(max(fr-2,0):min(fr+2,len(turn_dt)):
             right_turn_events.append(eventmean_data[fr])
-            right_turn_duration += 1
-        elif turn_data[fr] < -10 and np.mean(turn_dt[fr-2:fr+2]) < 0:
+            right_turn_no += 1
+        elif turn_data[fr] < -10 and np.mean(turn_dt[fr-2:fr+2]) < -10:
             left_turn_events.append(eventmean_data[fr])
-            left_turn_duration += 1
-        elif -10 < turn_data[fr] < 10:
-        # elif -10 < turn_data[fr] < 10 and -0.1 < np.mean(turn_dt[fr - 2:fr + 2]) < 0.1:
+            left_turn_no += 1
+        # elif -10 < turn_data[fr] < 10:
+        elif -10 < turn_data[fr] < 10 and -10 < np.mean(turn_dt[fr - 2:fr + 2]) < 10:
             straight_events.append(eventmean_data[fr])
-            straight_duration += 1
+            straight_no += 1
 
-    right_turn = [right_turn_duration/5, np.sum(right_turn_events)*5/straight_duration]
-    left_turn = [left_turn_duration/5, np.sum(left_turn_events)*5/straight_duration]
-    straight = [straight_duration/5, np.sum(straight_events)*5/straight_duration]
+    # frequency of behavior, event rate during behavior
+    right_turn = [right_turn_no/len(turn_data), np.mean(right_turn_events)*5/right_turn_no]
+    left_turn = [left_turn_no/len(turn_data), np.mean(left_turn_events)*5/left_turn_no]
+    straight = [straight_no/len(turn_data), np.mean(straight_events)*5/straight_no]
 
     return right_turn, left_turn, straight
 
@@ -136,10 +139,10 @@ def get_alldata():
     return alldata
 
 
-def plot_timespent(drugs, dose):
+def plot_timespent(drug, dose):
 
     bases = ['ctrl', 'amph']
-    metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc', 'right_turn', 'left_turn']
+    metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc', 'right_turn', 'left_turn', 'straight']
 
     # D1_animals, D2_animals = D1_D2_names()
 
@@ -148,68 +151,70 @@ def plot_timespent(drugs, dose):
 
     plt.figure(figsize=(10, 6))
 
-    for drug in drugs:
-        if dose == 'vehicle':
-            for base in bases:
-                for metric in metrics:
-                    y = [alldata[d][dose][base][a][metric] for d in
-                         alldata.keys() for a in alldata[d][dose][base].keys()]
-                    mean = np.mean(y, axis=0)
-                    sem = np.std(y, axis=0) / np.sqrt(len(y))
-                    plt.bar(metric + '_' + base, mean[0], yerr=sem[0], width=0.5, color='k')
-                    plt.title('n = ' + str(len(y)))
-        else:
-            for base in bases:
-                for metric in metrics:
-                    x = [alldata[drug][dose][base][a][metric] for a in alldata[drug][dose][base].keys()]
-                    mean = np.mean(x, axis=0)
-                    sem = np.std(x, axis=0) / np.sqrt(len(x))
-                    plt.bar(metric + '_' + base, mean[0], yerr=sem[0], width=0.5, color='k')
-                    plt.title('n = ' + str(len(x)))
+    # for drug in drugs:
+    if dose == 'vehicle':
+        for base in bases:
+            for metric in metrics:
+                y = [alldata[d][dose][base][a][metric] for d in
+                     alldata.keys() for a in alldata[d][dose][base].keys()]
+                mean = np.nanmean(y, axis=0)
+                sem = np.nanstd(y, axis=0) / np.sqrt(len(y))
+                plt.bar(metric + '_' + base, mean[0], yerr=sem[0], width=0.5, color='k')
+                plt.title('n = ' + str(len(y)))
+    else:
+        for base in bases:
+            for metric in metrics:
+                x = [alldata[drug][dose][base][a][metric] for a in alldata[drug][dose][base].keys()]
+                mean = np.nanmean(x, axis=0)
+                sem = np.nanstd(x, axis=0) / np.sqrt(len(x))
+                plt.bar(metric + '_' + base, mean[0], yerr=sem[0], width=0.5, color='k')
+                plt.title('n = ' + str(len(x)))
 
     plt.ylabel('time (s)')
-    plt.ylim((0, 2500))
+    plt.ylim((0, 1))
     plt.xticks(rotation=30, fontsize=8)
-    plt.suptitle(' '.join(drugs) + ', ' + dose)
+    plt.suptitle(' '.join(drug) + ', ' + dose)
     plt.show()
 
     return
 
 
-def plot_eventrate(drugs, dose):
+def plot_eventrate(drug, dose):
     bases = ['ctrl', 'amph']
-    metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc', 'right_turn', 'left_turn']
+    # metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc']
+    metrics = ['right_turn', 'left_turn', 'straight']
 
     D1_animals, D2_animals = D1_D2_names()
 
-    alldata = pickle.load(open("fname.pkl", "rb"))
+    alldata = pickle.load(open("alldata.pkl", "rb"))
     # alldata = get_alldata()
 
     plt.figure(figsize=(10, 6))
-    for drug in drugs:
-        if dose == 'vehicle':
-            for base in bases:
-                for metric in metrics:
-                    y = [alldata[d][dose][base][a][metric] for d in
-                         alldata.keys() for a in alldata[d][dose][base].keys() if a in D2_animals]
-                    mean = np.mean(y, axis=0)
-                    sem = np.std(y, axis=0) / np.sqrt(len(y))
-                    plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.5, color='k')
-                    plt.title('n = ' + str(len(y)))
-        else:
-            for base in bases:
-                for metric in metrics:
-                    x = [alldata[drug][dose][base][a][metric] for a in alldata[drug][dose][base].keys() if
-                         a in D2_animals]
-                    mean = np.mean(x, axis=0)
-                    sem = np.std(x, axis=0) / np.sqrt(len(x))
-                    plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.5, color='k')
-                    plt.title('n = ' + str(len(x)))
+    # for drug in drugs:
+    if dose == 'vehicle':
+        for base in bases:
+            for metric in metrics:
+                y = [alldata[d][dose][base][a][metric] for d in
+                     alldata.keys() for a in alldata[d][dose][base].keys() if a in D2_animals]
+                mean = np.ma.masked_invalid(y).mean(axis=0)
+                sem = np.ma.masked_invalid(y).std(axis=0) / np.sqrt(len(y))
+                plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.5, color='k')
+                plt.title('n = ' + str(len(y)))
+    else:
+        for base in bases:
+            for metric in metrics:
+                x = [alldata[drug][dose][base][a][metric] for a in alldata[drug][dose][base].keys() if
+                     a in D2_animals]
+                # pdb.set_trace()
+                mean = np.ma.masked_invalid(x).mean(axis=0) #try mean vs np.ma.masked_invalid(x).mean()
+                sem = np.ma.masked_invalid(x).std(axis=0) / np.sqrt(len(x))
+                plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.5, color='k')
+                plt.title('n = ' + str(len(x)))
 
     plt.ylabel('event rate (event/s)')
-    plt.ylim((0,0.07))
+    plt.ylim((0, 0.2))
     plt.xticks(rotation=30, fontsize=8)
-    plt.suptitle(' '.join(drugs) + ', ' + dose)
+    plt.suptitle(drug + ', ' + dose)
     plt.show()
 
     return
