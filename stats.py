@@ -61,6 +61,7 @@ def get_turns(turn_data, eventmean_data):
             straight_no += 1
 
     # frequency of behavior, event rate during behavior
+    # TODO: should event rate be np.sum or np.mean?
     right_turn = [right_turn_no/len(turn_data), np.mean(right_turn_events)*5/right_turn_no]
     left_turn = [left_turn_no/len(turn_data), np.mean(left_turn_events)*5/left_turn_no]
     straight = [straight_no/len(turn_data), np.mean(straight_events)*5/straight_no]
