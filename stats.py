@@ -143,7 +143,7 @@ def get_alldata():
 def plot_timespent(drug, dose):
 
     bases = ['ctrl', 'amph']
-    metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc', 'right_turn', 'left_turn', 'straight']
+    metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc', 'right_turn', 'left_turn']
 
     # D1_animals, D2_animals = D1_D2_names()
 
@@ -197,7 +197,7 @@ def plot_eventrate(drug, dose):
         for base in bases:
             for metric in metrics:
                 y = [alldata[d][dose][base][a][metric] for d in
-                     alldata.keys() for a in alldata[d][dose][base].keys() if a in D2_animals]
+                     alldata.keys() for a in alldata[d][dose][base].keys() if a in D1_animals]
                 mean = np.ma.masked_invalid(y).mean(axis=0)
                 sem = np.ma.masked_invalid(y).std(axis=0) / np.sqrt(len(y))
                 plt.bar(metric + '_' + base, mean[1], yerr=sem[1], width=0.25, color='k')
@@ -206,7 +206,7 @@ def plot_eventrate(drug, dose):
         for base in bases:
             for metric in metrics:
                 x = [alldata[drug][dose][base][a][metric] for a in alldata[drug][dose][base].keys() if
-                     a in D2_animals]
+                     a in D1_animals]
                 # pdb.set_trace()
                 mean = np.ma.masked_invalid(x).mean(axis=0) #try mean vs np.ma.masked_invalid(x).mean()
                 sem = np.ma.masked_invalid(x).std(axis=0) / np.sqrt(len(x))
@@ -214,9 +214,9 @@ def plot_eventrate(drug, dose):
                 plt.title('n = ' + str(len(x)))
 
     plt.ylabel('event rate (event/s)')
-    # plt.ylim((0, 0.07))
+    plt.ylim((0, 0.1))
     plt.xticks(rotation=30, fontsize=8)
-    plt.suptitle(drug + ', ' + dose)
+    plt.suptitle(drug + ', ' + dose + ', D1 SPNs')
     plt.show()
 
     return

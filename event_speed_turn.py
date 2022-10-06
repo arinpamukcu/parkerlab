@@ -7,6 +7,7 @@ from data import *
 from info import *
 from mars import *
 import pickle
+import csv
 import numpy as np
 import matplotlib.pyplot as plt
 import pdb
@@ -48,6 +49,10 @@ def data_ctrl():
     drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
     dose = 'Vehicle'
 
+    est_ctrl = {}
+    est_ctrl['D1'] = {}
+    est_ctrl['D2'] = {}
+
     D1_est_ctrl_0, D1_est_ctrl_30, D1_est_ctrl_60, D2_est_ctrl_0, D2_est_ctrl_30, D2_est_ctrl_60 = ([] for i in
                                                                                                     range(6))
 
@@ -62,8 +67,8 @@ def data_ctrl():
             turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
             est_ctrl_0 = speed_bins(speed_ctrl, turn_ctrl, 0, eventmean_ctrl)
-            est_ctrl_30 = speed_bins(speed_ctrl, turn_ctrl, 30, eventmean_ctrl)
-            est_ctrl_60 = speed_bins(speed_ctrl, turn_ctrl, 60, eventmean_ctrl)
+            est_ctrl_30 = speed_bins(speed_ctrl, turn_ctrl, -30, eventmean_ctrl)
+            est_ctrl_60 = speed_bins(speed_ctrl, turn_ctrl, -60, eventmean_ctrl)
 
             if experiment in D1_folders:
                 D1_est_ctrl_0.append(est_ctrl_0)
@@ -74,6 +79,15 @@ def data_ctrl():
                 D2_est_ctrl_0.append(est_ctrl_0)
                 D2_est_ctrl_30.append(est_ctrl_30)
                 D2_est_ctrl_60.append(est_ctrl_60)
+
+    est_ctrl['D1']['0'] = D1_est_ctrl_0
+    est_ctrl['D1']['30'] = D1_est_ctrl_30
+    est_ctrl['D1']['60'] = D1_est_ctrl_60
+    est_ctrl['D2']['0'] = D2_est_ctrl_0
+    est_ctrl['D2']['30'] = D2_est_ctrl_30
+    est_ctrl['D2']['60'] = D2_est_ctrl_60
+
+    pickle.dump(est_ctrl, open("est_ctrl.pkl", "wb"))
 
     D1_est_ctrl_0_mean = np.nanmean(np.array(D1_est_ctrl_0), axis=0)
     D1_est_ctrl_30_mean = np.nanmean(np.array(D1_est_ctrl_30), axis=0)
@@ -89,7 +103,6 @@ def data_ctrl():
     D2_est_ctrl_30_sem = np.nanstd(np.array(D2_est_ctrl_30), axis=0) / np.sqrt(len(D2_est_ctrl_30))
     D2_est_ctrl_60_sem = np.nanstd(np.array(D2_est_ctrl_60), axis=0) / np.sqrt(len(D2_est_ctrl_60))
 
-
     return D1_est_ctrl_0_mean, D1_est_ctrl_30_mean, D1_est_ctrl_60_mean, \
            D2_est_ctrl_0_mean, D2_est_ctrl_30_mean, D2_est_ctrl_60_mean, \
            D1_est_ctrl_0_sem, D1_est_ctrl_30_sem, D1_est_ctrl_60_sem, \
@@ -102,6 +115,9 @@ def data_amph():
 
     D1_est_amph_0, D1_est_amph_30, D1_est_amph_60, D2_est_amph_0, D2_est_amph_30, D2_est_amph_60 = ([] for i in
                                                                                                     range(6))
+    est_amph = {}
+    est_amph['D1'] = {}
+    est_amph['D2'] = {}
 
     for drug in drugs:
 
@@ -114,8 +130,8 @@ def data_amph():
             turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
             est_amph_0 = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
-            est_amph_30 = speed_bins(speed_amph, turn_amph, 30, eventmean_amph)
-            est_amph_60 = speed_bins(speed_amph, turn_amph, 60, eventmean_amph)
+            est_amph_30 = speed_bins(speed_amph, turn_amph, -30, eventmean_amph)
+            est_amph_60 = speed_bins(speed_amph, turn_amph, -60, eventmean_amph)
 
             if experiment in D1_folders:
                 D1_est_amph_0.append(est_amph_0)
@@ -126,6 +142,14 @@ def data_amph():
                 D2_est_amph_0.append(est_amph_0)
                 D2_est_amph_30.append(est_amph_30)
                 D2_est_amph_60.append(est_amph_60)
+
+    est_amph['D1']['0'] = D1_est_amph_0
+    est_amph['D1']['30'] = D1_est_amph_30
+    est_amph['D1']['60'] = D1_est_amph_60
+    est_amph['D2']['0'] = D2_est_amph_0
+    est_amph['D2']['30'] = D2_est_amph_30
+    est_amph['D2']['60'] = D2_est_amph_60
+    pickle.dump(est_amph, open("est_amph.pkl", "wb"))
 
     D1_est_amph_0_mean = np.nanmean(np.array(D1_est_amph_0), axis=0)
     D1_est_amph_30_mean = np.nanmean(np.array(D1_est_amph_30), axis=0)
@@ -183,7 +207,7 @@ def plot():
     plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D1 SPNs')
-    plt.suptitle('Ca spike per speed bout')
+    plt.suptitle('Ca spike per speed bout for left turn angles')
     plt.legend()
 
     plt.subplot(212)
