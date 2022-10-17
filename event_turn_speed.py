@@ -15,20 +15,25 @@ def speed_bins(speed_data, turn_data, speed, eventmean_data):
     left60_events, left30_events, straight_events, right30_events, right60_events = ([] for i in range(5))
     left60_duration, left30_duration, straight_duration, right30_duration, right60_duration = (0 for i in range(5))
 
-    for fr in range(0, len(turn_data)):
-        if speed_data[fr] < speed and -70 < turn_data[fr] < -50:
+    for fr in range(0, len(turn_data - 4)):
+        if speed_data[fr] < speed and -70 < turn_data[fr] < -50 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             left60_events.append(eventmean_data[fr])
             left60_duration += 1
-        if speed_data[fr] < speed and -40 < turn_data[fr] < -20:
+        if speed_data[fr] < speed and -40 < turn_data[fr] < -20 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             left30_events.append(eventmean_data[fr])
             left30_duration += 1
-        if speed_data[fr] < speed and -10 < turn_data[fr] < 10:
+        if speed_data[fr] < speed and -10 < turn_data[fr] < 10 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             straight_events.append(eventmean_data[fr])
             straight_duration += 1
-        if speed_data[fr] < speed and 20 < turn_data[fr] < 40:
+        if speed_data[fr] < speed and 20 < turn_data[fr] < 40 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             right30_events.append(eventmean_data[fr])
             right30_duration += 1
-        if speed_data[fr] < speed and 50 < turn_data[fr] < 70:
+        if speed_data[fr] < speed and 50 < turn_data[fr] < 70 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             right60_events.append(eventmean_data[fr])
             right60_duration += 1
 
