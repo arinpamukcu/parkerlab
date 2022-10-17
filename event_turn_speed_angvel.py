@@ -6,30 +6,34 @@
 from data import *
 from info import *
 from mars import *
-import pickle as pkl
-import pandas as pd
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import pdb
 
-def turn_bins(speed_data, turn_data, speed, eventmean_data):
+def turn_bins (speed_data, turn_data, speed, eventmean_data):
     left60_events, left30_events, straight_events, right30_events, right60_events = ([] for i in range(5))
     left60_duration, left30_duration, straight_duration, right30_duration, right60_duration = (0 for i in range(5))
 
-    for fr in range(0, len(turn_data - 4)):
-        if speed_data[fr] < speed and -70 < turn_data[fr] < -50:
+    for fr in range(0, len(turn_data) - 4):
+        if speed_data[fr] < speed and -70 < turn_data[fr] < -50 and \
+                turn_data[fr] < turn_data[fr + 1] < turn_data[fr + 2] < turn_data[fr + 3] < turn_data[fr + 4]:
             left60_events.append(eventmean_data[fr])
             left60_duration += 1
-        if speed_data[fr] < speed and -40 < turn_data[fr] < -20:
+        if speed_data[fr] < speed and -40 < turn_data[fr] < -20 and \
+                turn_data[fr] < turn_data[fr + 1] < turn_data[fr + 2] < turn_data[fr + 3] < turn_data[fr + 4]:
             left30_events.append(eventmean_data[fr])
             left30_duration += 1
-        if speed_data[fr] < speed and -10 < turn_data[fr] < 10:
+        if speed_data[fr] < speed and -10 < turn_data[fr] < 10 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             straight_events.append(eventmean_data[fr])
             straight_duration += 1
-        if speed_data[fr] < speed and 20 < turn_data[fr] < 40:
+        if speed_data[fr] < speed and 20 < turn_data[fr] < 40 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             right30_events.append(eventmean_data[fr])
             right30_duration += 1
-        if speed_data[fr] < speed and 50 < turn_data[fr] < 70:
+        if speed_data[fr] < speed and 50 < turn_data[fr] < 70 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             right60_events.append(eventmean_data[fr])
             right60_duration += 1
 
@@ -48,7 +52,6 @@ def data_ctrl():
 
     D1_ets_ctrl = []
     D2_ets_ctrl = []
-    ets_ctrl = {}
 
     for drug in drugs:
 
@@ -60,22 +63,13 @@ def data_ctrl():
             speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
             turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
-            ets_ctrl_all = turn_bins(speed_ctrl, turn_ctrl, 1, eventmean_ctrl)
+            ets_ctrl = turn_bins(speed_ctrl, turn_ctrl, 1, eventmean_ctrl)
 
             if experiment in D1_folders:
-                D1_ets_ctrl.append(ets_ctrl_all)
+                D1_ets_ctrl.append(ets_ctrl)
 
             elif experiment in D2_folders:
-                D2_ets_ctrl.append(ets_ctrl_all)
-
-    ets_ctrl['D1'] = D1_ets_ctrl
-    ets_ctrl['D2'] = D2_ets_ctrl
-    pkl.dump(ets_ctrl, open("ets_ctrl.pkl", "wb"))
-    with open("ets_ctrl.pkl", "rb") as f:
-        object = pkl.load(f)
-    df = pd.DataFrame.from_dict(object, orient='index')
-    df = df.transpose()
-    df.to_csv(r"ets_ctrl.csv")
+                D2_ets_ctrl.append(ets_ctrl)
 
     D1_ets_ctrl_mean = np.nanmean(D1_ets_ctrl, axis=0)
     D2_ets_ctrl_mean = np.nanmean(D2_ets_ctrl, axis=0)
@@ -98,7 +92,6 @@ def data_amph():
 
     D1_ets_amph = []
     D2_ets_amph = []
-    ets_amph = {}
 
     for drug in drugs:
 
@@ -110,22 +103,13 @@ def data_amph():
             speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
             turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
-            ets_amph_all = turn_bins(speed_amph, turn_amph, 1, eventmean_amph)
+            ets_amph = turn_bins(speed_amph, turn_amph, 1, eventmean_amph)
 
             if experiment in D1_folders:
-                D1_ets_amph.append(ets_amph_all)
+                D1_ets_amph.append(ets_amph)
 
             elif experiment in D2_folders:
-                D2_ets_amph.append(ets_amph_all)
-
-    ets_amph['D1'] = D1_ets_amph
-    ets_amph['D2'] = D2_ets_amph
-    pkl.dump(ets_amph, open("ets_amph.pkl", "wb"))
-    with open("ets_amph.pkl", "rb") as f:
-        object = pkl.load(f)
-    df = pd.DataFrame.from_dict(object, orient='index')
-    df = df.transpose()
-    df.to_csv(r"ets_amph.csv")
+                D2_ets_amph.append(ets_amph)
 
     D1_ets_amph_mean = np.nanmean(D1_ets_amph, axis=0)
     D2_ets_amph_mean = np.nanmean(D2_ets_amph, axis=0)
@@ -161,7 +145,7 @@ def plot():
     # plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D1 SPNs')
-    plt.suptitle('Ca events for speed: 0-1 cm/s')
+    # plt.suptitle('Ca events for speed: 1 cm/s')
     plt.legend()
 
     plt.subplot(212)

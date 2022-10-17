@@ -56,7 +56,7 @@ def get_turns(turn_data, eventmean_data):
             left_turn_events.append(eventmean_data[fr])
             left_turn_no += 1
         # elif -10 < turn_data[fr] < 10:
-        elif -10 < turn_data[fr] < 10 and -10 < np.mean(turn_dt[fr - 2:fr + 2]) < 10:
+        elif -10 < turn_data[fr] < 10 and -10 < np.mean(turn_dt[fr-2:fr+2]) < 10:
             straight_events.append(eventmean_data[fr])
             straight_no += 1
 

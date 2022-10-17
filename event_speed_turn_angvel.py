@@ -6,8 +6,7 @@
 from data import *
 from info import *
 from mars import *
-import pickle as pkl
-import pandas as pd
+import pickle
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,23 +16,29 @@ def speed_bins(speed_data, turn_data, turn_angle, eventmean_data):
     speed01_events, speed02_events, speed03_events, speed04_events, speed05_events, speed06_events = ([] for i in range(6))
     speed01_duration, speed02_duration, speed03_duration, speed04_duration, speed05_duration, speed06_duration = (0 for i in range(6))
 
-    for fr in range(0, len(turn_data)):
-        if speed_data[fr] <= 0.5 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+    for fr in range(0, len(turn_data) - 4):
+        if speed_data[fr] <= 0.5 and turn_angle-10 < turn_data[fr] < turn_angle+10 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             speed01_events.append(eventmean_data[fr])
             speed01_duration += 1
-        if 0.5 < speed_data[fr] <= 1 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 0.5 < speed_data[fr] <= 1 and turn_angle-10 < turn_data[fr] < turn_angle+10 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             speed02_events.append(eventmean_data[fr])
             speed02_duration += 1
-        if 1 < speed_data[fr] <= 2 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 1 < speed_data[fr] <= 2 and turn_angle-10 < turn_data[fr] < turn_angle+10 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             speed03_events.append(eventmean_data[fr])
             speed03_duration += 1
-        if 2 < speed_data[fr] <= 4 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 2 < speed_data[fr] <= 4 and turn_angle-10 < turn_data[fr] < turn_angle+10 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             speed04_events.append(eventmean_data[fr])
             speed04_duration += 1
-        if 4 < speed_data[fr] <= 8 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 4 < speed_data[fr] <= 8 and turn_angle-10 < turn_data[fr] < turn_angle+10 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             speed05_events.append(eventmean_data[fr])
             speed05_duration += 1
-        if 8 < speed_data[fr] <= 14 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 8 < speed_data[fr] <= 14 and turn_angle-10 < turn_data[fr] < turn_angle+10 and \
+                turn_data[fr] > turn_data[fr + 1] > turn_data[fr + 2] > turn_data[fr + 3] > turn_data[fr + 4]:
             speed06_events.append(eventmean_data[fr])
             speed06_duration += 1
 
@@ -88,11 +93,7 @@ def data_ctrl():
     est_ctrl['D2']['30'] = D2_est_ctrl_30
     est_ctrl['D2']['60'] = D2_est_ctrl_60
 
-    pkl.dump(est_ctrl, open("est_ctrl_right.pkl", "wb"))
-    with open("est_ctrl_right.pkl", "rb") as f:
-        object = pkl.load(f)
-    df = pd.DataFrame(object)
-    df.to_csv(r"est_ctrl_right.csv")
+    pickle.dump(est_ctrl, open("est_ctrl.pkl", "wb"))
 
     D1_est_ctrl_0_mean = np.nanmean(np.array(D1_est_ctrl_0), axis=0)
     D1_est_ctrl_30_mean = np.nanmean(np.array(D1_est_ctrl_30), axis=0)
@@ -154,12 +155,7 @@ def data_amph():
     est_amph['D2']['0'] = D2_est_amph_0
     est_amph['D2']['30'] = D2_est_amph_30
     est_amph['D2']['60'] = D2_est_amph_60
-
-    pkl.dump(est_amph, open("est_amph_right.pkl", "wb"))
-    with open("est_amph_right.pkl", "rb") as f:
-        object = pkl.load(f)
-    df = pd.DataFrame(object)
-    df.to_csv(r"est_amph_right.csv")
+    pickle.dump(est_amph, open("est_amph.pkl", "wb"))
 
     D1_est_amph_0_mean = np.nanmean(np.array(D1_est_amph_0), axis=0)
     D1_est_amph_30_mean = np.nanmean(np.array(D1_est_amph_30), axis=0)
@@ -217,7 +213,7 @@ def plot():
     plt.xlabel('Locomotor speed bin (cm/s)')
     plt.ylabel('Ca event rate (event/min)')
     plt.title('D1 SPNs')
-    plt.suptitle('Ca spike per speed bout for left turn angles')
+    plt.suptitle('Ca spike per speed bout for right turn angles')
     plt.legend()
 
     plt.subplot(212)
