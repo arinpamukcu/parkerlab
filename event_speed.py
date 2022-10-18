@@ -37,17 +37,17 @@ def speed_bins(speed_data, turn_data, turn_angle, eventmean_data):
             speed06_events.append(eventmean_data[fr])
             speed06_duration += 1
 
-    eventrate_vs_speed_turn = [(np.sum(speed01_events) / speed01_duration) * 300,
-                               (np.sum(speed02_events) / speed02_duration) * 300,
-                               (np.sum(speed03_events) / speed03_duration) * 300,
-                               (np.sum(speed04_events) / speed04_duration) * 300,
-                               (np.sum(speed05_events) / speed05_duration) * 300,
-                               (np.sum(speed06_events) / speed06_duration) * 300]
+    event_speed_turn = [(np.sum(speed01_events) / speed01_duration) * 300,
+                        (np.sum(speed02_events) / speed02_duration) * 300,
+                        (np.sum(speed03_events) / speed03_duration) * 300,
+                        (np.sum(speed04_events) / speed04_duration) * 300,
+                        (np.sum(speed05_events) / speed05_duration) * 300,
+                        (np.sum(speed06_events) / speed06_duration) * 300]
 
-    return eventrate_vs_speed_turn
+    return event_speed_turn
 
 def data_ctrl():
-    drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
+    drugs = ['Clozapine', 'Haloperidol', 'MP10', 'Olanzapine']
     dose = 'Vehicle'
 
     est_ctrl = {}
@@ -114,6 +114,72 @@ def data_ctrl():
            D1_est_ctrl_0_sem, D1_est_ctrl_30_sem, D1_est_ctrl_60_sem, \
            D2_est_ctrl_0_sem, D2_est_ctrl_30_sem, D2_est_ctrl_60_sem
 
+
+def data_amph():
+    drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
+    dose = 'Vehicle'
+
+    D1_est_amph_0, D1_est_amph_30, D1_est_amph_60, D2_est_amph_0, D2_est_amph_30, D2_est_amph_60 = ([] for i in
+                                                                                                    range(6))
+    est_amph = {}
+    est_amph['D1'] = {}
+    est_amph['D2'] = {}
+
+    for drug in drugs:
+
+        experiments, _, D1_folders, D2_folders = get_animal_id(drug, dose)
+
+        for experiment in experiments:
+            print(experiment + '_amph')
+
+            _, speed_amph, _, _, _, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
+            _, turn_amph, _, _ = mars_feature(drug, dose, experiment)
+
+            est_amph_0 = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
+            est_amph_30 = speed_bins(speed_amph, turn_amph, 30, eventmean_amph)
+            est_amph_60 = speed_bins(speed_amph, turn_amph, 60, eventmean_amph)
+
+            if experiment in D1_folders:
+                D1_est_amph_0.append(est_amph_0)
+                D1_est_amph_30.append(est_amph_30)
+                D1_est_amph_60.append(est_amph_60)
+
+            elif experiment in D2_folders:
+                D2_est_amph_0.append(est_amph_0)
+                D2_est_amph_30.append(est_amph_30)
+                D2_est_amph_60.append(est_amph_60)
+
+    est_amph['D1']['0'] = D1_est_amph_0
+    est_amph['D1']['30'] = D1_est_amph_30
+    est_amph['D1']['60'] = D1_est_amph_60
+    est_amph['D2']['0'] = D2_est_amph_0
+    est_amph['D2']['30'] = D2_est_amph_30
+    est_amph['D2']['60'] = D2_est_amph_60
+
+    pkl.dump(est_amph, open("est_amph_right.pkl", "wb"))
+    with open("est_amph_right.pkl", "rb") as f:
+        object = pkl.load(f)
+    df = pd.DataFrame(object)
+    df.to_csv(r"est_amph_right.csv")
+
+    D1_est_amph_0_mean = np.nanmean(np.array(D1_est_amph_0), axis=0)
+    D1_est_amph_30_mean = np.nanmean(np.array(D1_est_amph_30), axis=0)
+    D1_est_amph_60_mean = np.nanmean(np.array(D1_est_amph_60), axis=0)
+    D2_est_amph_0_mean = np.nanmean(np.array(D2_est_amph_0), axis=0)
+    D2_est_amph_30_mean = np.nanmean(np.array(D2_est_amph_30), axis=0)
+    D2_est_amph_60_mean = np.nanmean(np.array(D2_est_amph_60), axis=0)
+
+    D1_est_amph_0_sem = np.nanstd(np.array(D1_est_amph_0), axis=0) / np.sqrt(len(D1_est_amph_0))
+    D1_est_amph_30_sem = np.nanstd(np.array(D1_est_amph_30), axis=0) / np.sqrt(len(D1_est_amph_30))
+    D1_est_amph_60_sem = np.nanstd(np.array(D1_est_amph_60), axis=0) / np.sqrt(len(D1_est_amph_60))
+    D2_est_amph_0_sem = np.nanstd(np.array(D2_est_amph_0), axis=0) / np.sqrt(len(D2_est_amph_0))
+    D2_est_amph_30_sem = np.nanstd(np.array(D2_est_amph_30), axis=0) / np.sqrt(len(D2_est_amph_30))
+    D2_est_amph_60_sem = np.nanstd(np.array(D2_est_amph_60), axis=0) / np.sqrt(len(D2_est_amph_60))
+
+    return D1_est_amph_0_mean, D1_est_amph_30_mean, D1_est_amph_60_mean, \
+           D2_est_amph_0_mean, D2_est_amph_30_mean, D2_est_amph_60_mean, \
+           D1_est_amph_0_sem, D1_est_amph_30_sem, D1_est_amph_60_sem, \
+           D2_est_amph_0_sem, D2_est_amph_30_sem, D2_est_amph_60_sem
 
 
 def plot():

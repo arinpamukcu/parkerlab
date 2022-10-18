@@ -4,9 +4,10 @@
 from data import *
 from info import *
 from mars import *
+from scipy.io import savemat
 import numpy as np
 import matplotlib.pyplot as plt
-import pickle
+import pickle as pkl
 import pdb
 
 def get_speed(speed_data, eventmean_data):
@@ -61,7 +62,6 @@ def get_turns(turn_data, eventmean_data):
             straight_no += 1
 
     # frequency of behavior, event rate during behavior
-    # TODO: should event rate be np.sum or np.mean?
     right_turn = [right_turn_no/len(turn_data), np.sum(right_turn_events)*5/right_turn_no]
     left_turn = [left_turn_no/len(turn_data), np.sum(left_turn_events)*5/left_turn_no]
     straight = [straight_no/len(turn_data), np.sum(straight_events)*5/straight_no]
@@ -116,7 +116,7 @@ def get_metrics(drug, dose):
 
 def get_alldata():
 
-    drugs = ['clozapine', 'haloperidol', 'mp-10', 'olanzapine']
+    drugs = ['clozapine', 'haloperidol', 'mp10', 'olanzapine']
     doses = ['vehicle', 'lowdose', 'highdose']
 
     alldata = {}
@@ -134,8 +134,8 @@ def get_alldata():
 
     # pdb.set_trace()
 
-    pickle.dump(alldata, open("alldata.pkl", "wb"))
-    # alldata = pickle.load(open("fname.pkl", "rb"))
+    pkl.dump(alldata, open("alldata.pkl", "wb"))
+    savemat("alldata.mat", alldata)
 
     return alldata
 
@@ -147,7 +147,7 @@ def plot_timespent(drug, dose):
 
     # D1_animals, D2_animals = D1_D2_names()
 
-    alldata = pickle.load(open("alldata.pkl", "rb"))
+    alldata = pkl.load(open("alldata.pkl", "rb"))
     # alldata = get_alldata()
 
     plt.figure(figsize=(10, 6))

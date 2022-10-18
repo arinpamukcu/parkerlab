@@ -12,24 +12,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pdb
 
-def turn_bins(speed_data, turn_data, speed, eventmean_data):
+def turn_bins(speed_data, turn_data, speed1, speed2, eventmean_data):
     left60_events, left30_events, straight_events, right30_events, right60_events = ([] for i in range(5))
     left60_duration, left30_duration, straight_duration, right30_duration, right60_duration = (0 for i in range(5))
 
-    for fr in range(0, len(turn_data - 4)):
-        if speed_data[fr] < speed and -70 < turn_data[fr] < -50:
+    for fr in range(0, len(turn_data)):
+        if speed1 <= speed_data[fr] < speed2 and -70 < turn_data[fr] < -50:
             left60_events.append(eventmean_data[fr])
             left60_duration += 1
-        if speed_data[fr] < speed and -40 < turn_data[fr] < -20:
+        if speed1 <= speed_data[fr] < speed2 and -40 < turn_data[fr] < -20:
             left30_events.append(eventmean_data[fr])
             left30_duration += 1
-        if speed_data[fr] < speed and -10 < turn_data[fr] < 10:
+        if speed1 <= speed_data[fr] < speed2 and -10 < turn_data[fr] < 10:
             straight_events.append(eventmean_data[fr])
             straight_duration += 1
-        if speed_data[fr] < speed and 20 < turn_data[fr] < 40:
+        if speed1 <= speed_data[fr] < speed2 and 20 < turn_data[fr] < 40:
             right30_events.append(eventmean_data[fr])
             right30_duration += 1
-        if speed_data[fr] < speed and 50 < turn_data[fr] < 70:
+        if speed1 <= speed_data[fr] < speed2 and 50 < turn_data[fr] < 70:
             right60_events.append(eventmean_data[fr])
             right60_duration += 1
 
@@ -57,10 +57,11 @@ def data_ctrl():
         for experiment in experiments:
             print(experiment)
 
-            speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
-            turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
+            speed_ctrl, speed_ctrl, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
+            turn_ctrl, turn_ctrl, _, _ = mars_feature(drug, dose, experiment)
 
-            ets_ctrl_all = turn_bins(speed_ctrl, turn_ctrl, 1, eventmean_ctrl)
+            ets_ctrl_all = turn_bins(speed_ctrl, turn_ctrl, 0, 0.5, eventmean_ctrl)
+            # ets_ctrl_all = turn_bins(speed_ctrl, turn_ctrl, 0.5, 8, eventmean_ctrl)
 
             if experiment in D1_folders:
                 D1_ets_ctrl.append(ets_ctrl_all)
@@ -83,17 +84,11 @@ def data_ctrl():
     D1_ets_ctrl_sem = np.nanstd(D1_ets_ctrl, axis=0) / np.sqrt(len(D1_ets_ctrl))
     D2_ets_ctrl_sem = np.nanstd(D2_ets_ctrl, axis=0) / np.sqrt(len(D2_ets_ctrl))
 
-    # pickle.dump(D1_ets_ctrl_mean, open("D1_ets_ctrl_mean.pkl", "wb"))
-    # pickle.dump(D1_ets_ctrl_sem, open("D1_ets_ctrl_sem.pkl", "wb"))
-    # pickle.dump(D2_ets_ctrl_mean, open("D2_ets_ctrl_mean.pkl", "wb"))
-    # pickle.dump(D2_ets_ctrl_sem, open("D2_ets_ctrl_sem.pkl", "wb"))
-
     return D1_ets_ctrl_mean, D2_ets_ctrl_mean, D1_ets_ctrl_sem, D2_ets_ctrl_sem
 
 
 def data_amph():
     drugs = ['Clozapine', 'Haloperidol', 'MP-10', 'Olanzapine']
-    # drugs = ['Clozapine']
     dose = 'Vehicle'
 
     D1_ets_amph = []
@@ -107,10 +102,11 @@ def data_amph():
         for experiment in experiments:
             print(experiment + '_amph')
 
-            speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
-            turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
+            speed_amph, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
+            turn_amph, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
-            ets_amph_all = turn_bins(speed_amph, turn_amph, 1, eventmean_amph)
+            ets_amph_all = turn_bins(speed_amph, turn_amph, 0, 0.5, eventmean_amph)
+            # ets_amph_all = turn_bins(speed_amph, turn_amph, 0.5, 8, eventmean_amph)
 
             if experiment in D1_folders:
                 D1_ets_amph.append(ets_amph_all)
@@ -132,11 +128,6 @@ def data_amph():
 
     D1_ets_amph_sem = np.nanstd(D1_ets_amph, axis=0) / np.sqrt(len(D1_ets_amph))
     D2_ets_amph_sem = np.nanstd(D2_ets_amph, axis=0) / np.sqrt(len(D2_ets_amph))
-
-    # pickle.dump(D1_ets_amph_mean, open("D1_ets_amph_mean.pkl", "wb"))
-    # pickle.dump(D1_ets_amph_sem, open("D1_ets_amph_sem.pkl", "wb"))
-    # pickle.dump(D2_ets_amph_mean, open("D2_ets_amph_mean.pkl", "wb"))
-    # pickle.dump(D2_ets_amph_sem, open("D2_ets_amph_sem.pkl", "wb"))
 
     return D1_ets_amph_mean, D2_ets_amph_mean, D1_ets_amph_sem, D2_ets_amph_sem
 
