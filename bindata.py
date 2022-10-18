@@ -106,13 +106,13 @@ def get_metrics(drug, dose):
         eventrate_speed_right2_ctrl = speed_bins(speed_ctrl, turn_ctrl, 60, eventmean_ctrl)
         eventrate_speed_right1_ctrl = speed_bins(speed_ctrl, turn_ctrl, 30, eventmean_ctrl)
         eventrate_speed_straight_ctrl = speed_bins(speed_ctrl, turn_ctrl, 0, eventmean_ctrl)
-        eventrate_speed_left1_ctrl = speed_bins(speed_ctrl, turn_ctrl, 0, eventmean_ctrl)
-        eventrate_speed_left2_ctrl = speed_bins(speed_ctrl, turn_ctrl, 0, eventmean_ctrl)
+        eventrate_speed_left1_ctrl = speed_bins(speed_ctrl, turn_ctrl, -30, eventmean_ctrl)
+        eventrate_speed_left2_ctrl = speed_bins(speed_ctrl, turn_ctrl, -60, eventmean_ctrl)
         eventrate_speed_right2_amph = speed_bins(speed_amph, turn_amph, 60, eventmean_amph)
         eventrate_speed_right1_amph = speed_bins(speed_amph, turn_amph, 30, eventmean_amph)
         eventrate_speed_straight_amph = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
-        eventrate_speed_left1_amph = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
-        eventrate_speed_left2_amph = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
+        eventrate_speed_left1_amph = speed_bins(speed_amph, turn_amph, -30, eventmean_amph)
+        eventrate_speed_left2_amph = speed_bins(speed_amph, turn_amph, -60, eventmean_amph)
 
         # append values for each animal to a list
         speedbins_ctrl[animal]['stop'] = eventrate_turn_stop_ctrl
