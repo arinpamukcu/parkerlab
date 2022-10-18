@@ -165,6 +165,7 @@ def get_bindata():
     return bindata
 
 
+# todo: code below needs to be updated. average same mouse data to have 18 data points instead of 40.
 def plot():
 
     D1_ets_ctrl_mean, D2_ets_ctrl_mean, D1_ets_ctrl_sem, D2_ets_ctrl_sem = data_ctrl()
