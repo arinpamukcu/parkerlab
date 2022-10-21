@@ -238,7 +238,7 @@ def get_vehicle():
     return bindata_vehicle
 
 
-def plot_speedbin():
+def plot_speedbin_vehicle():
     turnfts = ['right60', 'right30', 'straight0', 'left30', 'left60']
 
     D1_animals, D2_animals = D1_D2_names()
@@ -297,7 +297,7 @@ def plot_speedbin():
     return
 
 
-def plot_turnbin():
+def plot_turnbin_vehicle():
     turnfts = ['stop', 'move']
 
     D1_animals, D2_animals = D1_D2_names()
@@ -329,7 +329,7 @@ def plot_turnbin():
         x_default = [0, 1, 2, 3, 4];
         x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
         plt.xticks(x_default, x_new);
-        plt.ylim((0, 2.5))
+        plt.ylim((0, 4))
         plt.ylabel('Ca event rate (event/min)')
         plt.title('D1 SPNs')
         plt.suptitle('Ca events for speeds')
@@ -347,10 +347,71 @@ def plot_turnbin():
         x_default = [0, 1, 2, 3, 4];
         x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
         plt.xticks(x_default, x_new);
-        plt.ylim((0, 2.5))
+        plt.ylim((0, 4))
         plt.ylabel('Ca event rate (event/min)')
         plt.title('D2 SPNs')
         plt.legend()
         plt.show()
 
     return
+
+
+def plot_turnbin_drug(drug, dose):
+    turnfts = ['stop', 'move']
+    bases = ['ctrl', 'amph']
+
+    D1_animals, D2_animals = D1_D2_names()
+
+    bindata = pkl.load(open("bindata.pkl", "rb"))
+    # bindata[drug][dose][base][turnfts][animal]['stop'] = eventrates
+
+    n = range(5)
+    for ft in turnfts:
+        plt.figure(figsize=(5, 9))
+        d1_ctrl, d2_ctrl, d1_amph, d2_amph = ([] for i in range(4))
+        for animal in bindata[drug][dose]['ctrl']['turn'].keys():
+            if animal in D1_animals:
+                d1_ctrl.append(bindata[drug][dose]['ctrl']['turn'][animal][ft])
+            elif animal in D2_animals:
+                d2_ctrl.append(bindata[drug][dose]['ctrl']['turn'][animal][ft])
+        for animal in bindata[drug][dose]['amph']['turn'].keys():
+            if animal in D1_animals:
+                d1_amph.append(bindata[drug][dose]['amph']['turn'][animal][ft])
+                d2_amph.append(bindata[drug][dose]['amph']['turn'][animal][ft])
+        # pdb.set_trace()
+
+        plt.subplot(211)
+        d1_ctrl_mean = np.ma.masked_invalid(d1_ctrl).mean(axis=0)
+        d1_ctrl_sem = np.ma.masked_invalid(d1_ctrl).std(axis=0) / np.sqrt(len(d1_ctrl))
+        d1_amph_mean = np.ma.masked_invalid(d1_amph).mean(axis=0)
+        d1_amph_sem = np.ma.masked_invalid(d1_amph).std(axis=0) / np.sqrt(len(d1_amph))
+        plt.plot(d1_ctrl_mean, label=str(ft) + '_ctrl', color='k')
+        plt.fill_between(n, d1_ctrl_mean + d1_ctrl_sem, d1_ctrl_mean - d1_ctrl_sem, color='k', alpha=0.1)
+        plt.plot(d1_amph_mean, label=str(ft) + '_amph', color='r')
+        plt.fill_between(n, d1_amph_mean + d1_amph_sem, d1_amph_mean - d1_amph_sem, color='r', alpha=0.1)
+        x_default = [0, 1, 2, 3, 4];
+        x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
+        plt.xticks(x_default, x_new);
+        plt.ylim((0, 4))
+        plt.ylabel('Ca event rate (event/min)')
+        plt.title('D1 SPNs')
+        plt.suptitle('Ca events for turns')
+        plt.legend()
+
+        plt.subplot(212)
+        d2_ctrl_mean = np.ma.masked_invalid(d2_ctrl).mean(axis=0)
+        d2_ctrl_sem = np.ma.masked_invalid(d2_ctrl).std(axis=0) / np.sqrt(len(d2_ctrl))
+        d2_amph_mean = np.ma.masked_invalid(d2_amph).mean(axis=0)
+        d2_amph_sem = np.ma.masked_invalid(d2_amph).std(axis=0) / np.sqrt(len(d2_amph))
+        plt.plot(d2_ctrl_mean, label=str(ft) + '_ctrl', color='k')
+        plt.fill_between(n, d2_ctrl_mean + d2_ctrl_sem, d2_ctrl_mean - d2_ctrl_sem, color='k', alpha=0.1)
+        plt.plot(d2_amph_mean, label=str(ft) + '_amph', color='r')
+        plt.fill_between(n, d2_amph_mean + d2_amph_sem, d2_amph_mean - d2_amph_sem, color='r', alpha=0.1)
+        x_default = [0, 1, 2, 3, 4];
+        x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
+        plt.xticks(x_default, x_new);
+        plt.ylim((0, 4))
+        plt.ylabel('Ca event rate (event/min)')
+        plt.title('D2 SPNs')
+        plt.legend()
+        plt.show()
