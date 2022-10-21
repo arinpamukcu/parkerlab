@@ -7,11 +7,9 @@ import pandas as pd
 import numpy as np
 from scipy.signal import find_peaks
 
-# path for pc
-# calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium'
-
-# path for mac
-calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium'
+# path
+# calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium' #pc
+calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium' #mac
 
 def get_calcium_dir(drug, dose, experiment):
     calcium_file = experiment + '_neurons_dv.csv'
@@ -32,9 +30,6 @@ def get_calcium_data(drug, dose, experiment):
     neuron = np.size(calcium_amph, 0)
     time_ctrl = np.size(calcium_ctrl, 1)
     time_amph = np.size(calcium_amph, 1)
-    # print("neuron count: " + str(neuron))
-    # print("time during ctrl: " + str(time_ctrl))
-    # print("time during amph: " + str(time_amph))
 
     # # smooth
     # calcium_ctrl_smooth = gaussian_filter1d(calcium_ctrl, sigma=10)

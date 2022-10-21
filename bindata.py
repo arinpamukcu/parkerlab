@@ -7,6 +7,7 @@ from data import *
 from info import *
 from mars import *
 from scipy.io import savemat
+from collections import defaultdict
 import matplotlib.pyplot as plt
 import pickle as pkl
 import pandas as pd
@@ -115,21 +116,29 @@ def get_metrics(drug, dose):
         eventrate_speed_left2_amph = speed_bins(speed_amph, turn_amph, -60, eventmean_amph)
 
         # append values for each animal to a list
-        speedbins_ctrl[animal]['stop'] = eventrate_turn_stop_ctrl
-        speedbins_ctrl[animal]['move'] = eventrate_turn_move_ctrl
-        turnbins_ctrl[animal]['right2'] = eventrate_speed_right2_ctrl
-        turnbins_ctrl[animal]['right1'] = eventrate_speed_right1_ctrl
-        turnbins_ctrl[animal]['straight'] = eventrate_speed_straight_ctrl
-        turnbins_ctrl[animal]['left1'] = eventrate_speed_left1_ctrl
-        turnbins_ctrl[animal]['left2'] = eventrate_speed_left2_ctrl
+        turnbins_ctrl[animal]['stop'] = eventrate_turn_stop_ctrl
+        turnbins_ctrl[animal]['move'] = eventrate_turn_move_ctrl
+        speedbins_ctrl[animal]['right60'] = eventrate_speed_right2_ctrl
+        speedbins_ctrl[animal]['right30'] = eventrate_speed_right1_ctrl
+        speedbins_ctrl[animal]['straight0'] = eventrate_speed_straight_ctrl
+        speedbins_ctrl[animal]['left30'] = eventrate_speed_left1_ctrl
+        speedbins_ctrl[animal]['left60'] = eventrate_speed_left2_ctrl
 
-        speedbins_amph[animal]['stop'] = eventrate_turn_stop_amph
-        speedbins_amph[animal]['move'] = eventrate_turn_move_amph
-        turnbins_amph[animal]['right2'] = eventrate_speed_right2_amph
-        turnbins_amph[animal]['right1'] = eventrate_speed_right1_amph
-        turnbins_amph[animal]['straight'] = eventrate_speed_straight_amph
-        turnbins_amph[animal]['left1'] = eventrate_speed_left1_amph
-        turnbins_amph[animal]['left2'] = eventrate_speed_left2_amph
+        turnbins_amph[animal]['stop'] = eventrate_turn_stop_amph
+        turnbins_amph[animal]['move'] = eventrate_turn_move_amph
+        speedbins_amph[animal]['right60'] = eventrate_speed_right2_amph
+        speedbins_amph[animal]['right30'] = eventrate_speed_right1_amph
+        speedbins_amph[animal]['straight0'] = eventrate_speed_straight_amph
+        speedbins_amph[animal]['left30'] = eventrate_speed_left1_amph
+        speedbins_amph[animal]['left60'] = eventrate_speed_left2_amph
+
+        # stop: for speed < 0.5, turn bins at -60, -30, 0, 30, 60 nose-neck-tail angle
+        # move: for 0.5 < speed < 8, turn bins at -60, -30, 0, 30, 60
+        # right2: for 60 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
+        # right1: for 30 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
+        # straight: for 0 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
+        # left1: for -30 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
+        # left2: for -60 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
 
     return speedbins_ctrl, turnbins_ctrl, speedbins_amph, turnbins_amph
 
@@ -144,6 +153,7 @@ def get_bindata():
         bindata[drug] = {}
         for dose in doses:
             print(drug, dose)
+
             bindata[drug][dose] = {}
             bindata[drug][dose]['ctrl'] = {}
             bindata[drug][dose]['amph'] = {}
@@ -164,44 +174,183 @@ def get_bindata():
 
     return bindata
 
+def get_vehicle():
+    drugs = ['clozapine', 'haloperidol', 'mp10', 'olanzapine']
+    turnfts = ['right60', 'right30', 'straight0', 'left30', 'left60']
+    speedfts = ['stop', 'move']
 
-# todo: code below needs to be updated. average same mouse data to have 18 data points instead of 40.
-def plot():
+    bindata = pkl.load(open("bindata.pkl", "rb"))
 
-    D1_ets_ctrl_mean, D2_ets_ctrl_mean, D1_ets_ctrl_sem, D2_ets_ctrl_sem = data_ctrl()
-    D1_ets_amph_mean, D2_ets_amph_mean, D1_ets_amph_sem, D2_ets_amph_sem = data_amph()
+    # speed
+    byanimal_speed_ctrl = defaultdict(list)
+    byanimal_speed_amph = defaultdict(list)
+    for drug in drugs:
+        for animal, animalvals in bindata[drug]['vehicle']['ctrl']['speed'].items():
+            byanimal_speed_ctrl[animal].append(animalvals)
+        for animal, animalvals in bindata[drug]['vehicle']['amph']['speed'].items():
+            byanimal_speed_amph[animal].append(animalvals)
 
-    x = range(5)
+    bindata_vehicle = {}
+    bindata_vehicle['speed'] = {}
+    bindata_vehicle['speed']['ctrl'] = {}
+    bindata_vehicle['speed']['amph'] = {}
+    for animal in byanimal_speed_ctrl.keys():
+        bindata_vehicle['speed']['ctrl'][animal] = {}
+        bindata_vehicle['speed']['amph'][animal] = {}
+        for ft in turnfts:
+            tempc, tempa = ([] for i in range(2))
+            for n in range(0, len(byanimal_speed_ctrl[animal])):
+                tempc.append(byanimal_speed_ctrl[animal][n][ft])
+                bindata_vehicle['speed']['ctrl'][animal][ft] = np.mean(tempc, axis=0).tolist()
+            for n in range(0, len(byanimal_speed_amph[animal])):
+                tempa.append(byanimal_speed_amph[animal][n][ft])
+                bindata_vehicle['speed']['amph'][animal][ft] = np.mean(tempa, axis=0).tolist()
 
-    plt.figure(figsize=(5, 9))
-    plt.subplot(211)
-    plt.plot(D1_ets_ctrl_mean, label='D1 ctrl', color='k')
-    plt.fill_between(x, D1_ets_ctrl_mean + D1_ets_ctrl_sem, D1_ets_ctrl_mean - D1_ets_ctrl_sem, color='k', alpha=0.2)
-    plt.plot(D1_ets_amph_mean, label='D1 amph', color='b')
-    plt.fill_between(x, D1_ets_amph_mean + D1_ets_amph_sem, D1_ets_amph_mean - D1_ets_amph_sem, color='b', alpha=0.2)
-    x_default = [0, 1, 2, 3, 4];
-    x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
-    plt.xticks(x_default, x_new);
-    plt.ylim((0, 2))
-    # plt.xlabel('Locomotor speed bin (cm/s)')
-    plt.ylabel('Ca event rate (event/min)')
-    plt.title('D1 SPNs')
-    plt.suptitle('Ca events for speed: 0-1 cm/s')
-    plt.legend()
+    # turns
+    byanimal_turn_ctrl = defaultdict(list)
+    byanimal_turn_amph = defaultdict(list)
+    for drug in drugs:
+        for animal, animalvals in bindata[drug]['vehicle']['ctrl']['turn'].items():
+            byanimal_turn_ctrl[animal].append(animalvals)
+        for animal, animalvals in bindata[drug]['vehicle']['amph']['turn'].items():
+            byanimal_turn_amph[animal].append(animalvals)
 
-    plt.subplot(212)
-    plt.plot(D2_ets_ctrl_mean, label='D2 ctrl', color='k')
-    plt.fill_between(x, D2_ets_ctrl_mean + D2_ets_ctrl_sem, D2_ets_ctrl_mean - D2_ets_ctrl_sem, color='k', alpha=0.2)
-    plt.plot(D2_ets_amph_mean, label='D2 amph', color='r')
-    plt.fill_between(x, D2_ets_amph_mean + D2_ets_amph_sem, D2_ets_amph_mean - D2_ets_amph_sem, color='r', alpha=0.2)
-    x_default = [0, 1, 2, 3, 4];
-    x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
-    plt.xticks(x_default, x_new);
-    plt.ylim((0, 2))
-    # plt.xlabel('Locomotor speed bin (cm/s)')
-    plt.ylabel('Ca event rate (event/min)')
-    plt.title('D2 SPNs')
-    plt.legend()
-    plt.show()
+    bindata_vehicle['turn'] = {}
+    bindata_vehicle['turn']['ctrl'] = {}
+    bindata_vehicle['turn']['amph'] = {}
+    for animal in byanimal_speed_ctrl.keys():
+        bindata_vehicle['turn']['ctrl'][animal] = {}
+        bindata_vehicle['turn']['amph'][animal] = {}
+        for ft in speedfts:
+            tempc, tempa = ([] for i in range(2))
+            for n in range(0, len(byanimal_turn_ctrl[animal])):
+                tempc.append(byanimal_turn_ctrl[animal][n][ft])
+                bindata_vehicle['turn']['ctrl'][animal][ft] = np.mean(tempc, axis=0).tolist()
+            for n in range(0, len(byanimal_turn_amph[animal])):
+                tempa.append(byanimal_turn_amph[animal][n][ft])
+                bindata_vehicle['turn']['amph'][animal][ft] = np.mean(tempa, axis=0).tolist()
+
+    pkl.dump(bindata_vehicle, open("bindata_vehicle.pkl", "wb"))
+    savemat("bindata_vehicle.mat", bindata_vehicle)
+
+    # pdb.set_trace()
+
+    return bindata_vehicle
+
+
+def plot_speedbin():
+    turnfts = ['right60', 'right30', 'straight0', 'left30', 'left60']
+
+    D1_animals, D2_animals = D1_D2_names()
+    bindata_vehicle = pkl.load(open("bindata_vehicle.pkl", "rb"))
+
+    n = range(6)
+    for ft in turnfts:
+        plt.figure(figsize=(5, 9))
+        d1_ctrl, d2_ctrl, d1_amph, d2_amph = ([] for i in range(4))
+        for animal in bindata_vehicle['speed']['ctrl'].keys():
+            if animal in D1_animals:
+                d1_ctrl.append(bindata_vehicle['speed']['ctrl'][animal][ft])
+                d1_amph.append(bindata_vehicle['speed']['amph'][animal][ft])
+            elif animal in D2_animals:
+                d2_ctrl.append(bindata_vehicle['speed']['ctrl'][animal][ft])
+                d2_amph.append(bindata_vehicle['speed']['amph'][animal][ft])
+        d1_ctrl_mean = np.ma.masked_invalid(d1_ctrl).mean(axis=0)
+        d1_ctrl_sem = np.ma.masked_invalid(d1_ctrl).std(axis=0) / np.sqrt(len(d1_ctrl))
+        d1_amph_mean = np.ma.masked_invalid(d1_amph).mean(axis=0)
+        d1_amph_sem = np.ma.masked_invalid(d1_amph).std(axis=0) / np.sqrt(len(d1_amph))
+        plt.subplot(211)
+        plt.plot(d1_ctrl_mean, label=str(ft)+'_ctrl', color='k')
+        plt.fill_between(n, d1_ctrl_mean + d1_ctrl_sem, d1_ctrl_mean - d1_ctrl_sem, color='k', alpha=0.1)
+        plt.plot(d1_amph_mean, label=str(ft)+'_amph', color='r')
+        plt.fill_between(n, d1_amph_mean + d1_amph_sem, d1_amph_mean - d1_amph_sem, color='r', alpha=0.1)
+        x_default = [0, 1, 2, 3, 4, 5]
+        x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14']
+        plt.xticks(x_default, x_new)
+        plt.ylim((0, 2.5))
+        plt.xlabel('Locomotor speed bin (cm/s)')
+        plt.ylabel('Ca event rate (event/min)')
+        plt.title('D1 SPNs')
+        plt.suptitle('Ca spike per speed bout for turn angles')
+        plt.legend()
+
+        d2_ctrl_mean = np.ma.masked_invalid(d2_ctrl).mean(axis=0)
+        d2_ctrl_sem = np.ma.masked_invalid(d2_ctrl).std(axis=0) / np.sqrt(len(d2_ctrl))
+        d2_amph_mean = np.ma.masked_invalid(d2_amph).mean(axis=0)
+        d2_amph_sem = np.ma.masked_invalid(d2_amph).std(axis=0) / np.sqrt(len(d2_amph))
+        plt.subplot(212)
+        plt.plot(d2_ctrl_mean, label=str(ft)+'_ctrl', color='k')
+        plt.fill_between(n, d2_ctrl_mean + d2_ctrl_sem, d2_ctrl_mean - d2_ctrl_sem, color='k', alpha=0.1)
+        plt.plot(d2_amph_mean, label=str(ft)+'_amph', color='r')
+        plt.fill_between(n, d2_amph_mean + d2_amph_sem, d2_amph_mean - d2_amph_sem, color='r', alpha=0.1)
+        x_default = [0, 1, 2, 3, 4, 5]
+        x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14']
+        plt.xticks(x_default, x_new)
+        plt.ylim((0, 2.5))
+        plt.xlabel('Locomotor speed bin (cm/s)')
+        plt.ylabel('Ca event rate (event/min)')
+        plt.title('D2 SPNs')
+        plt.suptitle('Ca spike per speed bout for turn angles')
+        plt.legend()
+        plt.show()
+
+    return
+
+
+def plot_turnbin():
+    turnfts = ['stop', 'move']
+
+    D1_animals, D2_animals = D1_D2_names()
+
+    bindata_vehicle = pkl.load(open("bindata_vehicle.pkl", "rb"))
+
+    n = range(5)
+    for ft in turnfts:
+        plt.figure(figsize=(5, 9))
+        d1_ctrl, d2_ctrl, d1_amph, d2_amph = ([] for i in range(4))
+        for animal in bindata_vehicle['turn']['ctrl'].keys():
+            if animal in D1_animals:
+                d1_ctrl.append(bindata_vehicle['turn']['ctrl'][animal][ft])
+                d1_amph.append(bindata_vehicle['turn']['amph'][animal][ft])
+            elif animal in D2_animals:
+                d2_ctrl.append(bindata_vehicle['turn']['ctrl'][animal][ft])
+                d2_amph.append(bindata_vehicle['turn']['amph'][animal][ft])
+        d1_ctrl_mean = np.ma.masked_invalid(d1_ctrl).mean(axis=0)
+        d1_ctrl_sem = np.ma.masked_invalid(d1_ctrl).std(axis=0) / np.sqrt(len(d1_ctrl))
+        d1_amph_mean = np.ma.masked_invalid(d1_amph).mean(axis=0)
+        d1_amph_sem = np.ma.masked_invalid(d1_amph).std(axis=0) / np.sqrt(len(d1_amph))
+        # pdb.set_trace()
+
+        plt.subplot(211)
+        plt.plot(d1_ctrl_mean, label=str(ft)+'_ctrl', color='k')
+        plt.fill_between(n, d1_ctrl_mean + d1_ctrl_sem, d1_ctrl_mean - d1_ctrl_sem, color='k', alpha=0.1)
+        plt.plot(d1_amph_mean, label=str(ft)+'_amph', color='r')
+        plt.fill_between(n, d1_amph_mean + d1_amph_sem, d1_amph_mean - d1_amph_sem, color='r', alpha=0.1)
+        x_default = [0, 1, 2, 3, 4];
+        x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
+        plt.xticks(x_default, x_new);
+        plt.ylim((0, 2.5))
+        plt.ylabel('Ca event rate (event/min)')
+        plt.title('D1 SPNs')
+        plt.suptitle('Ca events for speeds')
+        plt.legend()
+
+        d2_ctrl_mean = np.ma.masked_invalid(d2_ctrl).mean(axis=0)
+        d2_ctrl_sem = np.ma.masked_invalid(d2_ctrl).std(axis=0) / np.sqrt(len(d2_ctrl))
+        d2_amph_mean = np.ma.masked_invalid(d2_amph).mean(axis=0)
+        d2_amph_sem = np.ma.masked_invalid(d2_amph).std(axis=0) / np.sqrt(len(d2_amph))
+        plt.subplot(212)
+        plt.plot(d2_ctrl_mean, label=str(ft)+'_ctrl', color='k')
+        plt.fill_between(n, d2_ctrl_mean + d2_ctrl_sem, d2_ctrl_mean - d2_ctrl_sem, color='k', alpha=0.1)
+        plt.plot(d2_amph_mean, label=str(ft)+'_amph', color='r')
+        plt.fill_between(n, d2_amph_mean + d2_amph_sem, d2_amph_mean - d2_amph_sem, color='r', alpha=0.1)
+        x_default = [0, 1, 2, 3, 4];
+        x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
+        plt.xticks(x_default, x_new);
+        plt.ylim((0, 2.5))
+        plt.ylabel('Ca event rate (event/min)')
+        plt.title('D2 SPNs')
+        plt.legend()
+        plt.show()
 
     return

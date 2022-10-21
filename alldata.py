@@ -56,7 +56,6 @@ def get_turns(turn_data, eventmean_data):
         elif turn_data[fr] < -10 and np.mean(turn_dt[fr-2:fr+2]) < -10:
             left_turn_events.append(eventmean_data[fr])
             left_turn_no += 1
-        # elif -10 < turn_data[fr] < 10:
         elif -10 < turn_data[fr] < 10 and -10 < np.mean(turn_dt[fr-2:fr+2]) < 10:
             straight_events.append(eventmean_data[fr])
             straight_no += 1
@@ -183,12 +182,10 @@ def plot_timespent(drug, dose):
 def plot_eventrate(drug, dose):
     bases = ['ctrl', 'amph']
     metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc', 'right_turn', 'left_turn', 'straight']
-    # metrics = ['nospeed', 'lospeed', 'midspeed', 'hispeed', 'acc']
-    # metrics = ['right_turn', 'left_turn', 'straight']
 
     D1_animals, D2_animals = D1_D2_names()
 
-    alldata = pickle.load(open("alldata.pkl", "rb"))
+    alldata = pkl.load(open("alldata.pkl", "rb"))
     # alldata = get_alldata()
 
     plt.figure(figsize=(10, 6))
