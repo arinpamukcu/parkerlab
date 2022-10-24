@@ -14,34 +14,36 @@ import pandas as pd
 import numpy as np
 import pdb
 
-def turn_bins(speed_data, turn_data , speed1, speed2, eventmean_data):
-    left60_events, left30_events, straight_events, right30_events, right60_events = ([] for i in range(5))
-    left60_duration, left30_duration, straight_duration, right30_duration, right60_duration = (0 for i in range(5))
+def turn_bins(speed_data, turn_data, speed1, speed2, eventmean_data):
+    left60_events, left30_events, forward_events, right30_events, right60_events = ([] for i in range(5))
+    left60_duration, left30_duration, forward_duration, right30_duration, right60_duration = (0 for i in range(5))
 
     for fr in range(0, len(turn_data)):
-        if speed1 < speed_data[fr] <= speed2 and -70 < turn_data[fr] < -50:
+        if speed1 < speed_data[fr] <= speed2 and -75 < turn_data[fr] <= -45:
             left60_events.append(eventmean_data[fr])
             left60_duration += 1
-        if speed1 < speed_data[fr] <= speed2 and -40 < turn_data[fr] < -20:
+        if speed1 < speed_data[fr] <= speed2 and -45 < turn_data[fr] <= -15:
             left30_events.append(eventmean_data[fr])
             left30_duration += 1
-        if speed1 < speed_data[fr] <= speed2 and -10 < turn_data[fr] < 10:
-            straight_events.append(eventmean_data[fr])
-            straight_duration += 1
-        if speed1 < speed_data[fr] <= speed2 and 20 < turn_data[fr] < 40:
+        if speed1 < speed_data[fr] <= speed2 and -15 < turn_data[fr] <= 15:
+            forward_events.append(eventmean_data[fr])
+            forward_duration += 1
+        if speed1 < speed_data[fr] <= speed2 and 15 < turn_data[fr] <= 45:
             right30_events.append(eventmean_data[fr])
             right30_duration += 1
-        if speed1 < speed_data[fr] <= speed2 and 50 < turn_data[fr] < 70:
+        if speed1 < speed_data[fr] <= speed2 and 45 < turn_data[fr] <= 75:
             right60_events.append(eventmean_data[fr])
             right60_duration += 1
 
     eventrate_vs_turn_speed = [(np.sum(left60_events) / left60_duration) * 300,
                                (np.sum(left30_events) / left30_duration) * 300,
-                               (np.sum(straight_events) / straight_duration) * 300,
+                               (np.sum(forward_events) / forward_duration) * 300,
                                (np.sum(right30_events) / right30_duration) * 300,
                                (np.sum(right60_events) / right60_duration) * 300]
 
-    return eventrate_vs_turn_speed
+    duration_vs_turn_speed = [left60_duration, left30_duration, forward_duration, right30_duration, right60_duration]
+
+    return eventrate_vs_turn_speed, duration_vs_turn_speed
 
 
 def speed_bins(speed_data, turn_data, turn_angle, eventmean_data):
@@ -75,7 +77,10 @@ def speed_bins(speed_data, turn_data, turn_angle, eventmean_data):
                                (np.sum(speed05_events) / speed05_duration) * 300,
                                (np.sum(speed06_events) / speed06_duration) * 300]
 
-    return eventrate_vs_speed_turn
+    duration_vs_speed_turn = [speed01_duration, speed02_duration, speed03_duration,
+                              speed04_duration, speed05_duration, speed06_duration]
+
+    return eventrate_vs_speed_turn, duration_vs_speed_turn
 
 
 def get_metrics(drug, dose):
@@ -99,38 +104,38 @@ def get_metrics(drug, dose):
         turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
         # get values for each animal for that drug & dose
-        eventrate_turn_stop_ctrl = turn_bins(speed_ctrl, turn_ctrl, 0, 0.5, eventmean_ctrl)
-        eventrate_turn_move_ctrl = turn_bins(speed_ctrl, turn_ctrl, 0.5, 8, eventmean_ctrl)
-        eventrate_turn_stop_amph = turn_bins(speed_amph, turn_amph, 0, 0.5, eventmean_amph)
-        eventrate_turn_move_amph = turn_bins(speed_amph, turn_amph, 0.5, 8, eventmean_amph)
+        eventrate_turn_stop_ctrl, duration_turn_stop_ctrl = turn_bins(speed_ctrl, turn_ctrl, 0, 0.5, eventmean_ctrl)
+        eventrate_turn_move_ctrl, duration_turn_move_ctrl = turn_bins(speed_ctrl, turn_ctrl, 0.5, 8, eventmean_ctrl)
+        eventrate_turn_stop_amph, duration_turn_stop_amph = turn_bins(speed_amph, turn_amph, 0, 0.5, eventmean_amph)
+        eventrate_turn_move_amph, duration_turn_move_amph = turn_bins(speed_amph, turn_amph, 0.5, 8, eventmean_amph)
 
-        eventrate_speed_right2_ctrl = speed_bins(speed_ctrl, turn_ctrl, 60, eventmean_ctrl)
-        eventrate_speed_right1_ctrl = speed_bins(speed_ctrl, turn_ctrl, 30, eventmean_ctrl)
-        eventrate_speed_straight_ctrl = speed_bins(speed_ctrl, turn_ctrl, 0, eventmean_ctrl)
-        eventrate_speed_left1_ctrl = speed_bins(speed_ctrl, turn_ctrl, -30, eventmean_ctrl)
-        eventrate_speed_left2_ctrl = speed_bins(speed_ctrl, turn_ctrl, -60, eventmean_ctrl)
-        eventrate_speed_right2_amph = speed_bins(speed_amph, turn_amph, 60, eventmean_amph)
-        eventrate_speed_right1_amph = speed_bins(speed_amph, turn_amph, 30, eventmean_amph)
-        eventrate_speed_straight_amph = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
-        eventrate_speed_left1_amph = speed_bins(speed_amph, turn_amph, -30, eventmean_amph)
-        eventrate_speed_left2_amph = speed_bins(speed_amph, turn_amph, -60, eventmean_amph)
+        eventrate_speed_right2_ctrl, duration_speed_right2_ctrl = speed_bins(speed_ctrl, turn_ctrl, 60, eventmean_ctrl)
+        eventrate_speed_right1_ctrl, duration_speed_right1_ctrl = speed_bins(speed_ctrl, turn_ctrl, 30, eventmean_ctrl)
+        eventrate_speed_forward_ctrl, duration_speed_forward_ctrl = speed_bins(speed_ctrl, turn_ctrl, 0, eventmean_ctrl)
+        eventrate_speed_left1_ctrl, duration_speed_left1_ctrl = speed_bins(speed_ctrl, turn_ctrl, -30, eventmean_ctrl)
+        eventrate_speed_left2_ctrl, duration_speed_left2_ctrl = speed_bins(speed_ctrl, turn_ctrl, -60, eventmean_ctrl)
+        eventrate_speed_right2_amph, duration_speed_right2_amph = speed_bins(speed_amph, turn_amph, 60, eventmean_amph)
+        eventrate_speed_right1_amph, duration_speed_right1_amph = speed_bins(speed_amph, turn_amph, 30, eventmean_amph)
+        eventrate_speed_forward_amph, duration_speed_forward_amph = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
+        eventrate_speed_left1_amph, duration_speed_left1_amph = speed_bins(speed_amph, turn_amph, -30, eventmean_amph)
+        eventrate_speed_left2_amph, duration_speed_left2_amph = speed_bins(speed_amph, turn_amph, -60, eventmean_amph)
 
         # append values for each animal to a list
-        turnbins_ctrl[animal]['stop'] = eventrate_turn_stop_ctrl
-        turnbins_ctrl[animal]['move'] = eventrate_turn_move_ctrl
-        speedbins_ctrl[animal]['right60'] = eventrate_speed_right2_ctrl
-        speedbins_ctrl[animal]['right30'] = eventrate_speed_right1_ctrl
-        speedbins_ctrl[animal]['straight0'] = eventrate_speed_straight_ctrl
-        speedbins_ctrl[animal]['left30'] = eventrate_speed_left1_ctrl
-        speedbins_ctrl[animal]['left60'] = eventrate_speed_left2_ctrl
+        turnbins_ctrl[animal]['stop'] = eventrate_turn_stop_ctrl, duration_turn_stop_ctrl
+        turnbins_ctrl[animal]['move'] = eventrate_turn_move_ctrl, duration_turn_move_ctrl
+        speedbins_ctrl[animal]['right60'] = eventrate_speed_right2_ctrl, duration_speed_right2_ctrl
+        speedbins_ctrl[animal]['right30'] = eventrate_speed_right1_ctrl, duration_speed_right1_ctrl
+        speedbins_ctrl[animal]['forward0'] = eventrate_speed_forward_ctrl, duration_speed_forward_ctrl
+        speedbins_ctrl[animal]['left30'] = eventrate_speed_left1_ctrl, duration_speed_left1_ctrl
+        speedbins_ctrl[animal]['left60'] = eventrate_speed_left2_ctrl, duration_speed_left2_ctrl
 
-        turnbins_amph[animal]['stop'] = eventrate_turn_stop_amph
-        turnbins_amph[animal]['move'] = eventrate_turn_move_amph
-        speedbins_amph[animal]['right60'] = eventrate_speed_right2_amph
-        speedbins_amph[animal]['right30'] = eventrate_speed_right1_amph
-        speedbins_amph[animal]['straight0'] = eventrate_speed_straight_amph
-        speedbins_amph[animal]['left30'] = eventrate_speed_left1_amph
-        speedbins_amph[animal]['left60'] = eventrate_speed_left2_amph
+        turnbins_amph[animal]['stop'] = eventrate_turn_stop_amph, duration_turn_stop_amph
+        turnbins_amph[animal]['move'] = eventrate_turn_move_amph, duration_turn_move_amph
+        speedbins_amph[animal]['right60'] = eventrate_speed_right2_amph, duration_speed_right2_amph
+        speedbins_amph[animal]['right30'] = eventrate_speed_right1_amph, duration_speed_right1_amph
+        speedbins_amph[animal]['straight0'] = eventrate_speed_forward_amph, duration_speed_forward_amph
+        speedbins_amph[animal]['left30'] = eventrate_speed_left1_amph, duration_speed_left1_amph
+        speedbins_amph[animal]['left60'] = eventrate_speed_left2_amph, duration_speed_left2_amph
 
         # stop: for speed < 0.5, turn bins at -60, -30, 0, 30, 60 nose-neck-tail angle
         # move: for 0.5 < speed < 8, turn bins at -60, -30, 0, 30, 60
@@ -143,7 +148,7 @@ def get_metrics(drug, dose):
     return speedbins_ctrl, turnbins_ctrl, speedbins_amph, turnbins_amph
 
 
-def get_bindata():
+def get_bins():
 
     drugs = ['clozapine', 'haloperidol', 'mp10', 'olanzapine']
     doses = ['vehicle', 'lowdose', 'highdose']
