@@ -15,33 +15,33 @@ import numpy as np
 import pdb
 
 def turn_bins(speed_data, turn_data, speed1, speed2, eventmean_data):
-    left60_events, left30_events, forward_events, right30_events, right60_events = ([] for i in range(5))
-    left60_duration, left30_duration, forward_duration, right30_duration, right60_duration = (0 for i in range(5))
+    left60_events, left30_events, forward0_events, right30_events, right60_events = ([] for i in range(5))
+    left60_duration, left30_duration, forward0_duration, right30_duration, right60_duration = (0 for i in range(5))
 
     for fr in range(0, len(turn_data)):
-        if speed1 < speed_data[fr] <= speed2 and -75 < turn_data[fr] <= -45:
+        if speed1 < speed_data[fr] <= speed2 and -100 < turn_data[fr] <= -60:
             left60_events.append(eventmean_data[fr])
             left60_duration += 1
-        if speed1 < speed_data[fr] <= speed2 and -45 < turn_data[fr] <= -15:
+        if speed1 < speed_data[fr] <= speed2 and -60 < turn_data[fr] <= -20:
             left30_events.append(eventmean_data[fr])
             left30_duration += 1
-        if speed1 < speed_data[fr] <= speed2 and -15 < turn_data[fr] <= 15:
-            forward_events.append(eventmean_data[fr])
-            forward_duration += 1
-        if speed1 < speed_data[fr] <= speed2 and 15 < turn_data[fr] <= 45:
+        if speed1 < speed_data[fr] <= speed2 and -20 < turn_data[fr] <= 20:
+            forward0_events.append(eventmean_data[fr])
+            forward0_duration += 1
+        if speed1 < speed_data[fr] <= speed2 and 20 < turn_data[fr] <= 60:
             right30_events.append(eventmean_data[fr])
             right30_duration += 1
-        if speed1 < speed_data[fr] <= speed2 and 45 < turn_data[fr] <= 75:
+        if speed1 < speed_data[fr] <= speed2 and 60 < turn_data[fr] <= 100:
             right60_events.append(eventmean_data[fr])
             right60_duration += 1
 
     eventrate_vs_turn_speed = [(np.sum(left60_events) / left60_duration) * 300,
                                (np.sum(left30_events) / left30_duration) * 300,
-                               (np.sum(forward_events) / forward_duration) * 300,
+                               (np.sum(forward0_events) / forward0_duration) * 300,
                                (np.sum(right30_events) / right30_duration) * 300,
                                (np.sum(right60_events) / right60_duration) * 300]
 
-    duration_vs_turn_speed = [left60_duration, left30_duration, forward_duration, right30_duration, right60_duration]
+    duration_vs_turn_speed = [left60_duration, left30_duration, forward0_duration, right30_duration, right60_duration]
 
     return eventrate_vs_turn_speed, duration_vs_turn_speed
 
@@ -51,22 +51,22 @@ def speed_bins(speed_data, turn_data, turn_angle, eventmean_data):
     speed01_duration, speed02_duration, speed03_duration, speed04_duration, speed05_duration, speed06_duration = (0 for i in range(6))
 
     for fr in range(0, len(turn_data)):
-        if speed_data[fr] <= 0.5 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if speed_data[fr] <= 0.5 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
             speed01_events.append(eventmean_data[fr])
             speed01_duration += 1
-        if 0.5 < speed_data[fr] <= 1 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 0.5 < speed_data[fr] <= 1 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
             speed02_events.append(eventmean_data[fr])
             speed02_duration += 1
-        if 1 < speed_data[fr] <= 2 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 1 < speed_data[fr] <= 2 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
             speed03_events.append(eventmean_data[fr])
             speed03_duration += 1
-        if 2 < speed_data[fr] <= 4 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 2 < speed_data[fr] <= 4 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
             speed04_events.append(eventmean_data[fr])
             speed04_duration += 1
-        if 4 < speed_data[fr] <= 8 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 4 < speed_data[fr] <= 8 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
             speed05_events.append(eventmean_data[fr])
             speed05_duration += 1
-        if 8 < speed_data[fr] <= 14 and turn_angle-10 < turn_data[fr] < turn_angle+10:
+        if 8 < speed_data[fr] <= 14 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
             speed06_events.append(eventmean_data[fr])
             speed06_duration += 1
 
@@ -133,7 +133,7 @@ def get_metrics(drug, dose):
         turnbins_amph[animal]['move'] = eventrate_turn_move_amph, duration_turn_move_amph
         speedbins_amph[animal]['right60'] = eventrate_speed_right2_amph, duration_speed_right2_amph
         speedbins_amph[animal]['right30'] = eventrate_speed_right1_amph, duration_speed_right1_amph
-        speedbins_amph[animal]['straight0'] = eventrate_speed_forward_amph, duration_speed_forward_amph
+        speedbins_amph[animal]['forward0'] = eventrate_speed_forward_amph, duration_speed_forward_amph
         speedbins_amph[animal]['left30'] = eventrate_speed_left1_amph, duration_speed_left1_amph
         speedbins_amph[animal]['left60'] = eventrate_speed_left2_amph, duration_speed_left2_amph
 
@@ -181,7 +181,7 @@ def get_bins():
 
 def get_vehicle():
     drugs = ['clozapine', 'haloperidol', 'mp10', 'olanzapine']
-    turnfts = ['right60', 'right30', 'straight0', 'left30', 'left60']
+    turnfts = ['right60', 'right30', 'forward0', 'left30', 'left60']
     speedfts = ['stop', 'move']
 
     bindata = pkl.load(open("bindata.pkl", "rb"))
@@ -244,7 +244,7 @@ def get_vehicle():
 
 
 def plot_speedbin_vehicle():
-    turnfts = ['right60', 'right30', 'straight0', 'left30', 'left60']
+    turnfts = ['right60', 'right30', 'forward0', 'left30', 'left60']
 
     D1_animals, D2_animals = D1_D2_names()
     bindata_vehicle = pkl.load(open("bindata_vehicle.pkl", "rb"))
@@ -260,15 +260,16 @@ def plot_speedbin_vehicle():
             elif animal in D2_animals:
                 d2_ctrl.append(bindata_vehicle['speed']['ctrl'][animal][ft])
                 d2_amph.append(bindata_vehicle['speed']['amph'][animal][ft])
+        # pdb.set_trace()
         d1_ctrl_mean = np.ma.masked_invalid(d1_ctrl).mean(axis=0)
         d1_ctrl_sem = np.ma.masked_invalid(d1_ctrl).std(axis=0) / np.sqrt(len(d1_ctrl))
         d1_amph_mean = np.ma.masked_invalid(d1_amph).mean(axis=0)
         d1_amph_sem = np.ma.masked_invalid(d1_amph).std(axis=0) / np.sqrt(len(d1_amph))
         plt.subplot(211)
-        plt.plot(d1_ctrl_mean, label=str(ft)+'_ctrl', color='k')
-        plt.fill_between(n, d1_ctrl_mean + d1_ctrl_sem, d1_ctrl_mean - d1_ctrl_sem, color='k', alpha=0.1)
-        plt.plot(d1_amph_mean, label=str(ft)+'_amph', color='r')
-        plt.fill_between(n, d1_amph_mean + d1_amph_sem, d1_amph_mean - d1_amph_sem, color='r', alpha=0.1)
+        plt.plot(d1_ctrl_mean[0], label=str(ft)+'_ctrl', color='k')
+        plt.fill_between(n, d1_ctrl_mean[0] + d1_ctrl_sem[0], d1_ctrl_mean[0] - d1_ctrl_sem[0], color='k', alpha=0.1)
+        plt.plot(d1_amph_mean[0], label=str(ft)+'_amph', color='k', linestyle=':')
+        plt.fill_between(n, d1_amph_mean[0] + d1_amph_sem[0], d1_amph_mean[0] - d1_amph_sem[0], color='k', alpha=0.1)
         x_default = [0, 1, 2, 3, 4, 5]
         x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14']
         plt.xticks(x_default, x_new)
@@ -284,10 +285,10 @@ def plot_speedbin_vehicle():
         d2_amph_mean = np.ma.masked_invalid(d2_amph).mean(axis=0)
         d2_amph_sem = np.ma.masked_invalid(d2_amph).std(axis=0) / np.sqrt(len(d2_amph))
         plt.subplot(212)
-        plt.plot(d2_ctrl_mean, label=str(ft)+'_ctrl', color='k')
-        plt.fill_between(n, d2_ctrl_mean + d2_ctrl_sem, d2_ctrl_mean - d2_ctrl_sem, color='k', alpha=0.1)
-        plt.plot(d2_amph_mean, label=str(ft)+'_amph', color='r')
-        plt.fill_between(n, d2_amph_mean + d2_amph_sem, d2_amph_mean - d2_amph_sem, color='r', alpha=0.1)
+        plt.plot(d2_ctrl_mean[0], label=str(ft)+'_ctrl', color='k')
+        plt.fill_between(n, d2_ctrl_mean[0] + d2_ctrl_sem[0], d2_ctrl_mean[0] - d2_ctrl_sem[0], color='k', alpha=0.1)
+        plt.plot(d2_amph_mean[0], label=str(ft)+'_amph', color='k', linestyle=':')
+        plt.fill_between(n, d2_amph_mean[0] + d2_amph_sem[0], d2_amph_mean[0] - d2_amph_sem[0], color='k', alpha=0.1)
         x_default = [0, 1, 2, 3, 4, 5]
         x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14']
         plt.xticks(x_default, x_new)
@@ -327,13 +328,13 @@ def plot_turnbin_vehicle():
         # pdb.set_trace()
 
         plt.subplot(211)
-        plt.plot(d1_ctrl_mean, label=str(ft)+'_ctrl', color='k')
-        plt.fill_between(n, d1_ctrl_mean + d1_ctrl_sem, d1_ctrl_mean - d1_ctrl_sem, color='k', alpha=0.1)
-        plt.plot(d1_amph_mean, label=str(ft)+'_amph', color='r')
-        plt.fill_between(n, d1_amph_mean + d1_amph_sem, d1_amph_mean - d1_amph_sem, color='r', alpha=0.1)
-        x_default = [0, 1, 2, 3, 4];
-        x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
-        plt.xticks(x_default, x_new);
+        plt.plot(d1_ctrl_mean[0], label=str(ft)+'_ctrl', color='k')
+        plt.fill_between(n, d1_ctrl_mean[0] + d1_ctrl_sem[0], d1_ctrl_mean[0] - d1_ctrl_sem[0], color='k', alpha=0.1)
+        plt.plot(d1_amph_mean[0], label=str(ft)+'_amph', color='k', linestyle=':')
+        plt.fill_between(n, d1_amph_mean[0] + d1_amph_sem[0], d1_amph_mean[0] - d1_amph_sem[0], color='k', alpha=0.1)
+        x_default = [0, 1, 2, 3, 4]
+        x_new = ['right 60°', 'right 30°', 'forward 0°', 'left 30°', 'left 60°'];
+        plt.xticks(x_default, x_new)
         plt.ylim((0, 4))
         plt.ylabel('Ca event rate (event/min)')
         plt.title('D1 SPNs')
@@ -345,13 +346,13 @@ def plot_turnbin_vehicle():
         d2_amph_mean = np.ma.masked_invalid(d2_amph).mean(axis=0)
         d2_amph_sem = np.ma.masked_invalid(d2_amph).std(axis=0) / np.sqrt(len(d2_amph))
         plt.subplot(212)
-        plt.plot(d2_ctrl_mean, label=str(ft)+'_ctrl', color='k')
-        plt.fill_between(n, d2_ctrl_mean + d2_ctrl_sem, d2_ctrl_mean - d2_ctrl_sem, color='k', alpha=0.1)
-        plt.plot(d2_amph_mean, label=str(ft)+'_amph', color='r')
-        plt.fill_between(n, d2_amph_mean + d2_amph_sem, d2_amph_mean - d2_amph_sem, color='r', alpha=0.1)
-        x_default = [0, 1, 2, 3, 4];
-        x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
-        plt.xticks(x_default, x_new);
+        plt.plot(d2_ctrl_mean[0], label=str(ft)+'_ctrl', color='k')
+        plt.fill_between(n, d2_ctrl_mean[0] + d2_ctrl_sem[0], d2_ctrl_mean[0] - d2_ctrl_sem[0], color='k', alpha=0.1)
+        plt.plot(d2_amph_mean[0], label=str(ft)+'_amph', color='k', linestyle=':')
+        plt.fill_between(n, d2_amph_mean[0] + d2_amph_sem[0], d2_amph_mean[0] - d2_amph_sem[0], color='k', alpha=0.1)
+        x_default = [0, 1, 2, 3, 4]
+        x_new = ['right 60°', 'right 30°', 'forward 0°', 'left 30°', 'left 60°'];
+        plt.xticks(x_default, x_new)
         plt.ylim((0, 4))
         plt.ylabel('Ca event rate (event/min)')
         plt.title('D2 SPNs')
@@ -390,10 +391,10 @@ def plot_turnbin_drug(drug, dose):
         d1_ctrl_sem = np.ma.masked_invalid(d1_ctrl).std(axis=0) / np.sqrt(len(d1_ctrl))
         d1_amph_mean = np.ma.masked_invalid(d1_amph).mean(axis=0)
         d1_amph_sem = np.ma.masked_invalid(d1_amph).std(axis=0) / np.sqrt(len(d1_amph))
-        plt.plot(d1_ctrl_mean, label=str(ft) + '_ctrl', color='k')
-        plt.fill_between(n, d1_ctrl_mean + d1_ctrl_sem, d1_ctrl_mean - d1_ctrl_sem, color='k', alpha=0.1)
-        plt.plot(d1_amph_mean, label=str(ft) + '_amph', color='r')
-        plt.fill_between(n, d1_amph_mean + d1_amph_sem, d1_amph_mean - d1_amph_sem, color='r', alpha=0.1)
+        plt.plot(d1_ctrl_mean[0], label=str(ft) + '_ctrl', color='k')
+        plt.fill_between(n, d1_ctrl_mean[0] + d1_ctrl_sem[0], d1_ctrl_mean[0] - d1_ctrl_sem[0], color='k', alpha=0.1)
+        plt.plot(d1_amph_mean[0], label=str(ft) + '_amph', color='k', linestyle=':')
+        plt.fill_between(n, d1_amph_mean[0] + d1_amph_sem[0], d1_amph_mean[0] - d1_amph_sem[0], color='k', alpha=0.1)
         x_default = [0, 1, 2, 3, 4];
         x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
         plt.xticks(x_default, x_new);
@@ -408,10 +409,10 @@ def plot_turnbin_drug(drug, dose):
         d2_ctrl_sem = np.ma.masked_invalid(d2_ctrl).std(axis=0) / np.sqrt(len(d2_ctrl))
         d2_amph_mean = np.ma.masked_invalid(d2_amph).mean(axis=0)
         d2_amph_sem = np.ma.masked_invalid(d2_amph).std(axis=0) / np.sqrt(len(d2_amph))
-        plt.plot(d2_ctrl_mean, label=str(ft) + '_ctrl', color='k')
-        plt.fill_between(n, d2_ctrl_mean + d2_ctrl_sem, d2_ctrl_mean - d2_ctrl_sem, color='k', alpha=0.1)
-        plt.plot(d2_amph_mean, label=str(ft) + '_amph', color='r')
-        plt.fill_between(n, d2_amph_mean + d2_amph_sem, d2_amph_mean - d2_amph_sem, color='r', alpha=0.1)
+        plt.plot(d2_ctrl_mean[0], label=str(ft) + '_ctrl', color='k')
+        plt.fill_between(n, d2_ctrl_mean[0] + d2_ctrl_sem[0], d2_ctrl_mean[0] - d2_ctrl_sem[0], color='k', alpha=0.1)
+        plt.plot(d2_amph_mean[0], label=str(ft) + '_amph', color='k', linestyle=':')
+        plt.fill_between(n, d2_amph_mean[0] + d2_amph_sem[0], d2_amph_mean[0] - d2_amph_sem[0], color='k', alpha=0.1)
         x_default = [0, 1, 2, 3, 4];
         x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
         plt.xticks(x_default, x_new);
