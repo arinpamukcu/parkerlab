@@ -50,6 +50,7 @@ def get_turns(turn_data, eventmean_data):
 
     for fr in range(2, len(turn_data) - 2):
         if turn_data[fr] > 10 and np.mean(turn_dt[fr-2:fr+2]) > 10:
+        # if turn_data[fr] > 10 and turn_dt(max(fr-2,0):min(fr+2,len(turn_dt)):
             right_turn_events.append(eventmean_data[fr])
             right_turn_no += 1
         elif turn_data[fr] < -10 and np.mean(turn_dt[fr-2:fr+2]) < -10:

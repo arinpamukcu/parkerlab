@@ -48,40 +48,72 @@ def turn_bins(speed_data, turn_data, speed1, speed2, eventmean_data):
 
 
 def speed_bins(speed_data, turn_data, turn_angle, eventmean_data):
-    speed01_events, speed02_events, speed03_events, speed04_events, speed05_events, speed06_events = ([] for i in range(6))
-    speed01_duration, speed02_duration, speed03_duration, speed04_duration, speed05_duration, speed06_duration = (0 for i in range(6))
+    speed1_events, speed2_events, speed3_events, speed4_events, speed5_events = ([] for i in range(5))
+    speed1_duration, speed2_duration, speed3_duration, speed4_duration, speed5_duration = (0 for i in range(5))
 
     for fr in range(0, len(turn_data)):
         if speed_data[fr] <= 0.5 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
-            speed01_events.append(eventmean_data[fr])
-            speed01_duration += 1
+            speed1_events.append(eventmean_data[fr])
+            speed1_duration += 1
         if 0.5 < speed_data[fr] <= 1 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
-            speed02_events.append(eventmean_data[fr])
-            speed02_duration += 1
+            speed2_events.append(eventmean_data[fr])
+            speed2_duration += 1
         if 1 < speed_data[fr] <= 2 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
-            speed03_events.append(eventmean_data[fr])
-            speed03_duration += 1
+            speed3_events.append(eventmean_data[fr])
+            speed3_duration += 1
         if 2 < speed_data[fr] <= 4 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
-            speed04_events.append(eventmean_data[fr])
-            speed04_duration += 1
+            speed4_events.append(eventmean_data[fr])
+            speed4_duration += 1
         if 4 < speed_data[fr] <= 8 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
-            speed05_events.append(eventmean_data[fr])
-            speed05_duration += 1
-        if 8 < speed_data[fr] <= 14 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
-            speed06_events.append(eventmean_data[fr])
-            speed06_duration += 1
+            speed5_events.append(eventmean_data[fr])
+            speed5_duration += 1
+        # if 8 < speed_data[fr] <= 14 and turn_angle-15 < turn_data[fr] <= turn_angle+15:
+        #     speed06_events.append(eventmean_data[fr])
+        #     speed06_duration += 1
 
-    eventrate_vs_speed_turn = [(np.sum(speed01_events) / speed01_duration) * 300,
-                               (np.sum(speed02_events) / speed02_duration) * 300,
-                               (np.sum(speed03_events) / speed03_duration) * 300,
-                               (np.sum(speed04_events) / speed04_duration) * 300,
-                               (np.sum(speed05_events) / speed05_duration) * 300,
-                               (np.sum(speed06_events) / speed06_duration) * 300]
+    eventrate_vs_speed_turn = [(np.sum(speed1_events) / speed1_duration) * 300,
+                               (np.sum(speed2_events) / speed2_duration) * 300,
+                               (np.sum(speed3_events) / speed3_duration) * 300,
+                               (np.sum(speed4_events) / speed4_duration) * 300,
+                               (np.sum(speed5_events) / speed5_duration) * 300]
 
-    duration_vs_speed_turn = [speed01_duration, speed02_duration, speed03_duration,
-                              speed04_duration, speed05_duration, speed06_duration]
+    duration_vs_speed_turn = [speed1_duration, speed2_duration, speed3_duration, speed4_duration, speed5_duration]
 
     return eventrate_vs_speed_turn, duration_vs_speed_turn
+
+
+def angvel_bins(turn_data, speed1, speed2, eventmean_data):
+    angvel1_events, angvel2_events, angvel3_events, angvel4_events, angvel5_events = ([] for i in range(6))
+    angvel1_duration, angvel2_duration, angvel3_duration, angvel4_duration, angvel5_duration = (0 for i in range(6))
+    turn_dt = turn_data[1:] - turn_data[:-1]
+
+    for fr in range(0, len(turn_data)):
+        # if np.mean(turn_dt[fr-2:fr+2]) > 10 and 0 > turn_data[fr] > 15:
+        #     angvel1_events.append(eventmean_data[fr])
+        #     angvel1_duration += 1
+        # if speed1 < speed_data[fr] <= speed2 and -45 < turn_data[fr] <= -15:
+        #     angvel2_events.append(eventmean_data[fr])
+        #     angvel2_duration += 1
+        # if speed1 < speed_data[fr] <= speed2 and -15 < turn_data[fr] <= 15:
+        #     angvel3_events.append(eventmean_data[fr])
+        #     angvel3_duration += 1
+        # if speed1 < speed_data[fr] <= speed2 and 15 < turn_data[fr] <= 45:
+        #     angvel4_events.append(eventmean_data[fr])
+        #     angvel4_duration += 1
+        # if speed1 < speed_data[fr] <= speed2 and 45 < turn_data[fr] <= 75:
+        #     angvel5_events.append(eventmean_data[fr])
+        #     angvel5_duration += 1
+
+    eventrate_vs_angvel = [(np.sum(angvel1_events) / angvel1_duration) * 300,
+                           (np.sum(angvel2_events) / angvel2_duration) * 300,
+                           (np.sum(angvel3_events) / angvel3_duration) * 300,
+                           (np.sum(angvel4_events) / angvel4_duration) * 300,
+                           (np.sum(angvel5_events) / angvel5_duration) * 300]
+
+    duration_vs_angvel = [angvel1_duration, angvel2_duration, angvel3_duration, angvel4_duration, angvel5_duration]
+
+    return eventrate_vs_angvel, duration_vs_angvel
+
 
 
 def get_metrics(drug, dose):
@@ -140,11 +172,11 @@ def get_metrics(drug, dose):
 
         # stop: for speed < 0.5, turn bins at -60, -30, 0, 30, 60 nose-neck-tail angle
         # move: for 0.5 < speed < 8, turn bins at -60, -30, 0, 30, 60
-        # right2: for 60 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
-        # right1: for 30 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
-        # straight: for 0 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
-        # left1: for -30 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
-        # left2: for -60 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
+        # right2: for 60 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8,
+        # right1: for 30 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8
+        # straight: for 0 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8
+        # left1: for -30 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8
+        # left2: for -60 nose-neck-tail angle, speed bins at 0.5, 0.5-1, 1-2, 2-4, 4-8
 
     return speedbins_ctrl, turnbins_ctrl, speedbins_amph, turnbins_amph
 
@@ -244,7 +276,7 @@ def get_vehicle():
 
 def plot_speedbin_vehicle():
     turnfts = ['right60', 'right30', 'forward0', 'left30', 'left60']
-    speedbins = ['0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14']
+    speedbins = ['0.5', '0.5-1', '1-2', '2-4', '4-8']
 
     D1_animals, D2_animals = D1_D2_names()
     bindata_vehicle = pkl.load(open("bindata_vehicle.pkl", "rb"))
@@ -279,8 +311,8 @@ def plot_speedbin_vehicle():
         plt.fill_between(range(len(speedbins)), d1_ctrl_mean+d1_ctrl_sem, d1_ctrl_mean-d1_ctrl_sem, color='k', alpha=0.1)
         plt.plot(d1_amph_mean, label=str(ft)+'_amph', color='k', linestyle=':')
         plt.fill_between(range(len(speedbins)), d1_amph_mean+d1_amph_sem, d1_amph_mean-d1_amph_sem, color='k', alpha=0.1)
-        x_default = [0, 1, 2, 3, 4, 5]
-        x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14']
+        x_default = [0, 1, 2, 3, 4]
+        x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8']
         plt.xticks(x_default, x_new)
         plt.ylim((0, 2.5))
         plt.xlabel('Locomotor speed bin (cm/s)')
@@ -298,8 +330,8 @@ def plot_speedbin_vehicle():
         plt.fill_between(range(len(speedbins)), d2_ctrl_mean+d2_ctrl_sem, d2_ctrl_mean-d2_ctrl_sem, color='k', alpha=0.1)
         plt.plot(d2_amph_mean, label=str(ft)+'_amph', color='k', linestyle=':')
         plt.fill_between(range(len(speedbins)), d2_amph_mean+d2_amph_sem, d2_amph_mean-d2_amph_sem, color='k', alpha=0.1)
-        x_default = [0, 1, 2, 3, 4, 5]
-        x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8', '8-14']
+        x_default = [0, 1, 2, 3, 4]
+        x_new = ['<0.5', '0.5-1', '1-2', '2-4', '4-8']
         plt.xticks(x_default, x_new)
         plt.ylim((0, 2.5))
         plt.xlabel('Locomotor speed bin (cm/s)')
