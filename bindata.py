@@ -387,7 +387,6 @@ def plot_turnbin_drug(drug, dose):
     D1_animals, D2_animals = D1_D2_names()
 
     bindata = pkl.load(open("bindata_15deg.pkl", "rb"))
-    # bindata[drug][dose][base][turnfts][animal]['stop'] = eventrates
 
     for ft in speedfts:
         plt.figure(figsize=(5, 9))
@@ -409,12 +408,6 @@ def plot_turnbin_drug(drug, dose):
                         d2_ctrl[-1][n] = 'nan'
                     elif bindata[drug][dose]['amph']['turn'][animal][ft][1][n] < 25:
                         d2_amph[-1][n] = 'nan'
-            # if animal in D1_animals:
-            #     pdb.set_trace()
-            #     d1_ctrl.append(bindata[drug][dose]['ctrl']['turn'][animal][ft])
-            # elif animal in D2_animals:
-            #     d2_ctrl.append(bindata[drug][dose]['ctrl']['turn'][animal][ft])
-            # pdb.set_trace()
 
         plt.subplot(211)
         d1_ctrl_mean = np.ma.masked_invalid(np.array(d1_ctrl, dtype=float)).mean(axis=0)
@@ -425,9 +418,9 @@ def plot_turnbin_drug(drug, dose):
         plt.fill_between(range(len(turnbins)), d1_ctrl_mean+d1_ctrl_sem, d1_ctrl_mean-d1_ctrl_sem, color='k', alpha=0.1)
         plt.plot(d1_amph_mean, label=str(ft) + '_amph', color='k', linestyle=':')
         plt.fill_between(range(len(turnbins)), d1_amph_mean+d1_amph_sem, d1_amph_mean-d1_amph_sem, color='k', alpha=0.1)
-        x_default = [0, 1, 2, 3, 4];
+        x_default = [0, 1, 2, 3, 4]
         x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
-        plt.xticks(x_default, x_new);
+        plt.xticks(x_default, x_new)
         plt.ylim((0, 4))
         plt.ylabel('Ca event rate (event/min)')
         plt.title('D1 SPNs')
@@ -443,9 +436,9 @@ def plot_turnbin_drug(drug, dose):
         plt.fill_between(range(len(turnbins)), d2_ctrl_mean+d2_ctrl_sem, d2_ctrl_mean-d2_ctrl_sem, color='k', alpha=0.1)
         plt.plot(d2_amph_mean, label=str(ft) + '_amph', color='k', linestyle=':')
         plt.fill_between(range(len(turnbins)), d2_amph_mean+d2_amph_sem, d2_amph_mean-d2_amph_sem, color='k', alpha=0.1)
-        x_default = [0, 1, 2, 3, 4];
+        x_default = [0, 1, 2, 3, 4]
         x_new = ['right 60°', 'right 30°', 'straight 0°', 'left 30°', 'left 60°'];
-        plt.xticks(x_default, x_new);
+        plt.xticks(x_default, x_new)
         plt.ylim((0, 4))
         plt.ylabel('Ca event rate (event/min)')
         plt.title('D2 SPNs')
