@@ -149,9 +149,9 @@ def get_metrics(drug, dose):
         eventrate_turn_move_amph, duration_turn_move_amph = turn_bins(speed_amph, turn_amph, 0.5, 8, eventmean_amph)
 
         eventrate_angvel_rest_ctrl, duration_angvel_rest_ctrl = angvel_bins(speed_ctrl, turn_ctrl, 0, 0.5, eventmean_ctrl)
-        eventrate_angvel_move_ctrl, duration_angvel_move_ctrl = angvel_bins(speed_ctrl, turn_ctrl, 0, 0.5, eventmean_ctrl)
+        eventrate_angvel_move_ctrl, duration_angvel_move_ctrl = angvel_bins(speed_ctrl, turn_ctrl, 0.5, 8, eventmean_ctrl)
         eventrate_angvel_rest_amph, duration_angvel_rest_amph = angvel_bins(speed_amph, turn_amph, 0, 0.5, eventmean_amph)
-        eventrate_angvel_move_amph, duration_angvel_move_amph = angvel_bins(speed_amph, turn_amph, 0, 0.5, eventmean_amph)
+        eventrate_angvel_move_amph, duration_angvel_move_amph = angvel_bins(speed_amph, turn_amph, 0.5, 8, eventmean_amph)
 
         # append values for each animal to a list
         speedbins_ctrl[animal]['right60'] = eventrate_speed_right2_ctrl, duration_speed_right2_ctrl
@@ -641,3 +641,47 @@ def plot_angvel_drug(drug, dose):
         plt.title('D2 SPNs')
         plt.legend()
         plt.show()
+
+
+def stats():
+    turnfts = ['right60', 'right30', 'forward0', 'left30', 'left60']
+    speedbins = ['0.5', '0.5-1', '1-2', '2-4', '4-8']
+
+    D1_animals, D2_animals = D1_D2_names()
+    bindata_vehicle = pkl.load(open("bindata_vehicle.pkl", "rb"))
+
+    for ft in turnfts:
+        plt.figure(figsize=(5, 9))
+        d1_ctrl, d2_ctrl, d1_amph, d2_amph = ([] for i in range(4))
+        for animal in bindata_vehicle['speed']['ctrl'].keys():
+            if animal in D1_animals:
+                d1_ctrl.append(bindata_vehicle['speed']['ctrl'][animal][ft][0])
+                d1_amph.append(bindata_vehicle['speed']['amph'][animal][ft][0])
+                for n in range(0, len(speedbins)):
+                    if bindata_vehicle['speed']['ctrl'][animal][ft][1][n] < 50:  # 25 frames, 5 seconds
+                        d1_ctrl[-1][n] = 'nan'
+                    elif bindata_vehicle['speed']['amph'][animal][ft][1][n] < 50:
+                        d1_amph[-1][n] = 'nan'
+            elif animal in D2_animals:
+                d2_ctrl.append(bindata_vehicle['speed']['ctrl'][animal][ft][0])
+                d2_amph.append(bindata_vehicle['speed']['amph'][animal][ft][0])
+                for n in range(0, len(speedbins)):
+                    if bindata_vehicle['speed']['ctrl'][animal][ft][1][n] < 50:
+                        d2_ctrl[-1][n] = 'nan'
+                    elif bindata_vehicle['speed']['amph'][animal][ft][1][n] < 50:
+                        d2_amph[-1][n] = 'nan'
+        d1_ctrl_mean = np.ma.masked_invalid(np.array(d1_ctrl, dtype=float)).mean(axis=0)
+        d1_ctrl_sem = np.ma.masked_invalid(np.array(d1_ctrl, dtype=float)).std(axis=0) / np.sqrt(len(d1_ctrl))
+        d1_amph_mean = np.ma.masked_invalid(np.array(d1_amph, dtype=float)).mean(axis=0)
+        d1_amph_sem = np.ma.masked_invalid(np.array(d1_amph, dtype=float)).std(axis=0) / np.sqrt(len(d1_amph))
+
+        dataframe = pd.dataframe({d1_ctrl})
+
+        import statsmodels.api as sm
+        from statsmodels.formula.api import ols
+        model = ols('height ~ C(Fertilizer) + C(Watering) +\
+        C(Fertilizer):C(Watering)',
+                    data=dataframe).fit()
+        result = sm.stats.anova_lm(model, type=2)
+        print(result)
+

@@ -25,7 +25,7 @@ def get_speed(speed_data, eventmean_data):
         if speed_data[fr] <= 0.1:
             freeze_events.append(eventmean_data[fr])
             freeze_duration += 1
-        if 0.1 < speed_data[fr] <= 0.5:
+        if speed_data[fr] <= 0.5:
             rest_events.append(eventmean_data[fr])
             rest_duration += 1
         if 0.5 < speed_data[fr] <= 5:
