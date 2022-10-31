@@ -288,7 +288,7 @@ def plot_times():
     return
 
 
-def plot_events():
+def plot_events(spn):
 
     drugs = ['clozapine', 'olanzapine', 'haloperidol', 'mp10']
     doses = ['vehicle', 'highdose']
@@ -298,6 +298,13 @@ def plot_events():
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
 
+    animals = []
+    if spn == 'd1':
+        animals = D1_animals
+    elif spn == 'd2':
+        animals = D2_animals
+    # pdb.set_trace()
+
     plt.figure(figsize=(8, 5))
     x = 0
     for metric in metrics:
@@ -306,21 +313,21 @@ def plot_events():
                 a = 1
                 x = x + 2
                 for base in bases:
-                    data = [alldata[d][dose][base][a][metric] for d in
-                            alldata.keys() for a in alldata[d][dose][base].keys() if a in D2_animals]
+                    data = [alldata[d][dose][base][s][metric] for d in
+                            alldata.keys() for s in alldata[d][dose][base].keys() if s in animals]
                     mean = np.nanmean(data, axis=0)
                     sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
-                    plt.bar(x, mean[0], yerr=sem[0], width=1, color='k', alpha=a)
+                    plt.bar(x, mean[1], yerr=sem[1], width=1, color='k', alpha=a)
                     a = a - 0.5
                     x = x + 1
             else:
                 for drug in drugs:
                     x = x + 0.5
-                    data = [alldata[drug][dose]['amph'][a][metric] for a in alldata[drug][dose]['amph'].keys() if
-                            a in D2_animals]
+                    data = [alldata[drug][dose]['amph'][s][metric] for s in alldata[drug][dose]['amph'].keys() if
+                            s in animals]
                     mean = np.nanmean(data, axis=0)
                     sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
-                    plt.bar(x, mean[0], yerr=sem[0], width=1, color='b', alpha=0.5)
+                    plt.bar(x, mean[1], yerr=sem[1], width=1, color='b', alpha=0.5)
                     x = x + 1
 
     plt.suptitle('event rate during performing different behaviors')
@@ -329,7 +336,7 @@ def plot_events():
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
     plt.ylabel('event rate (event/s)')
-    plt.ylim((0, 1))
+    plt.ylim((0, 0.07))
     plt.show()
 
     return
