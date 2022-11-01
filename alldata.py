@@ -1,5 +1,4 @@
-# Created by Arin Pamukcu, PhD on August 2022
-# histogras for time spent doing particular action
+# Created by Arin Pamukcu, PhD on August 2022 in Chicago, IL
 
 from data import *
 from info import *
@@ -16,13 +15,21 @@ def get_speed(speed_data, eventmean_data):
     acc_duration, dec_duration, rest_duration, move_duration = (0 for i in range(4))
     speed_dt = speed_data[1:] - speed_data[:-1]
 
-    for fr in range(0, len(speed_data) - 5):
-        # if np.mean(speed_data[fr:fr + 5]) <= 0.5 and np.mean(speed_dt[fr:fr + 5]) > 0:
-        if 0.5 <= np.mean(speed_data[fr:fr + 5]) and np.mean(speed_dt[fr:fr + 5]) > 0:
+    for fr in range(0, len(speed_data) - 2):
+        # if np.mean(speed_dt[fr:fr + 2]) > 0:  #06
+        # if speed_data[fr - 2] < speed_data[fr - 1] < speed_data[fr]:  # 05
+        # if speed_dt[fr - 2] < speed_dt[fr - 1] < speed_dt[fr]:  # 04
+        # if np.mean(speed_data[fr - 2:fr]) <= 0.5 and np.mean(speed_dt[fr:fr + 5]) > 0:  # 03
+        if np.mean(speed_dt[fr:fr + 2]) > 0:  # 02
+        # if speed_dt[fr] > 0:  # 01
             acc_events.append(eventmean_data[fr])
             acc_duration += 1
-        # if np.mean(speed_data[fr:fr + 5]) <= 0.5 and np.mean(speed_dt[fr:fr + 5]) > 0:
-        if 0.5 <= np.mean(speed_data[fr - 5:fr]) and np.mean(speed_dt[fr - 5:fr]) < 0:
+        # if np.mean(speed_dt[fr:fr + 2]) < 0:  # 06
+        # if speed_data[fr - 2] > speed_data[fr - 1] > speed_data[fr]:  # 05
+        # if speed_dt[fr - 2] > speed_dt[fr - 1] > speed_dt[fr]:  # 04
+        # if np.mean(speed_data[fr:fr + 2]) <= 0.5 and np.mean(speed_dt[fr - 2:fr]) < 0:  # 03
+        if np.mean(speed_dt[fr:fr + 2]) < 0:  # 02
+        # if speed_dt[fr] < 0:  # 01
             dec_events.append(eventmean_data[fr])
             dec_duration += 1
         if speed_data[fr] <= 0.5:
@@ -179,12 +186,13 @@ def plot_timespent(drug, dose):
                 a = a - 0.5
                 x = x + 1
 
-    plt.suptitle(' '.join(drug) + ', ' + dose)
+    # plt.suptitle(' '.join(drug) + ', ' + dose)
     x_default = [1.5, 4.5, 7.5, 10.5, 13.5, 16.5]
     plt.xticks(x_default, metrics)
     # plt.xticks(rotation=20, fontsize=8)
     plt.ylabel('time (s)')
     plt.ylim((0, 1))
+    plt.legend(['ctrl', 'amph'])
     plt.show()
 
     return
@@ -245,40 +253,42 @@ def plot_eventrate(drug, dose):
 
 def plot_times():
 
-    drugs = ['clozapine', 'olanzapine', 'haloperidol', 'mp10']
+    drugs = ['haloperidol', 'clozapine', 'olanzapine', 'mp10']
     doses = ['vehicle', 'highdose']
     bases = ['ctrl', 'amph']
     metrics = ['acc', 'dec', 'rest', 'move', 'right_turn', 'left_turn']
 
     alldata = pkl.load(open("alldata.pkl", "rb"))
 
-    plt.figure(figsize=(8, 5))
+    fig, ax = plt.subplots()
     x = 0
     for metric in metrics:
         for dose in doses:
             if dose == 'vehicle':
-                a = 1
+                colors = ['black', 'gray']
                 x = x + 2
-                for base in bases:
+                for base, color in zip(bases, colors):
                     data = [alldata[d][dose][base][a][metric] for d in alldata.keys()
                             for a in alldata[d][dose][base].keys()]
                     mean = np.nanmean(data, axis=0)
                     sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
-                    plt.bar(x, mean[0], yerr=sem[0], width=1, color='k', alpha=a)
-                    a = a - 0.5
+                    ax.bar(x, mean[0], yerr=sem[0], width=1, color=color)
                     x = x + 1
             else:
-                for drug in drugs:
+                colors = ['royalblue', 'orangered', 'forestgreen', 'darkviolet']
+                for drug, color in zip(drugs, colors):
                     x = x + 0.5
                     data = [alldata[drug][dose]['amph'][a][metric] for a in alldata[drug][dose]['amph'].keys()]
                     mean = np.nanmean(data, axis=0)
                     sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
-                    plt.bar(x, mean[0], yerr=sem[0], width=1, color='b', alpha=0.5)
+                    ax.bar(x, mean[0], yerr=sem[0], width=1, color=color, alpha=0.7)
                     x = x + 1
 
-    plt.suptitle('fraction of time spent performing different behaviors')
-    # plt.title('n = ' + str(len(data)))
-    x_default = [2, 12, 22, 32, 42, 52]
+    plt.suptitle('fraction of time spent performing behaviors')
+    plt.legend(['ctrl', 'amph', 'haloperidol', 'clozapine', 'olanzapine', 'mp10'])
+    x_default = [2.5, 12.5, 22.5, 32.5, 42.5, 52.5]
+    # plt.legend(['ctrl', 'amph'])
+    # x_default = [2.5, 6.5, 10.5, 14.5, 18.5, 22.5]
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
     plt.ylabel('time spent fraction')
@@ -290,7 +300,7 @@ def plot_times():
 
 def plot_events(spn):
 
-    drugs = ['clozapine', 'olanzapine', 'haloperidol', 'mp10']
+    drugs = ['haloperidol', 'clozapine', 'olanzapine', 'mp10']
     doses = ['vehicle', 'highdose']
     bases = ['ctrl', 'amph']
     metrics = ['acc', 'dec', 'rest', 'move', 'right_turn', 'left_turn']
@@ -299,44 +309,45 @@ def plot_events(spn):
     D1_animals, D2_animals = D1_D2_names()
 
     animals = []
-    if spn == 'd1':
+    if spn == 'D1':
         animals = D1_animals
-    elif spn == 'd2':
+    elif spn == 'D2':
         animals = D2_animals
-    # pdb.set_trace()
 
-    plt.figure(figsize=(8, 5))
+    # plt.figure(figsize=(8, 5))
+    fig, ax = plt.subplots()
     x = 0
     for metric in metrics:
         for dose in doses:
             if dose == 'vehicle':
-                a = 1
+                colors = ['black', 'gray']
                 x = x + 2
-                for base in bases:
+                for base, color in zip(bases, colors):
                     data = [alldata[d][dose][base][s][metric] for d in
                             alldata.keys() for s in alldata[d][dose][base].keys() if s in animals]
                     mean = np.nanmean(data, axis=0)
                     sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
-                    plt.bar(x, mean[1], yerr=sem[1], width=1, color='k', alpha=a)
-                    a = a - 0.5
+                    ax.bar(x, mean[1], yerr=sem[1], width=1, color=color)
                     x = x + 1
             else:
-                for drug in drugs:
+                colors = ['royalblue', 'orangered', 'forestgreen', 'darkviolet']
+                for drug, color in zip(drugs, colors):
                     x = x + 0.5
                     data = [alldata[drug][dose]['amph'][s][metric] for s in alldata[drug][dose]['amph'].keys() if
                             s in animals]
                     mean = np.nanmean(data, axis=0)
                     sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
-                    plt.bar(x, mean[1], yerr=sem[1], width=1, color='b', alpha=0.5)
+                    ax.bar(x, mean[1], yerr=sem[1], width=1, color=color, alpha=0.7)
                     x = x + 1
 
-    plt.suptitle('event rate during performing different behaviors')
+    plt.suptitle(str(spn) + ' SPN event rate during performing behaviors')
     # plt.title('n = ' + str(len(data)))
-    x_default = [2, 12, 22, 32, 42, 52]
+    x_default = [2.5, 12.5, 22.5, 32.5, 42.5, 52.5]
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
     plt.ylabel('event rate (event/s)')
     plt.ylim((0, 0.07))
+    plt.legend(['ctrl', 'amph', 'haloperidol', 'clozapine', 'olanzapine', 'mp10'])
     plt.show()
 
     return
