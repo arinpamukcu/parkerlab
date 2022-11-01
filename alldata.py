@@ -272,6 +272,8 @@ def plot_times():
                             for a in alldata[d][dose][base].keys()]
                     mean = np.nanmean(data, axis=0)
                     sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
+                    print(base)
+                    print(mean[0])
                     ax.bar(x, mean[0], yerr=sem[0], width=1, color=color)
                     x = x + 1
             else:
@@ -281,6 +283,8 @@ def plot_times():
                     data = [alldata[drug][dose]['amph'][a][metric] for a in alldata[drug][dose]['amph'].keys()]
                     mean = np.nanmean(data, axis=0)
                     sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
+                    print(drug)
+                    print(mean[0])
                     ax.bar(x, mean[0], yerr=sem[0], width=1, color=color, alpha=0.7)
                     x = x + 1
 
