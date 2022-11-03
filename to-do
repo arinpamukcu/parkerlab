@@ -1,14 +1,10 @@
-things to work on:
-- turn_trig_speed
-- speed_trig_turn
-- event_trig_turn
-
-histograms for behaviors
-- turning (combined left and right)
-- left turn
-- right turn
-- speed
-- acceleration
+% time and event rate spent plots:
+- Change from fraction to %
+- Remove rest and move (or move them to the right end so it can be removed if needed)
+- For the rest of the behaviors, accelerate, decelerate, turn right, turn left, other, (and rearing, grooming once we have it), make total time equal to 100%
+- Separate drug plots from vehicle ctrl and amph
+- Show high-dose drugs for both ctrl and amph
+- Normalize drug ctrl and amph to vehicle ctrl and amph so you only display change in time
 
 pie chart for time spent doing actions:
 - grooming (binary)

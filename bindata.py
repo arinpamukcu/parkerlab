@@ -128,7 +128,8 @@ def get_metrics(drug, dose):
         print(experiment)
 
         # get values for speed or turn
-        speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
+        speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, \
+        _, time_ctrl, time_amph = get_data(drug, dose, experiment)
         turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
 
         # get values for each animal for that drug & dose
