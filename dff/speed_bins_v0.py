@@ -29,7 +29,7 @@ def event_per_speed():
             # calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
             eventcount_ctrl, eventcount_amph = binarize_calcium(drug, dose, experiment)
 
-            feature_count, feature_names, features_ctrl, features_amph = mars_data(drug, dose, experiment)
+            feature_count, feature_names, features_ctrl, features_amph = get_mars_data(drug, dose, experiment)
 
             bin1_events_ctrl, bin2_events_ctrl, bin3_events_ctrl, bin4_events_ctrl, bin5_events_ctrl, bin6_events_ctrl = (
                 [] for i in range(6))

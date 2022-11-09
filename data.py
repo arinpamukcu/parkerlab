@@ -8,18 +8,18 @@ from scipy.io import loadmat
 calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_JP' #pc
 # calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_JP' #mac
 
-def get_dir(drug, dose, experiment):
+def get_ca_dirs(drug, dose, experiment):
     calcium_ctrl_path = os.path.join(calcium_dir, drug, dose, experiment, 'veh_drug.mat')
     calcium_amph_path = os.path.join(calcium_dir, drug, dose, experiment + '_amph', 'amph_drug.mat')
 
     return calcium_ctrl_path, calcium_amph_path
 
 
-def get_data(drug, dose, experiment):
+def get_ca_data(drug, dose, experiment):
     # reshape
     # ctrl: 15 min * 60 sec * 5 Hz sampling rate = 4500
     # amph: 45 min * 60 sec * 5 Hz sampling rate = 13500
-    calcium_ctrl_path, calcium_amph_path = get_dir(drug, dose, experiment)
+    calcium_ctrl_path, calcium_amph_path = get_ca_dirs(drug, dose, experiment)
 
     mat_ctrl = loadmat(calcium_ctrl_path)
     speed_ctrl = mat_ctrl['veh_drug']['speed_traces_5hz'][0][0][0, :4500]

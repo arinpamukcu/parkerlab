@@ -72,7 +72,7 @@ def data_time_fraction():
         print(experiment)
 
         # get values for speed or turn
-        speed_ctrl, speed_amph, _, _, _, _, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+        speed_ctrl, speed_amph, _, _, _, _, neuron, time_ctrl, time_amph = get_mars_data(drug, dose, experiment)
 
         # get values for each animal for that drug & dose
         nospeed_ctrl, lospeed_ctrl, midspeed_ctrl, hispeed_ctrl, acc_ctrl = data_speed(speed_ctrl, time_ctrl)

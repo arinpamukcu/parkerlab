@@ -24,10 +24,10 @@ def ctrl():
             print(experiment)
 
             speed_ctrl, _, calcium_ctrl_dff, _, _, _, _, _, \
-            neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            neuron_count, time_ctrl, time_amph = get_mars_data(drug, dose, experiment)
 
             _, _, mars_left_angle_ctrl, mars_left_angle_amph, \
-            mars_right_angle_ctrl, mars_right_angle_amph = mars_feature(drug, dose, experiment)
+            mars_right_angle_ctrl, mars_right_angle_amph = get_mars_features(drug, dose, experiment)
 
             # remove events in first 25 and last 25 frames
             window = 25
@@ -91,10 +91,10 @@ def amph():
             print(experiment + '_amph')
 
             _, speed_amph, _, calcium_amph_dff, _, _, _, _, \
-            neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            neuron_count, time_ctrl, time_amph = get_mars_data(drug, dose, experiment)
 
             _, _, mars_left_angle_ctrl, mars_left_angle_amph, \
-            mars_right_angle_ctrl, mars_right_angle_amph, = mars_feature(drug, dose, experiment)
+            mars_right_angle_ctrl, mars_right_angle_amph, = get_mars_features(drug, dose, experiment)
 
             # remove events in first 25 and last 25 frames
             window = 25

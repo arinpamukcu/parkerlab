@@ -99,7 +99,7 @@ def speed_data():
         for experiment in experiments:
             print(experiment + '_speed')
 
-            speed_ctrl, speed_amph, _, _, _, _, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            speed_ctrl, speed_amph, _, _, _, _, neuron, time_ctrl, time_amph = get_mars_data(drug, dose, experiment)
 
             # mars_turn_angle_ctrl, mars_turn_angle_amph, _, _ = mars_feature(drug, dose, experiment)
 
@@ -177,9 +177,9 @@ def turn_data():
         for experiment in experiments:
             print(experiment + '_turn')
 
-            _, _, _, _, _, _, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            _, _, _, _, _, _, neuron, time_ctrl, time_amph = get_mars_data(drug, dose, experiment)
 
-            turn_angle_ctrl, turn_angle_amph, _, _ = mars_feature(drug, dose, experiment)
+            turn_angle_ctrl, turn_angle_amph, _, _ = get_mars_features(drug, dose, experiment)
 
             right_turn_duration_ctrl_peranimal, left_turn_duration_ctrl_peranimal = turn_bouts(turn_angle_ctrl, time_ctrl)
             right_turn_duration_amph_peranimal, left_turn_duration_amph_peranimal = turn_bouts(turn_angle_amph, time_amph)

@@ -23,7 +23,7 @@ def ctrl():
         for experiment in experiments:
             print(experiment)
 
-            speed_ctrl, _, _, _, eventmean_ctrl, _, neuron_count, time_ctrl, _ = get_data(drug, dose, experiment)
+            speed_ctrl, _, _, _, eventmean_ctrl, _, neuron_count, time_ctrl, _ = get_ca_data(drug, dose, experiment)
 
             # find event/min instead of event/frame
             eventmean_ctrl = eventmean_ctrl * 300
@@ -86,7 +86,7 @@ def amph():
         for experiment in experiments:
             print(experiment + '_amph')
 
-            _, speed_amph, _, _, _, eventmean_amph, neuron_count, _, time_amph = get_data(drug, dose, experiment)
+            _, speed_amph, _, _, _, eventmean_amph, neuron_count, _, time_amph = get_ca_data(drug, dose, experiment)
 
             # find event/min instead of event/frame
             eventmean_amph = eventmean_amph * 300

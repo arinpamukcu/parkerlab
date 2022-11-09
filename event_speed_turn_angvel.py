@@ -69,8 +69,9 @@ def data_ctrl():
         for experiment in experiments:
             print(experiment)
 
-            speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
-            turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
+            speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_mars_data(drug, dose,
+                                                                                                  experiment)
+            turn_ctrl, turn_amph, _, _ = get_mars_features(drug, dose, experiment)
 
             est_ctrl_0 = speed_bins(speed_ctrl, turn_ctrl, 0, eventmean_ctrl)
             est_ctrl_30 = speed_bins(speed_ctrl, turn_ctrl, 30, eventmean_ctrl)
@@ -132,8 +133,9 @@ def data_amph():
         for experiment in experiments:
             print(experiment + '_amph')
 
-            speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_data(drug, dose, experiment)
-            turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
+            speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, _, _, _ = get_mars_data(drug, dose,
+                                                                                                  experiment)
+            turn_ctrl, turn_amph, _, _ = get_mars_features(drug, dose, experiment)
 
             est_amph_0 = speed_bins(speed_amph, turn_amph, 0, eventmean_amph)
             est_amph_30 = speed_bins(speed_amph, turn_amph, 30, eventmean_amph)

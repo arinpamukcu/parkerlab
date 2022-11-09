@@ -1,3 +1,6 @@
+% run olanzapine pose
+% run olanzapine custom feats
+
 % time and event rate spent plots:
 - Change from fraction to %
 - Remove rest and move (or move them to the right end so it can be removed if needed)

@@ -24,7 +24,7 @@ def ctrl():
             print(experiment)
 
             speed_ctrl, speed_amph, _, _, _, _, _, _, \
-            neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            neuron_count, time_ctrl, time_amph = get_ca_data(drug, dose, experiment)
 
             # if you just want to use speed neurons for your analysis
             _, _, _, speed_neuron_ctrl_events, speed_neuron_amph_events = get_speed_neurons(drug, dose, experiment)
@@ -92,7 +92,7 @@ def amph():
             print(experiment + '_amph')
 
             speed_ctrl, speed_amph, _, _, _, _, _, _, \
-            neuron_count, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            neuron_count, time_ctrl, time_amph = get_ca_data(drug, dose, experiment)
 
             # if you just want to use speed neurons for your analysis
             _, _, _, speed_neuron_ctrl_events, speed_neuron_amph_events = get_speed_neurons(drug, dose, experiment)

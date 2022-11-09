@@ -88,9 +88,10 @@ def data():
         for experiment in experiments:
             print(experiment)
 
-            _, _, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_data(drug, dose, experiment)
+            _, _, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph = get_mars_data(drug, dose,
+                                                                                                     experiment)
 
-            mars_turn_angle_ctrl, mars_turn_angle_amph, _, _ = mars_feature(drug, dose, experiment)
+            mars_turn_angle_ctrl, mars_turn_angle_amph, _, _ = get_mars_features(drug, dose, experiment)
 
             event_per_right_turn_ctrl, event_per_left_turn_ctrl = turn_bins(mars_turn_angle_ctrl, eventmean_ctrl)
             event_per_right_turn_amph, event_per_left_turn_amph = turn_bins(mars_turn_angle_amph, eventmean_amph)

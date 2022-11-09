@@ -129,8 +129,8 @@ def get_metrics(drug, dose):
 
         # get values for speed or turn
         speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, \
-        _, time_ctrl, time_amph = get_data(drug, dose, experiment)
-        turn_ctrl, turn_amph, _, _ = mars_feature(drug, dose, experiment)
+        _, time_ctrl, time_amph = get_ca_data(drug, dose, experiment)
+        turn_ctrl, turn_amph, _, _ = get_mars_features(drug, dose, experiment)
 
         # get values for each animal for that drug & dose
         eventrate_speed_right2_ctrl, duration_speed_right2_ctrl = speed_bins(speed_ctrl, turn_ctrl, 60, eventmean_ctrl)
