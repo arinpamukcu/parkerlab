@@ -29,8 +29,8 @@ def timespent_vehicle():
             for animal in animals:
                 tempdata[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric][0] * 100
                                                for d in alldata.keys()
-                                               if animal in alldata[d]['vehicle'][base].keys()
-                                               and alldata[d]['vehicle']['ctrl'][animal][metric][0] > (1. / 90.)])
+                                               if animal in alldata[d]['vehicle'][base].keys()])
+                                               # and alldata[d]['vehicle']['ctrl'][animal][metric][0] > (1. / 90.)])
             data = list(tempdata.values())
             mean = np.nanmean(data, axis=0)
             sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
@@ -148,8 +148,8 @@ def eventrate_vehicle(spn):
             for animal in animals:
                 tempdata[animal] = np.nanmean([(alldata[d]['vehicle'][base][animal][metric][1])
                                                for d in alldata.keys()
-                                               if animal in alldata[d]['vehicle']['ctrl'].keys()
-                                               and alldata[d]['vehicle']['ctrl'][animal][metric][1] > (1. / 90.)])
+                                               if animal in alldata[d]['vehicle']['ctrl'].keys()])
+                                               # and alldata[d]['vehicle']['ctrl'][animal][metric][1] > (1. / 90.)])
             data = list(tempdata.values())
             mean = np.nanmean(data, axis=0)
             sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
@@ -208,7 +208,7 @@ def eventrate_drugs(spn):
             ax.bar(x, mean, yerr=sem, width=1, color='k', label='amph')
         else:
             ax.bar(x, mean, yerr=sem, width=1, color='k')
-        # ax.plot([x]*len(data), data, 'k.')
+        ax.plot([x]*len(data), data, 'k.')
         x = x + 1.5
 
         colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
@@ -224,9 +224,8 @@ def eventrate_drugs(spn):
                         if animal in alldata[drug]['vehicle'][base].keys()
                         and animal in alldata[drug]['highdose'][base].keys()
                         and alldata[drug]['vehicle']['ctrl'][animal][metric][0] > (1. / 90.)]
-
-                # data = [i for i in range(0, len(data)) if (np.nanmean(data, axis=0) - np.nanstd(data, axis=0) * 5) < i < (np.nanmean(data, axis=0) + np.nanstd(data, axis=0) * 5)]
-                # pdb.set_trace()
+                print(drug, base)
+                print(data)
 
                 mean = np.nanmean(data, axis=0)
                 sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
@@ -234,7 +233,7 @@ def eventrate_drugs(spn):
                     ax.bar(x, mean, yerr=sem, width=1, color=color, alpha=a, label=drug + '-' + base)
                 else:
                     ax.bar(x, mean, yerr=sem, width=1, color=color, alpha=a)
-                # ax.plot([x]*len(data), data, 'k.')
+                ax.plot([x]*len(data), data, 'k.')
                 x = x + 1
                 a = a + 0.5
 
