@@ -12,14 +12,14 @@ def timespent_vehicle():
     # doses = ['vehicle', 'highdose']
     drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
     bases = ['ctrl', 'amph']
-    # metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'grooming', 'other']
-    metrics = ['acc', 'dec', 'right_turn', 'left_turn', 'other']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'other']
+    # metrics = ['acc', 'dec', 'right_turn', 'left_turn', 'groom', 'other']
 
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
     animals = D1_animals + D2_animals
 
-    fig, ax = plt.subplots(figsize=(5, 5))
+    fig, ax = plt.subplots(figsize=(6, 5))
     x = 0
     for metric in metrics:
         x = x + 2
@@ -29,7 +29,8 @@ def timespent_vehicle():
             for animal in animals:
                 tempdata[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric][0] * 100
                                                for d in alldata.keys()
-                                               if animal in alldata[d]['vehicle'][base].keys()])
+                                               if animal in alldata[d]['vehicle'][base].keys()
+                                               and alldata[d]['vehicle']['ctrl'][animal][metric][0] > (1. / 90.)])
             data = list(tempdata.values())
             mean = np.nanmean(data, axis=0)
             sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
@@ -40,8 +41,8 @@ def timespent_vehicle():
 
     plt.suptitle('percent time spent performing behaviors')
     plt.legend(['ctrl', 'amph'])
-    # x_default = [2.5, 6.5, 10.5, 14.5, 18.5, 22.5, 26.5]
-    x_default = [2.5, 6.5, 10.5, 14.5, 18.5]
+    x_default = [2.5, 6.5, 10.5, 14.5, 18.5, 22.5, 26.5, 30.5]
+    # x_default = [2.5, 6.5, 10.5, 14.5, 18.5, 22.5]
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
     plt.ylabel('percent time of full trial duration (%)')
@@ -55,14 +56,14 @@ def timespent_drugs():
 
     drugs = ['haloperidol', 'olanzapine', 'clozapine',  'mp10']
     bases = ['ctrl', 'amph']
-    # metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'other']
-    metrics = ['acc', 'dec', 'right_turn', 'left_turn', 'other']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'other']
+    # metrics = ['acc', 'dec', 'right_turn', 'left_turn', 'groom', 'other']
 
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
     animals = D1_animals + D2_animals
 
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(12, 5))
 
     x = 0
     for metric in metrics:
@@ -74,15 +75,15 @@ def timespent_drugs():
                                              / alldata[d]['vehicle']['ctrl'][animal][metric][0])) * 100.
                                            for d in alldata.keys()
                                            if animal in alldata[d]['vehicle']['ctrl'].keys()
-                                           and alldata[d]['vehicle']['ctrl'][animal][metric][0] > (2. / 90.)])
+                                           and alldata[d]['vehicle']['ctrl'][animal][metric][0] > (1. / 90.)])
 
         data = list(tempdata.values())
         mean = np.nanmean(data, axis=0)
         sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
         if metric == 'acc':
-            ax.bar(x, mean, yerr=sem, width=1, color='k', alpha=0.5, label='amph')
+            ax.bar(x, mean, yerr=sem, width=1, color='k', label='amph')
         else:
-            ax.bar(x, mean, yerr=sem, width=1, color='k', alpha=0.5)
+            ax.bar(x, mean, yerr=sem, width=1, color='k')
         # ax.plot([x] * len(data), data, 'k.')
         x = x + 1.5
 
@@ -95,7 +96,7 @@ def timespent_drugs():
                           / alldata[drug]['vehicle']['ctrl'][a][metric][0])) * 100.
                         for a in alldata[drug]['highdose'][base].keys()
                         if a in alldata[drug]['vehicle'][base].keys()
-                        and alldata[drug]['vehicle']['ctrl'][a][metric][0] > (2./90.)]
+                        and alldata[drug]['vehicle']['ctrl'][a][metric][0] > (1. / 90.)]
                 mean = np.nanmean(data, axis=0)
                 sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
                 if metric == 'acc':
@@ -107,9 +108,9 @@ def timespent_drugs():
                 a = a + 0.5
 
     plt.axhspan(0, 100, alpha=0.2, color='k', zorder=0)
-    plt.axhline(y=100, color='k', alpha=0.2, linestyle=':')
+    # plt.axhline(y=100, color='k', alpha=0.2, linestyle=':')
     plt.suptitle('fraction of time spent compared to veh-ctrl')
-    x_default = [8, 21.5, 35, 48.5, 62, 75.5, 89]
+    x_default = [8, 21.5, 35, 48.5, 62, 75.5, 89, 102.5]
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
     plt.ylabel('percent change (%)')
@@ -125,8 +126,8 @@ def eventrate_vehicle(spn):
     # doses = ['vehicle', 'highdose']
     # drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
     bases = ['ctrl', 'amph']
-    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'other']
-    # metrics = ['acc', 'dec', 'right_turn', 'left_turn', 'other']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'other']
+    # metrics = ['acc', 'dec', 'right_turn', 'left_turn', 'groom', 'other']
 
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
@@ -137,7 +138,7 @@ def eventrate_vehicle(spn):
     elif spn == 'D2':
         animals = D2_animals
 
-    fig, ax = plt.subplots(figsize=(5, 5))
+    fig, ax = plt.subplots(figsize=(6, 5))
     x = 0
     for metric in metrics:
         x = x + 2
@@ -147,8 +148,8 @@ def eventrate_vehicle(spn):
             for animal in animals:
                 tempdata[animal] = np.nanmean([(alldata[d]['vehicle'][base][animal][metric][1])
                                                for d in alldata.keys()
-                                               if animal in alldata[d]['vehicle']['ctrl'].keys()])
-                                               # and alldata[d]['vehicle']['ctrl'][animal][metric][1] > (1. / 90.)])
+                                               if animal in alldata[d]['vehicle']['ctrl'].keys()
+                                               and alldata[d]['vehicle']['ctrl'][animal][metric][1] > (1. / 90.)])
             data = list(tempdata.values())
             mean = np.nanmean(data, axis=0)
             sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
@@ -159,11 +160,11 @@ def eventrate_vehicle(spn):
 
     plt.suptitle(str(spn) + ' SPN event rate during performing behaviors')
     plt.legend(['ctrl', 'amph'])
-    x_default = [2.5, 6.5, 10.5, 14.5, 18.5, 22.5, 26.5]
-    # x_default = [2.5, 6.5, 10.5, 14.5, 18.5]
+    x_default = [2.5, 6.5, 10.5, 14.5, 18.5, 22.5, 26.5, 30.5]
+    # x_default = [2.5, 6.5, 10.5, 14.5, 18.5, 22.5]
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
-    plt.ylabel('event rate (event/s)')
+    plt.ylabel('change in event rate compared to control')
     # plt.ylim((0, 0.07))
     plt.show()
 
@@ -174,8 +175,8 @@ def eventrate_drugs(spn):
 
     drugs = ['haloperidol', 'olanzapine', 'clozapine',  'mp10']
     bases = ['ctrl', 'amph']
-    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'other']
-    # metrics = ['acc', 'dec', 'right_turn', 'left_turn', 'other']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'other']
+    # metrics = ['acc', 'dec', 'right_turn', 'left_turn', 'groom', 'other']
 
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
@@ -186,7 +187,7 @@ def eventrate_drugs(spn):
     elif spn == 'D2':
         animals = D2_animals
 
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(12, 5))
     x = 0
     for metric in metrics:
         x = x + 2
@@ -204,9 +205,9 @@ def eventrate_drugs(spn):
         mean = np.nanmean(data, axis=0)
         sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
         if metric == 'acc':
-            ax.bar(x, mean, yerr=sem, width=1, color='k', alpha=0.5, label='amph')
+            ax.bar(x, mean, yerr=sem, width=1, color='k', label='amph')
         else:
-            ax.bar(x, mean, yerr=sem, width=1, color='k', alpha=0.5)
+            ax.bar(x, mean, yerr=sem, width=1, color='k')
         # ax.plot([x]*len(data), data, 'k.')
         x = x + 1.5
 
@@ -224,6 +225,9 @@ def eventrate_drugs(spn):
                         and animal in alldata[drug]['highdose'][base].keys()
                         and alldata[drug]['vehicle']['ctrl'][animal][metric][0] > (1. / 90.)]
 
+                # data = [i for i in range(0, len(data)) if (np.nanmean(data, axis=0) - np.nanstd(data, axis=0) * 5) < i < (np.nanmean(data, axis=0) + np.nanstd(data, axis=0) * 5)]
+                # pdb.set_trace()
+
                 mean = np.nanmean(data, axis=0)
                 sem = np.nanstd(data, axis=0) / np.sqrt(len(data))
                 if metric == 'acc':
@@ -237,10 +241,10 @@ def eventrate_drugs(spn):
     plt.axhspan(0, 1, alpha=0.2, color='k', zorder=0)
     # plt.axhline(y=1, color='k', alpha=0.2, linestyle=':')
     plt.suptitle(str(spn) + ' SPN event rate during performing behaviors')
-    x_default = [8, 21.5, 35, 48.5, 62, 75.5, 89]
+    x_default = [8, 21.5, 35, 48.5, 62, 75.5, 89, 102.5]
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
-    plt.ylabel('event rate (event/s)')
+    plt.ylabel('change in event rate compared to control')
     # plt.ylim((0, 0.07))
     plt.legend()
     plt.show()
@@ -253,7 +257,7 @@ def eventrates(spn):
     drugs = ['haloperidol', 'clozapine', 'olanzapine', 'mp10']
     doses = ['vehicle', 'highdose']
     bases = ['ctrl', 'amph']
-    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'grooming', 'other']
 
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
@@ -295,7 +299,7 @@ def eventrates(spn):
 
     plt.suptitle(str(spn) + ' SPN event rate during performing behaviors')
     plt.legend(['ctrl', 'amph', 'haloperidol', 'clozapine', 'olanzapine', 'mp10'])
-    x_default = [2.5, 12.5, 22.5, 32.5, 42.5, 52.5]
+    x_default = [2.5, 12.5, 22.5, 32.5, 42.5, 52.5, 62.5, 72.5]
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
     plt.ylabel('event rate (event/s)')

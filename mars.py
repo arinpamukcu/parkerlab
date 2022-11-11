@@ -68,16 +68,16 @@ def get_mars_features(drug, dose, experiment):
         # if feature_names[ft] == 'm0_top_acceleration_head':
         #     mars_acc_ctrl = features_ctrl[:, ft]
         #     mars_acc_amph = features_amph[:, ft]
-
+        #
         # if feature_names[ft] == 'top_m0_angle_to_center':
-        #     mars_center_angle_ctrl = features_ctrl[:, ft]
-        #     mars_center_angle_amph = features_amph[:, ft]
+        #     mars_angle_center_ctrl = features_ctrl[:, ft]
+        #     mars_angle_center_amph = features_amph[:, ft]
 
         if feature_names[ft] == 'top_m0_angle_nose_neck_tail':
-            mars_turn_ctrl = np.sin(features_ctrl[:, ft]) * 180
-            mars_turn_amph = np.sin(features_amph[:, ft]) * 180
+            mars_angle_nnt_ctrl = np.sin(features_ctrl[:, ft]) * 180
+            mars_angle_nnt_amph = np.sin(features_amph[:, ft]) * 180
 
-    return mars_turn_ctrl, mars_turn_amph
+    return mars_angle_nnt_ctrl, mars_angle_nnt_amph
 
 
 def get_classifiers(drug, dose, experiment, behavior):
@@ -94,19 +94,21 @@ def get_classifiers(drug, dose, experiment, behavior):
     annot_dict_amph = annotation_parsers.parse_annot(annot_dir_amph)
 
     beh_bouts_ctrl = np.zeros((annot_dict_ctrl['behs_bout']['predicted_behaviors']['other'][0][1]))
-    for bout in range(0, len(annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior])):
-        startframe = annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior][bout][0]
-        endframe = annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior][bout][1]
-        beh_bouts_ctrl[startframe:endframe + 1] = 1
+    if behavior in annot_dict_ctrl['behs_bout']['predicted_behaviors'].keys():
+        for bout in range(0, len(annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior])):
+            startframe = annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior][bout][0]
+            endframe = annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior][bout][1]
+            beh_bouts_ctrl[startframe:endframe + 1] = 1
 
     beh_bouts_ctrl_ = np.nan_to_num(beh_bouts_ctrl[12000:30000])
     behavior_ctrl = beh_bouts_ctrl_[::4]
 
     beh_bout_amph = np.zeros((annot_dict_amph['behs_bout']['predicted_behaviors']['other'][0][1]))
-    for bout in range(0, len(annot_dict_amph['behs_bout']['predicted_behaviors'][behavior])):
-        startframe = annot_dict_amph['behs_bout']['predicted_behaviors'][behavior][bout][0]
-        endframe = annot_dict_amph['behs_bout']['predicted_behaviors'][behavior][bout][1]
-        beh_bout_amph[startframe:endframe + 1] = 1
+    if behavior in annot_dict_amph['behs_bout']['predicted_behaviors'].keys():
+        for bout in range(0, len(annot_dict_amph['behs_bout']['predicted_behaviors'][behavior])):
+            startframe = annot_dict_amph['behs_bout']['predicted_behaviors'][behavior][bout][0]
+            endframe = annot_dict_amph['behs_bout']['predicted_behaviors'][behavior][bout][1]
+            beh_bout_amph[startframe:endframe + 1] = 1
 
     beh_bouts_amph_ = np.nan_to_num(beh_bout_amph[12000:66000])
     behavior_amph = beh_bouts_amph_[::4]

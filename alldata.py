@@ -77,9 +77,9 @@ def get_turns(turn_data, eventmean_data):
 def get_behavior(speed_data, turn_data, groom_data, eventmean_data):
 
     acc_events, dec_events, rest_events, move_events, right_events, left_events, groom_events, other_events \
-        = ([] for i in range(7))
+        = ([] for i in range(8))
     acc_duration, dec_duration, rest_duration, move_duration, right_duration, left_duration, groom_duration, other_duration \
-        = (0 for i in range(7))
+        = (0 for i in range(8))
 
     speed_dt = speed_data[1:] - speed_data[:-1]
     turn_dt = turn_data[1:] - turn_data[:-1]
@@ -130,15 +130,16 @@ def get_metrics(drug, dose):
     data_amph = {}
 
     for experiment, animal in zip(experiments, animals):
+        print(experiment)
         data_ctrl[animal] = {}
         data_amph[animal] = {}
 
-        print(experiment)
+        # print(experiment)
 
         # get values for speed or turn
         speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph \
             = get_ca_data(drug, dose, experiment)
-        turn_angle_ctrl, turn_angle_amph \
+        turn_ctrl, turn_amph \
             = get_mars_features(drug, dose, experiment)
         grooming_ctrl, grooming_amph \
             = get_classifiers(drug, dose, experiment, 'grooming')
@@ -149,14 +150,14 @@ def get_metrics(drug, dose):
         # right_turn_ctrl, left_turn_ctrl = get_turns(turn_angle_ctrl, eventmean_ctrl)
         # right_turn_amph, left_turn_amph = get_turns(turn_angle_amph, eventmean_amph)
         acc_ctrl, dec_ctrl, rest_ctrl, move_ctrl, right_turn_ctrl, left_turn_ctrl, groom_ctrl, other_ctrl \
-            = get_behavior(speed_ctrl, turn_angle_ctrl, grooming_ctrl, eventmean_ctrl)
+            = get_behavior(speed_ctrl, turn_ctrl, grooming_ctrl, eventmean_ctrl)
         acc_amph, dec_amph, rest_amph, move_amph, right_turn_amph, left_turn_amph, groom_amph, other_amph \
-            = get_behavior(speed_amph, turn_angle_amph, grooming_amph, eventmean_amph)
+            = get_behavior(speed_amph, turn_amph, grooming_amph, eventmean_amph)
 
         # append values for each animal to a list
         data_ctrl[animal]['eventrate'] = eventmean_ctrl
         data_ctrl[animal]['speed'] = speed_ctrl
-        data_ctrl[animal]['turn'] = turn_angle_ctrl
+        data_ctrl[animal]['turn'] = turn_ctrl
         data_ctrl[animal]['acc'] = acc_ctrl
         data_ctrl[animal]['dec'] = dec_ctrl
         data_ctrl[animal]['rest'] = rest_ctrl
@@ -168,7 +169,7 @@ def get_metrics(drug, dose):
 
         data_amph[animal]['eventrate'] = eventmean_amph
         data_amph[animal]['speed'] = speed_amph
-        data_amph[animal]['turn'] = turn_angle_amph
+        data_amph[animal]['turn'] = turn_amph
         data_amph[animal]['acc'] = acc_amph
         data_amph[animal]['dec'] = dec_amph
         data_amph[animal]['rest'] = rest_amph
@@ -184,8 +185,8 @@ def get_metrics(drug, dose):
 def get_alldata():
 
     drugs = ['clozapine', 'haloperidol', 'mp10', 'olanzapine']
-    doses = ['vehicle', 'lowdose', 'highdose']
-    # doses = ['vehicle', 'highdose']
+    # doses = ['vehicle', 'lowdose', 'highdose']
+    doses = ['vehicle', 'highdose']
 
     alldata = {}
     for drug in drugs:
@@ -199,8 +200,6 @@ def get_alldata():
             _, animals, _, _ = get_animal_id(drug, dose)
             alldata[drug][dose]['ctrl'] = data_ctrl
             alldata[drug][dose]['amph'] = data_amph
-
-    # pdb.set_trace()
 
     pkl.dump(alldata, open("alldata.pkl", "wb"))
     savemat("alldata.mat", alldata)
