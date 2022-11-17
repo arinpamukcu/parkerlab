@@ -142,7 +142,7 @@ def get_metrics(drug, dose):
         turn_ctrl, turn_amph \
             = get_mars_features(drug, dose, experiment)
         grooming_ctrl, grooming_amph \
-            = get_classifiers(drug, dose, experiment, 'grooming')
+            = get_classifier(drug, dose, experiment, 'grooming')
 
         # # get values for each animal for that drug & dose
         # acc_ctrl, dec_ctrl, rest_ctrl, move_ctrl = get_speed(speed_ctrl, eventmean_ctrl)

@@ -80,7 +80,7 @@ def get_mars_features(drug, dose, experiment):
     return mars_angle_nnt_ctrl, mars_angle_nnt_amph
 
 
-def get_classifiers(drug, dose, experiment, behavior):
+def get_classifier(drug, dose, experiment, behavior):
 
     mars_dir_ctrl, mars_dir_amph = get_mars_dirs(drug, dose, experiment)
 
@@ -100,8 +100,8 @@ def get_classifiers(drug, dose, experiment, behavior):
             endframe = annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior][bout][1]
             beh_bouts_ctrl[startframe:endframe + 1] = 1
 
-    beh_bouts_ctrl_ = np.nan_to_num(beh_bouts_ctrl[12000:30000])
-    behavior_ctrl = beh_bouts_ctrl_[::4]
+    beh_bouts_ctrl_ = np.nan_to_num(beh_bouts_ctrl[12000:30000])  # remove first 10 mins
+    behavior_ctrl = beh_bouts_ctrl_[::4]  # downsample
 
     beh_bout_amph = np.zeros((annot_dict_amph['behs_bout']['predicted_behaviors']['other'][0][1]))
     if behavior in annot_dict_amph['behs_bout']['predicted_behaviors'].keys():
@@ -110,8 +110,10 @@ def get_classifiers(drug, dose, experiment, behavior):
             endframe = annot_dict_amph['behs_bout']['predicted_behaviors'][behavior][bout][1]
             beh_bout_amph[startframe:endframe + 1] = 1
 
-    beh_bouts_amph_ = np.nan_to_num(beh_bout_amph[12000:66000])
+    beh_bouts_amph_ = np.nan_to_num(beh_bout_amph[12000:66000])  # remove first 10 mins
     behavior_amph = beh_bouts_amph_[::4]
+
+    # pdb.set_trace()
 
     return behavior_ctrl, behavior_amph
 
