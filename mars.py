@@ -1,4 +1,4 @@
-# Created by Arin Pamukcu, PhD on August 2022
+# Created by Arin Pamukcu, PhD on August 2022 in Chicago, IL
 
 import os
 import numpy as np
@@ -32,12 +32,15 @@ def get_mars_data(drug, dose, experiment):
 
     mars_dir_ctrl, mars_dir_amph = get_mars_dirs(drug, dose, experiment)
 
+    # get file name
     mars_ctrl_feat = experiment + '_custom_feat_top_v1_8.npz'
     mars_amph_feat = experiment + '_amph_custom_feat_top_v1_8.npz'
 
+    # get directory path
     mars_ctrl_file = os.path.join(mars_dir_ctrl, mars_ctrl_feat)
     mars_amph_file = os.path.join(mars_dir_amph, mars_amph_feat)
 
+    # get data using directory path
     mars_ctrl = np.load(mars_ctrl_file)
     mars_amph = np.load(mars_amph_file)
 
@@ -47,9 +50,11 @@ def get_mars_data(drug, dose, experiment):
     features_ctrl_all = mars_ctrl['data_smooth'][0]
     features_amph_all = mars_amph['data_smooth'][0]
 
-    # downsample
+    # reshape (remove first 10 mins)
     features_ctrl_some = np.nan_to_num(features_ctrl_all[12000:30000, :])
     features_amph_some = np.nan_to_num(features_amph_all[12000:66000, :])
+
+    # downsample (from 20Hz to 5Hz)
     features_ctrl = features_ctrl_some[::4, :]
     features_amph = features_amph_some[::4, :]
 
@@ -93,6 +98,7 @@ def get_classifier(drug, dose, experiment, behavior):
     annot_dict_ctrl = annotation_parsers.parse_annot(annot_dir_ctrl)
     annot_dict_amph = annotation_parsers.parse_annot(annot_dir_amph)
 
+    # get behavior from predicted annotations for ctrl
     beh_bouts_ctrl = np.zeros((annot_dict_ctrl['behs_bout']['predicted_behaviors']['other'][0][1]))
     if behavior in annot_dict_ctrl['behs_bout']['predicted_behaviors'].keys():
         for bout in range(0, len(annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior])):
@@ -100,9 +106,7 @@ def get_classifier(drug, dose, experiment, behavior):
             endframe = annot_dict_ctrl['behs_bout']['predicted_behaviors'][behavior][bout][1]
             beh_bouts_ctrl[startframe:endframe + 1] = 1
 
-    beh_bouts_ctrl_ = np.nan_to_num(beh_bouts_ctrl[12000:30000])  # remove first 10 mins
-    behavior_ctrl = beh_bouts_ctrl_[::4]  # downsample
-
+    # get behavior from predicted annotations for amph
     beh_bout_amph = np.zeros((annot_dict_amph['behs_bout']['predicted_behaviors']['other'][0][1]))
     if behavior in annot_dict_amph['behs_bout']['predicted_behaviors'].keys():
         for bout in range(0, len(annot_dict_amph['behs_bout']['predicted_behaviors'][behavior])):
@@ -110,7 +114,12 @@ def get_classifier(drug, dose, experiment, behavior):
             endframe = annot_dict_amph['behs_bout']['predicted_behaviors'][behavior][bout][1]
             beh_bout_amph[startframe:endframe + 1] = 1
 
-    beh_bouts_amph_ = np.nan_to_num(beh_bout_amph[12000:66000])  # remove first 10 mins
+    # reshape (remove first 10 mins)
+    beh_bouts_ctrl_ = np.nan_to_num(beh_bouts_ctrl[12000:30000])
+    beh_bouts_amph_ = np.nan_to_num(beh_bout_amph[12000:66000])
+
+    # downsample (from 20Hz to 5Hz)
+    behavior_ctrl = beh_bouts_ctrl_[::4]
     behavior_amph = beh_bouts_amph_[::4]
 
     # pdb.set_trace()

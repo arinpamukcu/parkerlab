@@ -31,6 +31,7 @@ def timespent_vehicle():
                                                for d in alldata.keys()
                                                if animal in alldata[d]['vehicle'][base].keys()
                                                and alldata[d]['vehicle']['ctrl'][animal][metric][0] > (1. / 180.)])
+
             data = list(tempdata.values())
             mean = np.nanmean(data)
             sem = np.nanstd(data) / np.sqrt(len(data))
@@ -87,7 +88,8 @@ def timespent_drugs(base):
         # ax.plot([x] * len(data), data, 'k.')
         x = x + 1.5
 
-        colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
+        # colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
+        colors = ['red', 'teal', 'blue', 'limegreen']
         for drug, color in zip(drugs, colors):
             a = (0.5 if base == 'ctrl' else 1)
             x = x + 0.5
@@ -97,6 +99,7 @@ def timespent_drugs(base):
                     for a in alldata[drug]['highdose'][base].keys()
                     if a in alldata[drug]['vehicle'][base].keys()
                     and alldata[drug]['vehicle']['ctrl'][a][metric][0] > (1. / 180.)]
+
             mean = np.nanmean(data)
             sem = np.nanstd(data) / np.sqrt(len(data))
             if metric == 'acc':
@@ -152,12 +155,14 @@ def eventrate_vehicle(spn):
                                                for d in alldata.keys()
                                                if animal in alldata[d]['vehicle']['ctrl'].keys()
                                                and alldata[d]['vehicle']['ctrl'][animal][metric][0] > (1. / 180.)])
-            pdb.set_trace()
 
             data = list(tempdata.values())
             mean = np.nanmean(data)
             sem = np.nanstd(data) / np.sqrt(len(data))
-            ax.bar(x, mean, yerr=sem, width=1, color='k', alpha=a)
+            if base == ' ctrl':
+                ax.bar(x, mean, yerr=sem, width=1, color='k', alpha=a)
+            else:
+                ax.bar(x, mean, yerr=sem, width=1, color='fuchsia', alpha=a)
             # ax.plot([x] * len(data), data, 'k.')
             x = x + 1
             a = a + 0.5
@@ -208,13 +213,14 @@ def eventrate_drugs(spn, base):
         mean = np.nanmean(data)
         sem = np.nanstd(data) / np.sqrt(len(data))
         if metric == 'acc':
-            ax.bar(x, mean, yerr=sem, width=1, alpha=1, color='k', label='amph')
+            ax.bar(x, mean, yerr=sem, width=1, alpha=1, color='fuchsia', label='amph')
         else:
-            ax.bar(x, mean, yerr=sem, width=1, alpha=1, color='k')
+            ax.bar(x, mean, yerr=sem, width=1, alpha=1, color='fuchsia')
         # ax.plot([x]*len(data), data, 'k.')
         x = x + 1.5
 
-        colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
+        # colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
+        colors = ['red', 'teal', 'blue', 'limegreen']
         for drug, color in zip(drugs, colors):
             a = (0.5 if base == 'ctrl' else 1)
             x = x + 0.5
@@ -286,7 +292,8 @@ def eventrates(spn):
                     ax.bar(x, mean, yerr=sem, width=1, color=color)
                     x = x + 1
             else:
-                colors = ['royalblue', 'orangered', 'forestgreen', 'darkviolet']
+                # colors = ['royalblue', 'orangered', 'forestgreen', 'darkviolet']
+                colors = ['red', 'teal', 'blue', 'limegreen']
                 for drug, color in zip(drugs, colors):
                     x = x + 0.5
                     data = [alldata[drug][dose]['amph'][s][metric][1]

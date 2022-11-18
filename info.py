@@ -1,10 +1,11 @@
-# Created by Arin Pamukcu, PhD on August 2022
+# Created by Arin Pamukcu, PhD on August 2022 in Chicago, IL
 
 import os
 
 # path
 calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_JP' #pc
 # calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_JP' #mac
+
 
 def get_drug():
 
@@ -15,6 +16,7 @@ def get_drug():
         drugs.append(drug)
 
     return drugs
+
 
 def get_dose(drug):
 
@@ -28,14 +30,16 @@ def get_dose(drug):
 
     return doses
 
+
 def D1_D2_names():
 
     D1_animals = ['m085', 'm040', 'm298', 'm404', 'f487', 'f694', 'f857', 'f859', 'm794', 'm797', 'm795',
-                  'm659', 'm973', 'm974', 'm975', 'f976', 'f977', 'f979']
+                  'm659', 'm973', 'm974', 'm975', 'f976', 'f977', 'f979']  # count: 18 animals
     D2_animals = ['m971', 'm972', 'm106', 'm120', 'm377', 'm380', 'f414', 'f480', 'm483', 'm485',
-                  'm241', 'm242', 'm523', 'f605', 'f808', 'f811', 'f840']
+                  'm241', 'm242', 'm523', 'f605', 'f808', 'f811', 'f840']  # count: 17 animals
 
     return D1_animals, D2_animals
+
 
 def get_animal_id(drug, dose):
 
