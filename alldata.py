@@ -184,7 +184,7 @@ def get_metrics(drug, dose):
 
 def get_alldata():
 
-    drugs = ['clozapine', 'haloperidol', 'mp10', 'olanzapine']
+    drugs = ['haloperidol', 'olanzapine', 'clozapine',  'mp10']
     # doses = ['vehicle', 'lowdose', 'highdose']
     doses = ['vehicle', 'highdose']
 

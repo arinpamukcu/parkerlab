@@ -82,6 +82,8 @@ def get_mars_features(drug, dose, experiment):
             mars_angle_nnt_ctrl = np.sin(features_ctrl[:, ft]) * 180
             mars_angle_nnt_amph = np.sin(features_amph[:, ft]) * 180
 
+
+
     return mars_angle_nnt_ctrl, mars_angle_nnt_amph
 
 
