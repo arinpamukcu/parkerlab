@@ -59,21 +59,6 @@ def get_turns(turn_data, eventmean_data):
     return right_turn, left_turn
 
 
-# def get_rearing_grooming(annotated_data, eventmean_data):
-#
-#     behavior_events = []
-#     behavior_duration = 0
-#
-#     for fr in range(0, len(annotated_data)):
-#         if annotated_data == 1.:
-#             behavior_events.append(eventmean_data[fr])
-#             behavior_duration
-#
-#     behavior = [behavior_duration / len(annotated_data), np.sum(behavior_events) * 5 / behavior_duration]
-#
-#     return behavior
-
-
 def get_behavior(speed_data, turn_data, groom_data, rear_data, eventmean_data):
 
     acc_events, dec_events, rest_events, move_events, right_events, left_events, groom_events, rear_events, other_events \
@@ -150,11 +135,7 @@ def get_metrics(drug, dose):
         rearing_ctrl, rearing_amph \
             = get_classifier(drug, dose, experiment, 'rearing')
 
-        # # get values for each animal for that drug & dose
-        # acc_ctrl, dec_ctrl, rest_ctrl, move_ctrl = get_speed(speed_ctrl, eventmean_ctrl)
-        # acc_amph, dec_amph, rest_amph, move_amph = get_speed(speed_amph, eventmean_amph)
-        # right_turn_ctrl, left_turn_ctrl = get_turns(turn_angle_ctrl, eventmean_ctrl)
-        # right_turn_amph, left_turn_amph = get_turns(turn_angle_amph, eventmean_amph)
+        # get values for each animal for that drug & dose
         acc_ctrl, dec_ctrl, rest_ctrl, move_ctrl, right_turn_ctrl, left_turn_ctrl, groom_ctrl, rear_ctrl, other_ctrl \
             = get_behavior(speed_ctrl, turn_ctrl, grooming_ctrl, rearing_ctrl, eventmean_ctrl)
         acc_amph, dec_amph, rest_amph, move_amph, right_turn_amph, left_turn_amph, groom_amph, rear_amph, other_amph \
@@ -184,6 +165,7 @@ def get_metrics(drug, dose):
         data_amph[animal]['right_turn'] = right_turn_amph
         data_amph[animal]['left_turn'] = left_turn_amph
         data_amph[animal]['groom'] = groom_amph
+        data_amph[animal]['rear'] = rear_amph
         data_amph[animal]['other'] = other_amph
 
     return data_ctrl, data_amph
