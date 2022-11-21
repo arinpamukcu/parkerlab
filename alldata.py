@@ -77,9 +77,9 @@ def get_turns(turn_data, eventmean_data):
 def get_behavior(speed_data, turn_data, groom_data, rear_data, eventmean_data):
 
     acc_events, dec_events, rest_events, move_events, right_events, left_events, groom_events, rear_events, other_events \
-        = ([] for i in range(8))
+        = ([] for i in range(9))
     acc_duration, dec_duration, rest_duration, move_duration, right_duration, left_duration, groom_duration, rear_duration, other_duration \
-        = (0 for i in range(8))
+        = (0 for i in range(9))
 
     speed_dt = speed_data[1:] - speed_data[:-1]
     turn_dt = turn_data[1:] - turn_data[:-1]
