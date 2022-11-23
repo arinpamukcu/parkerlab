@@ -77,7 +77,8 @@ def get_behavior(speed_data, turn_data, groom_data, rear_data, eventmean_data):
             move_events.append(eventmean_data[fr])
             move_duration += 1
         if rear_data[fr] == 1:
-            rear_events.append(eventmean_data[fr])
+            # rear_events.append(eventmean_data[fr])
+            rear_events.append(np.mean(eventmean_data[fr-5:fr]))
             rear_duration += 1
         elif groom_data[fr] == 1:
             groom_events.append(eventmean_data[fr])

@@ -5,7 +5,7 @@ import numpy as np
 from scipy.io import loadmat
 
 #  path
-calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v3' #pc
+calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v2' #pc
 # calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_v2' #mac
 
 
