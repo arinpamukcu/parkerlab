@@ -91,7 +91,6 @@ def get_classifier(drug, dose, experiment, behavior):
 
     mars_dir_ctrl, mars_dir_amph = get_mars_dirs(drug, dose, experiment)
 
-
     annot_file_ctrl = experiment + '_top_actions_pred_' + behavior + '_v1_8.annot'
     annot_file_amph = experiment + '_amph_top_actions_pred_' + behavior + '_v1_8.annot'
 
