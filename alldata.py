@@ -42,7 +42,6 @@ def get_turns(turn_data, eventmean_data):
     right_events, left_events = ([] for i in range(2))
     right_duration, left_duration = (0 for i in range(2))
     turn_dt = turn_data[1:] - turn_data[:-1]
-    # TRY just right vs left turn, here or when plotting
 
     for fr in range(1, len(turn_data) - 1):
         if np.mean(turn_dt[fr - 1:fr + 1]) >= 30:  # turn right
@@ -61,10 +60,10 @@ def get_turns(turn_data, eventmean_data):
 
 def get_behavior(speed_data, turn_data, groom_data, rear_data, eventmean_data):
 
-    acc_events, dec_events, rest_events, move_events, right_events, left_events, groom_events, rear_events, \
-    other_rest_events, other_move_events = ([] for i in range(10))
-    acc_duration, dec_duration, rest_duration, move_duration, right_duration, left_duration, groom_duration, rear_duration, \
-    other_rest_duration, other_move_duration = (0 for i in range(10))
+    acc_events, dec_events, rest_events, move_events, right_events, left_events, \
+    groom_events, rear_events, other_rest_events, other_move_events = ([] for i in range(10))
+    acc_duration, dec_duration, rest_duration, move_duration, right_duration, left_duration, \
+    groom_duration, rear_duration, other_rest_duration, other_move_duration = (0 for i in range(10))
 
     speed_dt = speed_data[1:] - speed_data[:-1]
     turn_dt = turn_data[1:] - turn_data[:-1]
@@ -127,8 +126,6 @@ def get_metrics(drug, dose):
         data_ctrl[animal] = {}
         data_amph[animal] = {}
 
-        # print(experiment)
-
         # get values for speed or turn
         speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph \
             = get_ca_data(drug, dose, experiment)
@@ -140,9 +137,11 @@ def get_metrics(drug, dose):
             = get_classifier(drug, dose, experiment, 'rearing')
 
         # get values for each animal for that drug & dose
-        acc_ctrl, dec_ctrl, rest_ctrl, move_ctrl, right_turn_ctrl, left_turn_ctrl, groom_ctrl, rear_ctrl, other_rest_ctrl, other_move_ctrl \
+        acc_ctrl, dec_ctrl, rest_ctrl, move_ctrl, right_turn_ctrl, left_turn_ctrl, \
+        groom_ctrl, rear_ctrl, other_rest_ctrl, other_move_ctrl \
             = get_behavior(speed_ctrl, turn_ctrl, grooming_ctrl, rearing_ctrl, eventmean_ctrl)
-        acc_amph, dec_amph, rest_amph, move_amph, right_turn_amph, left_turn_amph, groom_amph, rear_amph, other_rest_amph, other_move_amph \
+        acc_amph, dec_amph, rest_amph, move_amph, right_turn_amph, left_turn_amph, \
+        groom_amph, rear_amph, other_rest_amph, other_move_amph \
             = get_behavior(speed_amph, turn_amph, grooming_amph, rearing_amph, eventmean_amph)
 
         # append values for each animal to a list

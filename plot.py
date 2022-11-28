@@ -161,7 +161,8 @@ def eventrate_vehicle(spn):
                 cutoff = cutoff_time / 2700.
 
             for animal in animals:
-                eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric][1] * alldata[d]['vehicle']['ctrl'][animal][metric][0] * 900.
+                eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric][1] *
+                                                    alldata[d]['vehicle']['ctrl'][animal][metric][0] * 900.
                                                     for d in alldata.keys()
                                                     if animal in alldata[d]['vehicle']['ctrl'].keys()])
                 eventtime_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric][0] * 900.
