@@ -26,10 +26,10 @@ def timespent_vehicle():
         tempdata = {}
         for base in bases:
             for animal in animals:
-                tempdata[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric][0] * 100
+                tempdata[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric]['time'] * 100
                                                for d in alldata.keys()
                                                if animal in alldata[d]['vehicle'][base].keys()
-                                               and alldata[d]['vehicle']['ctrl'][animal][metric][0] > (1. / 180.)])
+                                               and alldata[d]['vehicle']['ctrl'][animal][metric]['time'] > (1. / 180.)])
 
             data = list(tempdata.values())
             mean = np.nanmean(data)
@@ -67,16 +67,17 @@ def timespent_drugs(base):
 
     x = 0
     for metric in metrics:
-
-        x = x + 2
         tempdata = {}
         baseline = {}
+
+        x = x + 2
         for animal in animals:
-            baseline[animal] = np.nanmean([alldata[d]['vehicle']['ctrl'][animal][metric][0]
+
+            baseline[animal] = np.nanmean([alldata[d]['vehicle']['ctrl'][animal][metric]['time']
                                            for d in alldata.keys()
                                            if animal in alldata[d]['vehicle']['ctrl'].keys()])
             if baseline[animal] > 1. / 180.:
-                tempdata[animal] = np.nanmean([alldata[d]['vehicle']['amph'][animal][metric][0]
+                tempdata[animal] = np.nanmean([alldata[d]['vehicle']['amph'][animal][metric]['time']
                                                for d in alldata.keys()
                                                if animal in alldata[d]['vehicle']['ctrl'].keys()]) / baseline[animal] * 100.
 
@@ -93,14 +94,14 @@ def timespent_drugs(base):
         # colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
         colors = ['red', 'teal', 'blue', 'limegreen']
         for drug, color in zip(drugs, colors):
+
             # a = (0.5 if base == 'ctrl' else 1)
             x = x + 0.5
-            # for base in bases:
-            data = [((alldata[drug]['highdose'][base][a][metric][0]
-                      / alldata[drug]['vehicle']['ctrl'][a][metric][0])) * 100.
+            data = [((alldata[drug]['highdose'][base][a][metric]['time']
+                      / alldata[drug]['vehicle']['ctrl'][a][metric]['time'])) * 100.
                     for a in alldata[drug]['highdose'][base].keys()
                     if a in alldata[drug]['vehicle'][base].keys()
-                    and alldata[drug]['vehicle']['ctrl'][a][metric][0] > (1. / 180.)]
+                    and alldata[drug]['vehicle']['ctrl'][a][metric]['time'] > (1. / 180.)]
 
             mean = np.nanmean(data)
             sem = np.nanstd(data) / np.sqrt(len(data))
@@ -161,24 +162,24 @@ def eventrate_vehicle(spn):
                 cutoff = cutoff_time / 2700.
 
             for animal in animals:
-                eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric][1] *
-                                                    alldata[d]['vehicle']['ctrl'][animal][metric][0] * 900.
+                eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['rate'] *
+                                                    alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900.
                                                     for d in alldata.keys()
                                                     if animal in alldata[d]['vehicle']['ctrl'].keys()])
-                eventtime_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric][0] * 900.
+                eventtime_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900.
                                                     for d in alldata.keys()
                                                     if animal in alldata[d]['vehicle']['ctrl'].keys()])
-                eventtime_amph[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric][0] * 2700.
+                eventtime_amph[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric]['time'] * 2700.
                                                     for d in alldata.keys()
                                                     if animal in alldata[d]['vehicle']['amph'].keys()])
                 eventrate_ctrl[animal] = eventrate_ctrl[animal] / eventtime_ctrl[animal]
 
                 if (eventtime_ctrl[animal] > 20.) and (eventtime_amph[animal] > 20.):
-                    tempdata[animal] = np.nansum([alldata[d]['vehicle'][base][animal][metric][1] *
-                                                  alldata[d]['vehicle'][base][animal][metric][0] * (cutoff_time/cutoff)
+                    tempdata[animal] = np.nansum([alldata[d]['vehicle'][base][animal][metric]['rate'] *
+                                                  alldata[d]['vehicle'][base][animal][metric]['time'] * (cutoff_time/cutoff)
                                                   for d in alldata.keys()
                                                   if animal in alldata[d]['vehicle']['ctrl'].keys()
-                                                  and alldata[d]['vehicle'][base][animal][metric][0] > cutoff])
+                                                  and alldata[d]['vehicle'][base][animal][metric]['time'] > cutoff])
                     if base == 'ctrl':
                         tempdata[animal] = tempdata[animal] / eventtime_ctrl[animal]
                     elif base == 'amph':
@@ -242,24 +243,25 @@ def eventrate_drugs(spn, base):
             # [1] is population event rate (per sec)
             # [0] is event time (no of events per trial, 15 or 45 mins for ctrl or amph)
 
-            eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric][1] *
-                                                alldata[d]['vehicle']['ctrl'][animal][metric][0] * 900
+            eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['rate'] *
+                                                alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900
                                                 for d in alldata.keys()
                                                 if animal in alldata[d]['vehicle']['ctrl'].keys()])
-            eventtime_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric][0] * 900
+            eventtime_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900
                                                 for d in alldata.keys()
                                                 if animal in alldata[d]['vehicle']['ctrl'].keys()])
-            eventtime_amph[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric][0] * 2700
+            eventtime_amph[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric]['time'] * 2700
                                                 for d in alldata.keys()
                                                 if animal in alldata[d]['vehicle']['amph'].keys()])
             eventrate_ctrl[animal] = eventrate_ctrl[animal] / eventtime_ctrl[animal]
 
             if (eventtime_ctrl[animal] > 20.) and (eventtime_amph[animal] > 20.):
 
-                tempdata[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric][1] *
-                                              alldata[d]['vehicle']['amph'][animal][metric][0] * 2700
+                tempdata[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric]['rate'] *
+                                              alldata[d]['vehicle']['amph'][animal][metric]['time'] * 2700
                                               for d in alldata.keys()
-                                              if animal in alldata[d]['vehicle']['ctrl'].keys()])
+                                              if animal in alldata[d]['vehicle']['ctrl'].keys()
+                                              and alldata[d]['vehicle']['amph'][animal][metric]['time'] > (cutoff_time / 2700.)])
 
                 tempdata[animal] = (tempdata[animal] / (eventtime_amph[animal] * eventrate_ctrl[animal])) * 100
 
@@ -280,12 +282,12 @@ def eventrate_drugs(spn, base):
             x = x + 0.5
 
             # for base in bases:
-            data = [((alldata[drug]['highdose'][base][animal][metric][1] / eventrate_ctrl[animal]) * 100.)
+            data = [((alldata[drug]['highdose'][base][animal][metric]['rate'] / eventrate_ctrl[animal]) * 100.)
                     for animal in animals
                     if animal in alldata[drug]['vehicle'][base].keys()
                     and animal in alldata[drug]['highdose'][base].keys()
                     and eventtime_ctrl[animal] > 20.
-                    and alldata[drug]['highdose'][base][animal][metric][0] > cutoff]
+                    and alldata[drug]['highdose'][base][animal][metric]['time'] > cutoff]
 
             # mean = np.ma.masked_invalid(data).mean()
             # sem = np.ma.masked_invalid(data).std() / np.sqrt(len(data))

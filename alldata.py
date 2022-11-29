@@ -144,34 +144,46 @@ def get_metrics(drug, dose):
         groom_amph, rear_amph, other_rest_amph, other_move_amph \
             = get_behavior(speed_amph, turn_amph, grooming_amph, rearing_amph, eventmean_amph)
 
+        data_ctrl[animal]['acc'], data_ctrl[animal]['dec'], \
+        data_ctrl[animal]['rest'], data_ctrl[animal]['move'], \
+        data_ctrl[animal]['right_turn'], data_ctrl[animal]['left_turn'], \
+        data_ctrl[animal]['groom'], data_ctrl[animal]['rear'], \
+        data_ctrl[animal]['other_rest'], data_ctrl[animal]['other_move'] = ({} for i in range(10))
+
+        data_amph[animal]['acc'], data_amph[animal]['dec'], \
+        data_amph[animal]['rest'], data_amph[animal]['move'], \
+        data_amph[animal]['right_turn'], data_amph[animal]['left_turn'], \
+        data_amph[animal]['groom'], data_amph[animal]['rear'], \
+        data_amph[animal]['other_rest'], data_amph[animal]['other_move'] = ({} for i in range(10))
+
         # append values for each animal to a list
         data_ctrl[animal]['eventrate'] = eventmean_ctrl
         data_ctrl[animal]['speed'] = speed_ctrl
         data_ctrl[animal]['turn'] = turn_ctrl
-        data_ctrl[animal]['acc'] = acc_ctrl
-        data_ctrl[animal]['dec'] = dec_ctrl
-        data_ctrl[animal]['rest'] = rest_ctrl
-        data_ctrl[animal]['move'] = move_ctrl
-        data_ctrl[animal]['right_turn'] = right_turn_ctrl
-        data_ctrl[animal]['left_turn'] = left_turn_ctrl
-        data_ctrl[animal]['groom'] = groom_ctrl
-        data_ctrl[animal]['rear'] = rear_ctrl
-        data_ctrl[animal]['other_rest'] = other_rest_ctrl
-        data_ctrl[animal]['other_move'] = other_move_ctrl
+        data_ctrl[animal]['acc']['time'], data_ctrl[animal]['acc']['rate'] = acc_ctrl
+        data_ctrl[animal]['dec']['time'], data_ctrl[animal]['dec']['rate'] = dec_ctrl
+        data_ctrl[animal]['rest']['time'], data_ctrl[animal]['rest']['rate'] = rest_ctrl
+        data_ctrl[animal]['move']['time'], data_ctrl[animal]['move']['rate'] = move_ctrl
+        data_ctrl[animal]['right_turn']['time'], data_ctrl[animal]['right_turn']['rate'] = right_turn_ctrl
+        data_ctrl[animal]['left_turn']['time'], data_ctrl[animal]['left_turn']['rate'] = left_turn_ctrl
+        data_ctrl[animal]['groom']['time'], data_ctrl[animal]['groom']['rate'] = groom_ctrl
+        data_ctrl[animal]['rear']['time'], data_ctrl[animal]['rear']['rate'] = rear_ctrl
+        data_ctrl[animal]['other_rest']['time'], data_ctrl[animal]['other_rest']['rate'] = other_rest_ctrl
+        data_ctrl[animal]['other_move']['time'], data_ctrl[animal]['other_move']['rate'] = other_move_ctrl
 
         data_amph[animal]['eventrate'] = eventmean_amph
         data_amph[animal]['speed'] = speed_amph
         data_amph[animal]['turn'] = turn_amph
-        data_amph[animal]['acc'] = acc_amph
-        data_amph[animal]['dec'] = dec_amph
-        data_amph[animal]['rest'] = rest_amph
-        data_amph[animal]['move'] = move_amph
-        data_amph[animal]['right_turn'] = right_turn_amph
-        data_amph[animal]['left_turn'] = left_turn_amph
-        data_amph[animal]['groom'] = groom_amph
-        data_amph[animal]['rear'] = rear_amph
-        data_amph[animal]['other_rest'] = other_rest_amph
-        data_amph[animal]['other_move'] = other_move_amph
+        data_amph[animal]['acc']['time'], data_amph[animal]['acc']['rate'] = acc_amph
+        data_amph[animal]['dec']['time'], data_amph[animal]['dec']['rate'] = dec_amph
+        data_amph[animal]['rest']['time'], data_amph[animal]['rest']['rate'] = rest_amph
+        data_amph[animal]['move']['time'], data_amph[animal]['move']['rate'] = move_amph
+        data_amph[animal]['right_turn']['time'], data_amph[animal]['right_turn']['rate'] = right_turn_amph
+        data_amph[animal]['left_turn']['time'], data_amph[animal]['left_turn']['rate'] = left_turn_amph
+        data_amph[animal]['groom']['time'], data_amph[animal]['groom']['rate'] = groom_amph
+        data_amph[animal]['rear']['time'], data_amph[animal]['rear']['rate'] = rear_amph
+        data_amph[animal]['other_rest']['time'], data_amph[animal]['other_rest']['rate'] = other_rest_amph
+        data_amph[animal]['other_move']['time'], data_amph[animal]['other_move']['rate'] = other_move_amph
 
     return data_ctrl, data_amph
 
