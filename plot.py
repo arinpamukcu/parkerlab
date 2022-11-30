@@ -240,8 +240,6 @@ def eventrate_drugs(spn, base):
         eventtime_amph = {}
 
         for animal in animals:
-            # [1] is population event rate (per sec)
-            # [0] is event time (no of events per trial, 15 or 45 mins for ctrl or amph)
 
             eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['rate'] *
                                                 alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900
