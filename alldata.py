@@ -213,3 +213,55 @@ def get_alldata():
     return alldata
 
 
+def separate_spns(spn, eventdata):
+    # eventdata = ['time', 'rate']
+    drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
+    doses = ['vehicle', 'lowdose', 'highdose']
+    bases = ['ctrl', 'amph']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'rear', 'other_rest', 'other_move']
+
+    alldata = pkl.load(open("alldata.pkl", "rb"))
+    D1_animals, D2_animals = D1_D2_names()
+
+    animals = []
+    if spn == 'D1':
+        animals = D1_animals
+    elif spn == 'D2':
+        animals = D2_animals
+
+    data = {}
+
+    for drug in drugs:
+        data[drug] = {}
+
+        for dose in doses:
+            data[drug][dose] = {}
+
+            for base in bases:
+                data[drug][dose][base] = {}
+
+                # so rather than doing for mouse in mice:
+                # you would do for i, mouse in enumerate(mice): 
+                # and store the value into clozapine.vehicle.ctrl[i,j]
+
+                # for animal in animals:
+                #     data[drug][dose][base][animal] = {}
+                #
+                #     for metric in metrics:
+                #
+                #         if animal in alldata[drug][dose][base].keys():
+                #             data[drug][dose][base][animal][metric] = alldata[drug][dose][base][animal][metric][eventdata]
+                #
+                #         else:
+                #             data[drug][dose][base][animal][metric] = 'NaN'
+
+    filename = 'test' + '.mat'
+
+    savemat(filename, data)
+
+    return data
+
+
+
+
+
