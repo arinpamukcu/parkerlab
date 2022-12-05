@@ -55,25 +55,26 @@ def timespent():
                     else:
                         normtime[drug][base][animal][metric] = 'NaN'
 
-    savemat("normdata_timespent.mat", normtime)
+    pkl.dump(normtime, open("norm_timespent.pkl", "wb"))
+    savemat("norm_timespent.mat", normtime)
 
     return normtime
 
 
-def eventrate(spn):
+def eventrate():
     drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
     bases = ['ctrl', 'amph']
     metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'rear', 'other_rest', 'other_move']
 
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
-    # animals = D1_animals + D2_animals
+    animals = D1_animals + D2_animals
 
-    animals = []
-    if spn == 'D1':
-        animals = D1_animals
-    elif spn == 'D2':
-        animals = D2_animals
+    # animals = []
+    # if spn == 'D1':
+    #     animals = D1_animals
+    # elif spn == 'D2':
+    #     animals = D2_animals
 
     normrate = {}
     normrate['vehicle'] = {}
@@ -144,7 +145,58 @@ def eventrate(spn):
                         normrate[drug][base][animal][metric] = 'NaN'
             # pdb.set_trace()
 
-    filename = 'normdata_eventrate_' + spn + '.mat'
-    savemat(filename, normrate)
+
+    # filename = "norm_eventrate"
+    pkl.dump(normrate, open("norm_eventrate.pkl", "wb"))
+    savemat("norm_eventrate.mat", normrate)
 
     return normrate
+
+
+def separate_spns(spn, event):
+    # events = ['time', 'rate']
+    drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
+    # doses = ['vehicle', 'lowdose', 'highdose']
+    bases = ['ctrl', 'amph']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'rear', 'other_rest', 'other_move']
+
+    if event == 'time':
+        filename = "norm_timespent.pkl"
+    elif event == 'rate':
+        filename = "norm_eventrate.pkl"
+
+    normdata = pkl.load(open(filename, "rb"))
+    D1_animals, D2_animals = D1_D2_names()
+
+    animals = []
+    if spn == 'D1':
+        animals = D1_animals
+    elif spn == 'D2':
+        animals = D2_animals
+
+    data = {}
+
+    for drug in drugs:
+        data[drug] = {}
+
+        # for dose in doses:
+        #     data[drug][dose] = {}
+
+        for base in bases:
+            data[drug][base] = np.ndarray((len(metrics), len(animals)), dtype=object)
+
+            for i, metric in enumerate(metrics):
+
+                for j, animal in enumerate(animals):
+
+                    if animal in normdata[drug][base].keys():
+                        data[drug][base][i, j] = normdata[drug][base][animal][metric]
+
+                    else:
+                        data[drug][base][i, j] = 'NaN'
+
+    filename = 'norm_' + spn + '_' + event + '.mat'
+
+    savemat(filename, data)
+
+    return data
