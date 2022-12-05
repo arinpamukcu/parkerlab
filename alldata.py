@@ -213,8 +213,8 @@ def get_alldata():
     return alldata
 
 
-def separate_spns(spn, eventdata):
-    # eventdata = ['time', 'rate']
+def separate_spns(spn, event):
+    # events = ['time', 'rate']
     drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
     doses = ['vehicle', 'lowdose', 'highdose']
     bases = ['ctrl', 'amph']
@@ -240,7 +240,17 @@ def separate_spns(spn, eventdata):
             for base in bases:
                 data[drug][dose][base] = {}
 
-                # so rather than doing for mouse in mice:
+                for i, metric in enumerate(metrics):
+
+                    for j, animal in enumerate(animals):
+
+                        if animal in alldata[drug][dose][base].keys():
+                            data[drug][dose][base][i, j] = alldata[drug][dose][base][animal][metric][event]
+
+                        else:
+                            data[drug][dose][base][i, j] = 'NaN'
+
+                            # so rather than doing for mouse in mice:
                 # you would do for i, mouse in enumerate(mice): 
                 # and store the value into clozapine.vehicle.ctrl[i,j]
 
@@ -255,7 +265,7 @@ def separate_spns(spn, eventdata):
                 #         else:
                 #             data[drug][dose][base][animal][metric] = 'NaN'
 
-    filename = 'test' + '.mat'
+    filename = spn + '_' + event + '.mat'
 
     savemat(filename, data)
 
