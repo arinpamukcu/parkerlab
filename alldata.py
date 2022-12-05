@@ -238,7 +238,7 @@ def separate_spns(spn, event):
             data[drug][dose] = {}
 
             for base in bases:
-                data[drug][dose][base] = {}
+                data[drug][dose][base] = np.ndarray((len(metrics), len(animals)))
 
                 for i, metric in enumerate(metrics):
 
@@ -249,21 +249,6 @@ def separate_spns(spn, event):
 
                         else:
                             data[drug][dose][base][i, j] = 'NaN'
-
-                            # so rather than doing for mouse in mice:
-                # you would do for i, mouse in enumerate(mice): 
-                # and store the value into clozapine.vehicle.ctrl[i,j]
-
-                # for animal in animals:
-                #     data[drug][dose][base][animal] = {}
-                #
-                #     for metric in metrics:
-                #
-                #         if animal in alldata[drug][dose][base].keys():
-                #             data[drug][dose][base][animal][metric] = alldata[drug][dose][base][animal][metric][eventdata]
-                #
-                #         else:
-                #             data[drug][dose][base][animal][metric] = 'NaN'
 
     filename = spn + '_' + event + '.mat'
 
