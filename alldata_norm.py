@@ -155,9 +155,9 @@ def eventrate():
 
 def separate_spns(spn, event):
     # events = ['time', 'rate']
-    drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
+    drugs = ['vehicle', 'haloperidol', 'olanzapine', 'clozapine', 'mp10']
     # doses = ['vehicle', 'lowdose', 'highdose']
-    bases = ['ctrl', 'amph']
+    # bases = ['ctrl', 'amph']
     metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'rear', 'other_rest', 'other_move']
 
     if event == 'time':
@@ -179,8 +179,10 @@ def separate_spns(spn, event):
     for drug in drugs:
         data[drug] = {}
 
-        # for dose in doses:
-        #     data[drug][dose] = {}
+        if drug == 'vehicle':
+            bases = ['amph']
+        else:
+            bases = ['ctrl', 'amph']
 
         for base in bases:
             data[drug][base] = np.ndarray((len(metrics), len(animals)), dtype=object)
