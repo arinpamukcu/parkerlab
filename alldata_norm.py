@@ -82,7 +82,7 @@ def eventrate():
     for animal in animals:
         normrate['vehicle']['amph'][animal] = {}
 
-    cutoff_time = 5.
+    cutoff_time = 5.  # seconds
 
     eventrate_ctrl, eventtime_ctrl, eventtime_amph, tempdata = ({} for i in range(4))
 
