@@ -8,7 +8,7 @@ from scipy.io import savemat
 import pdb
 
 
-def timespent_vehicle():
+def eventtime_vehicle():
 
     # doses = ['vehicle', 'highdose']
     # drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
@@ -23,6 +23,7 @@ def timespent_vehicle():
     fig, ax = plt.subplots(figsize=(8, 4))
     x = 0
 
+    cutoff = 5.  # seconds
     timedata = {}
 
     for metric in metrics:
@@ -36,7 +37,7 @@ def timespent_vehicle():
                 tempdata[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric]['time'] * 100
                                                for d in alldata.keys()
                                                if animal in alldata[d]['vehicle'][base].keys()
-                                               and alldata[d]['vehicle']['ctrl'][animal][metric]['time'] > (1. / 180.)])
+                                               and alldata[d]['vehicle']['ctrl'][animal][metric]['time'] > (cutoff / 900.)])
                 timedata[metric][i, j] = tempdata[animal]
 
             data = list(tempdata.values())
@@ -64,7 +65,97 @@ def timespent_vehicle():
     return
 
 
-def timespent_drugs(base):
+def eventtime_drugs(setbase):
+
+    drugs = ['haloperidol', 'olanzapine', 'clozapine',  'mp10']
+    bases = ['ctrl', 'amph']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'rear', 'other_rest', 'other_move']
+
+    alldata = pkl.load(open("alldata.pkl", "rb"))
+    D1_animals, D2_animals = D1_D2_names()
+    animals = D1_animals + D2_animals
+
+    fig, ax = plt.subplots(figsize=(12, 4))
+
+    timedata = {}
+    cutoff = 5.  # seconds
+
+    x = 0
+    for metric in metrics:
+        tempdata = {}
+        timedata[metric] = np.ndarray((len(animals), len(drugs)+2), dtype=object)
+        timedata[metric].fill(np.NaN)
+
+        x = x + 2
+        for j, base in enumerate(bases):
+
+            for i, animal in enumerate(animals):
+
+                    tempdata[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric]['time'] * 100
+                                            for d in alldata.keys()
+                                            if animal in alldata[d]['vehicle'][base].keys()
+                                            and alldata[d]['vehicle']['ctrl'][animal][metric]['time'] > (cutoff / 900.)])
+
+                    timedata[metric][i, j] = tempdata[animal]
+
+            data = list(tempdata.values())
+            mean = np.nanmean(data)
+            sem = np.nanstd(data) / np.sqrt(len(data))
+            if (metric == 'acc') and (base == 'ctrl'):
+                ax.bar(x, mean, yerr=sem, width=1, color='gray', alpha=1, label='ctrl')
+            elif (metric == 'acc') and (base == 'amph'):
+                ax.bar(x, mean, yerr=sem, width=1, color='black', alpha=1, label='amph')
+            elif base == 'ctrl':
+                ax.bar(x, mean, yerr=sem, width=1, color='gray')
+            elif base == 'amph':
+                ax.bar(x, mean, yerr=sem, width=1, color='black', alpha=1)
+            x = x + 1.5
+            x = x + 1.5
+
+        colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
+        for drug, color in zip(drugs, colors):
+            x = x + 0.5
+            drugdata = {}
+
+            for i, animal in enumerate(animals):
+
+                if (animal in alldata[drug]['vehicle'][setbase].keys()) and (
+                        animal in alldata[drug]['highdose'][setbase].keys()) and (
+                        alldata[drug]['vehicle']['ctrl'][animal][metric]['time'] > (cutoff / 900.)):
+
+                    drugdata[animal] = [(alldata[drug]['highdose'][setbase][animal][metric]['time']) * 100]
+
+                    timedata[metric][i, drugs.index(drug)+2] = drugdata[animal]
+
+            data = list(drugdata.values())
+            mean = np.nanmean(data)
+            sem = np.nanstd(data) / np.sqrt(len(data))
+
+            if metric == 'acc':
+                ax.bar(x, mean, yerr=sem, width=1, color=color, alpha=1, label=drug + '-' + base)
+            else:
+                ax.bar(x, mean, yerr=sem, width=1, color=color, alpha=1)
+            # ax.plot([x]*len(data), data, 'k.')
+            x = x + 1
+
+    filename = "eventtime_drugs" + "_" + setbase + ".mat"
+    savemat(filename, timedata)
+
+    # plt.axhspan(0, 1, alpha=0.4, color='gray', zorder=0)
+    # plt.axhline(y=100, color='k', alpha=0.2, linestyle=':')
+    plt.suptitle('% time spent performing behavior')
+    x_default = [4.5, 15.5, 26.5, 37.5, 48.5, 59.5, 70.5, 81.5, 92.5, 103.5]
+    plt.xticks(x_default, metrics)
+    plt.xticks(fontsize=8)
+    plt.ylabel('% time spent performing behavior')
+    # plt.ylim((0, 1))
+    plt.legend()
+    plt.show()
+
+    return
+
+
+def normalized_eventtime(base):
 
     drugs = ['haloperidol', 'olanzapine', 'clozapine',  'mp10']
     # bases = ['ctrl', 'amph']
@@ -99,9 +190,6 @@ def timespent_drugs(base):
 
                 timedata[metric][i, 0] = tempdata[animal]
 
-            # else:
-            #     timedata[metric][j, 0] = 'NaN'
-
         data = list(tempdata.values())
         mean = np.nanmean(data)
         sem = np.nanstd(data) / np.sqrt(len(data))
@@ -113,8 +201,6 @@ def timespent_drugs(base):
         x = x + 1.5
 
         colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
-        # colors = ['red', 'teal', 'blue', 'limegreen']
-        counts = [2, 3, 4, 5]
         for drug, color in zip(drugs, colors):
             x = x + 0.5
             drugdata = {}
@@ -127,9 +213,6 @@ def timespent_drugs(base):
 
                     drugdata[animal] = [((alldata[drug]['highdose'][base][animal][metric]['time']
                               / alldata[drug]['vehicle']['ctrl'][animal][metric]['time']))]
-                            # for a in alldata[drug]['highdose'][base].keys()
-                            # if a in alldata[drug]['vehicle'][base].keys()
-                            # and alldata[drug]['vehicle']['ctrl'][a][metric]['time'] > (1. / 180.)]
 
                     timedata[metric][i, drugs.index(drug)+1] = drugdata[animal]
 
@@ -144,7 +227,7 @@ def timespent_drugs(base):
             # ax.plot([x]*len(data), data, 'k.')
             x = x + 1
 
-    filename = "eventtime_drugs" + "_" + base + ".mat"
+    filename = "normalized_eventtime_drugs" + "_" + base + ".mat"
     savemat(filename, timedata)
 
     plt.axhspan(0, 1, alpha=0.4, color='gray', zorder=0)
@@ -200,28 +283,29 @@ def eventrate_vehicle(spn):
                 cutoff = cutoff_time / 2700.
 
             for i, animal in enumerate(animals):
-                eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['rate'] *
-                                                    alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900.
-                                                    for d in alldata.keys()
-                                                    if animal in alldata[d]['vehicle']['ctrl'].keys()])
+                # eventrate_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['rate'] *
+                #                                     alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900.
+                #                                     for d in alldata.keys()
+                #                                     if animal in alldata[d]['vehicle']['ctrl'].keys()])
                 eventtime_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900.
                                                     for d in alldata.keys()
                                                     if animal in alldata[d]['vehicle']['ctrl'].keys()])
                 eventtime_amph[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric]['time'] * 2700.
                                                     for d in alldata.keys()
                                                     if animal in alldata[d]['vehicle']['amph'].keys()])
-                eventrate_ctrl[animal] = eventrate_ctrl[animal] / eventtime_ctrl[animal]
+                # eventrate_ctrl[animal] = eventrate_ctrl[animal] / eventtime_ctrl[animal]
 
-                if (eventtime_ctrl[animal] > 20.) and (eventtime_amph[animal] > 20.):
+                if (eventtime_ctrl[animal] > cutoff_time) and (eventtime_amph[animal] > cutoff_time):
                     tempdata[animal] = np.nansum([alldata[d]['vehicle'][base][animal][metric]['rate'] *
-                                                  alldata[d]['vehicle'][base][animal][metric]['time'] * (cutoff_time/cutoff)
+                                                  alldata[d]['vehicle'][base][animal][metric]['time'] *
+                                                  (cutoff_time/cutoff)
                                                   for d in alldata.keys()
                                                   if animal in alldata[d]['vehicle']['ctrl'].keys()
                                                   and alldata[d]['vehicle'][base][animal][metric]['time'] > cutoff])
                     if base == 'ctrl':
-                        tempdata[animal] = tempdata[animal] / eventtime_ctrl[animal]
+                        tempdata[animal] = tempdata[animal] / eventtime_ctrl[animal] * 60
                     elif base == 'amph':
-                        tempdata[animal] = tempdata[animal] / eventtime_amph[animal]
+                        tempdata[animal] = tempdata[animal] / eventtime_amph[animal] * 60
 
                     eventdata[metric][i, j] = tempdata[animal]
 
@@ -247,13 +331,129 @@ def eventrate_vehicle(spn):
     plt.xticks(x_default, metrics)
     plt.xticks(fontsize=8)
     plt.ylabel('event rate (events/s)')
-    plt.ylim((0, 0.05))
+    # plt.ylim((0, 0.05))
     plt.show()
 
     return
 
 
-def eventrate_drugs(spn, base):
+def eventrate_drugs(spn, setbase):
+
+    drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
+    bases = ['ctrl', 'amph']
+    metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'rear', 'other_rest', 'other_move']
+
+    alldata = pkl.load(open("alldata.pkl", "rb"))
+    D1_animals, D2_animals = D1_D2_names()
+
+    animals = []
+    if spn == 'D1':
+        animals = D1_animals
+    elif spn == 'D2':
+        animals = D2_animals
+
+    cutoff_time = 5.
+
+    fig, ax = plt.subplots(figsize=(12, 4))
+    eventdata = {}
+
+    x = 0
+    for metric in metrics:
+        x = x + 2
+
+        tempdata = {}
+        eventtime = {}
+        eventtime_ctrl = {}
+        eventtime_amph = {}
+
+        eventdata[metric] = np.ndarray((len(animals), len(drugs) + 2), dtype=object)
+        eventdata[metric].fill(np.NaN)
+
+        for j, base in enumerate(bases):
+            if base == 'ctrl':
+                cutoff = cutoff_time / 900.
+            else:
+                cutoff = cutoff_time / 2700.
+
+            for i, animal in enumerate(animals):
+
+                eventtime[animal] = np.nansum([alldata[d]['vehicle'][base][animal][metric]['time'] * (cutoff_time/cutoff)
+                                               for d in alldata.keys()
+                                               if animal in alldata[d]['vehicle']['ctrl'].keys()])
+                eventtime_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900
+                                                    for d in alldata.keys()
+                                                    if animal in alldata[d]['vehicle']['ctrl'].keys()])
+                eventtime_amph[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric]['time'] * 2700
+                                                    for d in alldata.keys()
+                                                    if animal in alldata[d]['vehicle']['amph'].keys()])
+
+                if (eventtime_ctrl[animal] > cutoff_time) and (eventtime_amph[animal] > cutoff_time):
+
+                    tempdata[animal] = np.nansum([alldata[d]['vehicle'][base][animal][metric]['rate'] *
+                                                  alldata[d]['vehicle'][base][animal][metric]['time'] *
+                                                  (cutoff_time / cutoff)
+                                                  for d in alldata.keys()
+                                                  if animal in alldata[d]['vehicle']['ctrl'].keys()
+                                                  and alldata[d]['vehicle']['amph'][animal][metric]['time'] > (cutoff_time / 2700.)])
+
+                    tempdata[animal] = tempdata[animal] / eventtime[animal] * 60
+
+                    eventdata[metric][i, j] = tempdata[animal]
+
+            data = list(tempdata.values())
+            mean = np.nanmean(data)
+            sem = np.nanstd(data) / np.sqrt(len(data))
+            if (metric == 'acc') and (base == 'ctrl'):
+                ax.bar(x, mean, yerr=sem, width=1, color='gray', alpha=1, label='ctrl')
+            elif (metric == 'acc') and (base == 'amph'):
+                ax.bar(x, mean, yerr=sem, width=1, color='black', alpha=1, label='amph')
+            elif base == 'ctrl':
+                ax.bar(x, mean, yerr=sem, width=1, color='gray')
+            elif base == 'amph':
+                ax.bar(x, mean, yerr=sem, width=1, color='black', alpha=1)
+            x = x + 1.5
+
+        colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
+        for drug, color in zip(drugs, colors):
+            x = x + 0.5
+            drugdata = {}
+
+            for i, animal in enumerate(animals):
+
+                if (animal in alldata[drug]['vehicle'][setbase].keys()) and (
+                        animal in alldata[drug]['highdose'][setbase].keys()) and (
+                        eventtime_ctrl[animal] > cutoff_time) and (
+                        alldata[drug]['highdose'][setbase][animal][metric]['time'] > cutoff):
+
+                    drugdata[animal] = (alldata[drug]['highdose'][setbase][animal][metric]['rate'] * 60)
+
+                    eventdata[metric][i, drugs.index(drug)+2] = drugdata[animal]
+
+            data = list(drugdata.values())
+            mean = np.nanmean(data)
+            sem = np.nanstd(data) / np.sqrt(len(data))
+
+            if metric == 'acc':
+                ax.bar(x, mean, yerr=sem, width=1, color=color, alpha=1, label=drug + '-' + setbase)
+            else:
+                ax.bar(x, mean, yerr=sem, width=1, color=color, alpha=1)
+            x = x + 1
+
+    filename = spn + "_eventrate_drugs" + "_" + setbase + ".mat"
+    savemat(filename, eventdata)
+
+    plt.suptitle(str(spn) + ' SPN event rate during performing behaviors')
+    x_default = [4.5, 15.5, 26.5, 37.5, 48.5, 59.5, 70.5, 81.5, 92.5, 103.5]
+    plt.xticks(x_default, metrics)
+    plt.xticks(fontsize=8)
+    plt.ylabel('% change in event rate from vehicle control')
+    plt.legend()
+    plt.show()
+
+    return
+
+
+def normalized_eventrate(spn, base):
 
     drugs = ['haloperidol', 'olanzapine', 'clozapine',  'mp10']
     # bases = ['ctrl', 'amph']
@@ -303,7 +503,7 @@ def eventrate_drugs(spn, base):
                                                 if animal in alldata[d]['vehicle']['amph'].keys()])
             eventrate_ctrl[animal] = eventrate_ctrl[animal] / eventtime_ctrl[animal]
 
-            if (eventtime_ctrl[animal] > 20.) and (eventtime_amph[animal] > 20.):
+            if (eventtime_ctrl[animal] > cutoff_time) and (eventtime_amph[animal] > cutoff_time):
 
                 tempdata[animal] = np.nansum([alldata[d]['vehicle']['amph'][animal][metric]['rate'] *
                                               alldata[d]['vehicle']['amph'][animal][metric]['time'] * 2700
@@ -327,7 +527,6 @@ def eventrate_drugs(spn, base):
         x = x + 1.5
 
         colors = ['orangered', 'royalblue', 'forestgreen', 'darkviolet']
-        # colors = ['red', 'teal', 'blue', 'limegreen']
         for drug, color in zip(drugs, colors):
             x = x + 0.5
             drugdata = {}
@@ -335,7 +534,7 @@ def eventrate_drugs(spn, base):
             for i, animal in enumerate(animals):
 
                 if (animal in alldata[drug]['vehicle'][base].keys()) and (
-                        animal in alldata[drug]['highdose'][base].keys()) and (eventtime_ctrl[animal] > 20.) and (
+                        animal in alldata[drug]['highdose'][base].keys()) and (eventtime_ctrl[animal] > cutoff_time) and (
                         alldata[drug]['highdose'][base][animal][metric]['time'] > cutoff):
 
                     drugdata[animal] = [((alldata[drug]['highdose'][base][animal][metric]['rate']
@@ -358,7 +557,7 @@ def eventrate_drugs(spn, base):
             # ax.plot([x] * len(data) + np.random.normal(0, 0.15, size=(len(data))), data, 'k.', markersize=3.5)
             x = x + 1
 
-    filename = spn + "_eventrate_drugs" + "_" + base + ".mat"
+    filename = "normalized_" + spn + "_eventrate_drugs" + "_" + base + ".mat"
     savemat(filename, eventdata)
 
     plt.axhspan(0, 1, alpha=0.4, color='gray', zorder=0)
