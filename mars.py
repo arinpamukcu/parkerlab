@@ -66,23 +66,21 @@ def get_mars_features(drug, dose, experiment):
     feature_count, feature_names, features_ctrl, features_amph = get_mars_data(drug, dose, experiment)
 
     for ft in range(0, feature_count):
-        # if feature_names[ft] == 'm0_top_speed':
-        #     mars_speed_ctrl = features_ctrl[:, ft]
-        #     mars_speed_amph = features_amph[:, ft]
-        #
-        # if feature_names[ft] == 'm0_top_acceleration_head':
-        #     mars_acc_ctrl = features_ctrl[:, ft]
-        #     mars_acc_amph = features_amph[:, ft]
-        #
-        # if feature_names[ft] == 'top_m0_angle_to_center':
-        #     mars_angle_center_ctrl = features_ctrl[:, ft]
-        #     mars_angle_center_amph = features_amph[:, ft]
+    #     if feature_names[ft] == 'm0_top_speed':
+    #         mars_speed_ctrl = features_ctrl[:, ft]
+    #         mars_speed_amph = features_amph[:, ft]
+    #
+    #     if feature_names[ft] == 'm0_top_acceleration_head':
+    #         mars_acc_ctrl = features_ctrl[:, ft]
+    #         mars_acc_amph = features_amph[:, ft]
+    #
+    #     if feature_names[ft] == 'top_m0_angle_to_center':
+    #         mars_angle_center_ctrl = features_ctrl[:, ft]
+    #         mars_angle_center_amph = features_amph[:, ft]
 
         if feature_names[ft] == 'top_m0_angle_nose_neck_tail':
             mars_angle_nnt_ctrl = np.sin(features_ctrl[:, ft]) * 180
             mars_angle_nnt_amph = np.sin(features_amph[:, ft]) * 180
-
-
 
     return mars_angle_nnt_ctrl, mars_angle_nnt_amph
 
