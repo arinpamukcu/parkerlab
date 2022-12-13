@@ -157,11 +157,11 @@ def get_metrics(drug, dose):
         data_amph[animal]['other_rest'], data_amph[animal]['other_move'] = ({} for i in range(10))
 
         # append values for each animal to a list
-        data_ctrl[animal]['eventrate_full'] = eventmean_ctrl
-        data_ctrl[animal]['speed_full'] = speed_ctrl
-        data_ctrl[animal]['turn_full'] = turn_ctrl
-        data_ctrl[animal]['rear_full'] = rearing_ctrl
-        data_ctrl[animal]['groom_full'] = grooming_ctrl
+        # data_ctrl[animal]['eventrate_full'] = eventmean_ctrl
+        # data_ctrl[animal]['speed_full'] = speed_ctrl
+        # data_ctrl[animal]['turn_full'] = turn_ctrl
+        # data_ctrl[animal]['rear_full'] = rearing_ctrl
+        # data_ctrl[animal]['groom_full'] = grooming_ctrl
         data_ctrl[animal]['acc']['time'], data_ctrl[animal]['acc']['rate'] = acc_ctrl
         data_ctrl[animal]['dec']['time'], data_ctrl[animal]['dec']['rate'] = dec_ctrl
         data_ctrl[animal]['rest']['time'], data_ctrl[animal]['rest']['rate'] = rest_ctrl
@@ -173,11 +173,11 @@ def get_metrics(drug, dose):
         data_ctrl[animal]['other_rest']['time'], data_ctrl[animal]['other_rest']['rate'] = other_rest_ctrl
         data_ctrl[animal]['other_move']['time'], data_ctrl[animal]['other_move']['rate'] = other_move_ctrl
 
-        data_amph[animal]['eventrate_full'] = eventmean_amph
-        data_amph[animal]['speed_full'] = speed_amph
-        data_amph[animal]['turn_full'] = turn_amph
-        data_amph[animal]['rear_full'] = rearing_amph
-        data_amph[animal]['groom_full'] = grooming_amph
+        # data_amph[animal]['eventrate_full'] = eventmean_amph
+        # data_amph[animal]['speed_full'] = speed_amph
+        # data_amph[animal]['turn_full'] = turn_amph
+        # data_amph[animal]['rear_full'] = rearing_amph
+        # data_amph[animal]['groom_full'] = grooming_amph
         data_amph[animal]['acc']['time'], data_amph[animal]['acc']['rate'] = acc_amph
         data_amph[animal]['dec']['time'], data_amph[animal]['dec']['rate'] = dec_amph
         data_amph[animal]['rest']['time'], data_amph[animal]['rest']['rate'] = rest_amph
@@ -191,78 +191,6 @@ def get_metrics(drug, dose):
 
     return data_ctrl, data_amph
 
-
-def get_metrics(drug, dose):
-    experiments, animals, _, _ = get_animal_id(drug, dose)
-
-    data_ctrl = {}
-    data_amph = {}
-
-    for experiment, animal in zip(experiments, animals):
-        print(experiment)
-        data_ctrl[animal] = {}
-        data_amph[animal] = {}
-
-        # get values for speed or turn
-        speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph \
-            = get_ca_data(drug, dose, experiment)
-        turn_ctrl, turn_amph \
-            = get_mars_features(drug, dose, experiment)
-        grooming_ctrl, grooming_amph \
-            = get_classifier(drug, dose, experiment, 'grooming')
-        rearing_ctrl, rearing_amph \
-            = get_classifier(drug, dose, experiment, 'rearing')
-
-        # get values for each animal for that drug & dose
-        acc_ctrl, dec_ctrl, rest_ctrl, move_ctrl, right_turn_ctrl, left_turn_ctrl, \
-        groom_ctrl, rear_ctrl, other_rest_ctrl, other_move_ctrl \
-            = get_behavior(speed_ctrl, turn_ctrl, grooming_ctrl, rearing_ctrl, eventmean_ctrl)
-        acc_amph, dec_amph, rest_amph, move_amph, right_turn_amph, left_turn_amph, \
-        groom_amph, rear_amph, other_rest_amph, other_move_amph \
-            = get_behavior(speed_amph, turn_amph, grooming_amph, rearing_amph, eventmean_amph)
-
-        data_ctrl[animal]['acc'], data_ctrl[animal]['dec'], \
-        data_ctrl[animal]['rest'], data_ctrl[animal]['move'], \
-        data_ctrl[animal]['right_turn'], data_ctrl[animal]['left_turn'], \
-        data_ctrl[animal]['groom'], data_ctrl[animal]['rear'], \
-        data_ctrl[animal]['other_rest'], data_ctrl[animal]['other_move'] = ({} for i in range(10))
-
-        data_amph[animal]['acc'], data_amph[animal]['dec'], \
-        data_amph[animal]['rest'], data_amph[animal]['move'], \
-        data_amph[animal]['right_turn'], data_amph[animal]['left_turn'], \
-        data_amph[animal]['groom'], data_amph[animal]['rear'], \
-        data_amph[animal]['other_rest'], data_amph[animal]['other_move'] = ({} for i in range(10))
-
-        # append values for each animal to a list
-        data_ctrl[animal]['eventrate'] = eventmean_ctrl
-        data_ctrl[animal]['speed'] = speed_ctrl
-        data_ctrl[animal]['turn'] = turn_ctrl
-        data_ctrl[animal]['acc']['time'], data_ctrl[animal]['acc']['rate'] = acc_ctrl
-        data_ctrl[animal]['dec']['time'], data_ctrl[animal]['dec']['rate'] = dec_ctrl
-        data_ctrl[animal]['rest']['time'], data_ctrl[animal]['rest']['rate'] = rest_ctrl
-        data_ctrl[animal]['move']['time'], data_ctrl[animal]['move']['rate'] = move_ctrl
-        data_ctrl[animal]['right_turn']['time'], data_ctrl[animal]['right_turn']['rate'] = right_turn_ctrl
-        data_ctrl[animal]['left_turn']['time'], data_ctrl[animal]['left_turn']['rate'] = left_turn_ctrl
-        data_ctrl[animal]['groom']['time'], data_ctrl[animal]['groom']['rate'] = groom_ctrl
-        data_ctrl[animal]['rear']['time'], data_ctrl[animal]['rear']['rate'] = rear_ctrl
-        data_ctrl[animal]['other_rest']['time'], data_ctrl[animal]['other_rest']['rate'] = other_rest_ctrl
-        data_ctrl[animal]['other_move']['time'], data_ctrl[animal]['other_move']['rate'] = other_move_ctrl
-
-        data_amph[animal]['eventrate'] = eventmean_amph
-        data_amph[animal]['speed'] = speed_amph
-        data_amph[animal]['turn'] = turn_amph
-        data_amph[animal]['acc']['time'], data_amph[animal]['acc']['rate'] = acc_amph
-        data_amph[animal]['dec']['time'], data_amph[animal]['dec']['rate'] = dec_amph
-        data_amph[animal]['rest']['time'], data_amph[animal]['rest']['rate'] = rest_amph
-        data_amph[animal]['move']['time'], data_amph[animal]['move']['rate'] = move_amph
-        data_amph[animal]['right_turn']['time'], data_amph[animal]['right_turn']['rate'] = right_turn_amph
-        data_amph[animal]['left_turn']['time'], data_amph[animal]['left_turn']['rate'] = left_turn_amph
-        data_amph[animal]['groom']['time'], data_amph[animal]['groom']['rate'] = groom_amph
-        data_amph[animal]['rear']['time'], data_amph[animal]['rear']['rate'] = rear_amph
-        data_amph[animal]['other_rest']['time'], data_amph[animal]['other_rest']['rate'] = other_rest_amph
-        data_amph[animal]['other_move']['time'], data_amph[animal]['other_move']['rate'] = other_move_amph
-
-    return data_ctrl, data_amph
 
 def get_alldata():
 
