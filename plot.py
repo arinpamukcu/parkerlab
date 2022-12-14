@@ -256,8 +256,6 @@ def normalized_eventtime(base):
 
 def eventrate_vehicle(spn):
 
-    # doses = ['vehicle', 'highdose']
-    # drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
     bases = ['ctrl', 'amph']
     metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'rear', 'other_rest', 'other_move']
 
@@ -270,10 +268,10 @@ def eventrate_vehicle(spn):
     elif spn == 'D2':
         animals = D2_animals
 
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(10, 4))
 
     eventdata = {}
-    cutoff_time = 5.
+    cutoff = 5.
 
     x = 0
     for metric in metrics:
@@ -288,9 +286,9 @@ def eventrate_vehicle(spn):
         for j, base in enumerate(bases):
 
             if base == 'ctrl':
-                cutoff = cutoff_time / 900.
+                cutoff_frame = cutoff / 900.
             else:
-                cutoff = cutoff_time / 2700.
+                cutoff_frame = cutoff / 2700.
 
             for i, animal in enumerate(animals):
                 basetime_ctrl[animal] = np.nansum([alldata[d]['vehicle']['ctrl'][animal][metric]['time'] * 900.
@@ -300,14 +298,14 @@ def eventrate_vehicle(spn):
                                                     for d in alldata.keys()
                                                     if animal in alldata[d]['vehicle']['amph'].keys()])
 
-                if (basetime_ctrl[animal] > cutoff_time) and (basetime_amph[animal] > cutoff_time):
+                if (basetime_ctrl[animal] > cutoff) and (basetime_amph[animal] > cutoff):
 
                     tempdata[animal] = np.nansum([alldata[d]['vehicle'][base][animal][metric]['rate'] *
                                                   alldata[d]['vehicle'][base][animal][metric]['time'] *
-                                                  (cutoff_time/cutoff)
+                                                  (cutoff/cutoff_frame)
                                                   for d in alldata.keys()
                                                   if animal in alldata[d]['vehicle']['ctrl'].keys()
-                                                  and alldata[d]['vehicle'][base][animal][metric]['time'] > cutoff])
+                                                  and alldata[d]['vehicle'][base][animal][metric]['time'] > cutoff_frame])
                     if base == 'ctrl':
                         tempdata[animal] = tempdata[animal] / basetime_ctrl[animal] * 60
                     elif base == 'amph':
