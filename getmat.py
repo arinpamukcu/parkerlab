@@ -185,33 +185,30 @@ def norm_eventtime_drugs(base):
     x = 0
     for metric in metrics:
         tempdata = {}
-        basetime_ctrl = {}
         timedata[metric] = np.ndarray((len(animals), len(drugs)+1), dtype=object)
         timedata[metric].fill(np.NaN)
 
         x = x + 2
         for i, animal in enumerate(animals):
 
-            basetime_ctrl[animal] = np.nanmean([alldata[d]['vehicle']['ctrl'][animal][metric]['time']
-                                                for d in alldata.keys()
-                                                if animal in alldata[d]['vehicle']['ctrl'].keys()])
-
-            if (metric == 'rest' or metric == 'move') and (basetime_ctrl[animal] > cutoff * 4 / 900.):
+            if (metric == 'rest' or metric == 'move'):
                 tempdata[animal] = np.nanmean([alldata[d]['vehicle']['amph'][animal][metric]['time']
                                                / alldata[d]['vehicle']['ctrl'][animal][metric]['time']
                                                for d in alldata.keys()
                                                if animal in alldata[d]['vehicle']['ctrl'].keys()
-                                               and alldata[d]['vehicle']['ctrl'][animal][metric]['time'] != 0])
+                                               and alldata[d]['vehicle']['ctrl'][animal][metric]['time'] != 0
+                                               and alldata[d]['vehicle']['amph'][animal][metric]['time'] > (cutoff * 4. / 2700.)])
 
                 timedata[metric][i, 0] = tempdata[animal]
 
-            elif basetime_ctrl[animal] > cutoff / 900.:
+            else:
                 print(metric, animal)
                 tempdata[animal] = np.nanmean([alldata[d]['vehicle']['amph'][animal][metric]['time']
                                                / alldata[d]['vehicle']['ctrl'][animal][metric]['time']
                                                for d in alldata.keys()
                                                if animal in alldata[d]['vehicle']['ctrl'].keys()
-                                               and alldata[d]['vehicle']['ctrl'][animal][metric]['time'] != 0])
+                                               and alldata[d]['vehicle']['ctrl'][animal][metric]['time'] != 0
+                                               and alldata[d]['vehicle']['amph'][animal][metric]['time'] > (cutoff / 2700.)])
 
                 timedata[metric][i, 0] = tempdata[animal]
 
@@ -234,7 +231,7 @@ def norm_eventtime_drugs(base):
                 if (metric == 'rest' or metric == 'move') \
                         and (animal in alldata[drug]['vehicle'][base].keys()) \
                         and (animal in alldata[drug]['highdose'][base].keys()) \
-                        and (alldata[drug]['vehicle']['ctrl'][animal][metric]['time'] > (cutoff * 4 / 900.)):
+                        and (alldata[drug]['vehicle'][base][animal][metric]['time'] > (cutoff * 4 / 900.)):
 
                     drugdata[animal] = [((alldata[drug]['highdose'][base][animal][metric]['time']
                               / alldata[drug]['vehicle']['ctrl'][animal][metric]['time']))]
@@ -243,7 +240,7 @@ def norm_eventtime_drugs(base):
 
                 elif (animal in alldata[drug]['vehicle'][base].keys()) \
                         and (animal in alldata[drug]['highdose'][base].keys()) \
-                        and (alldata[drug]['vehicle']['ctrl'][animal][metric]['time'] > (cutoff / 900.)):
+                        and (alldata[drug]['vehicle'][base][animal][metric]['time'] > (cutoff / 900.)):
 
                     drugdata[animal] = [((alldata[drug]['highdose'][base][animal][metric]['time']
                               / alldata[drug]['vehicle']['ctrl'][animal][metric]['time']))]
@@ -289,39 +286,42 @@ def eventrate_vehicle(spn):
     elif spn == 'D2':
         animals = D2_animals
 
-    fig, ax = plt.subplots(figsize=(10, 4))
-
-    eventdata = {}
     cutoff = 5.  # seconds
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    eventdata = {}
 
     x = 0
     for metric in metrics:
         x = x + 2
 
         tempdata = {}
-        basetime = {}
         eventdata[metric] = np.ndarray((len(animals), len(bases)), dtype=object)
         eventdata[metric].fill(np.NaN)
 
         for j, base in enumerate(bases):
 
-            for i, animal in enumerate(animals):
-                basetime[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric]['time']
-                                              for d in alldata.keys()
-                                              if animal in alldata[d]['vehicle']['ctrl'].keys()])
+            if base == 'ctrl':
+                cutoff_frame = cutoff / 900.
+            elif base == 'amph':
+                cutoff_frame = cutoff / 2700.
 
-                if (metric == 'rest' or metric == 'move') and (basetime[animal] > (cutoff * 4 / 900)):
+            for i, animal in enumerate(animals):
+
+                if (metric == 'rest' or metric == 'move'):
 
                     tempdata[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric]['rate'] * 60
-                                                  for d in alldata.keys()
-                                                  if animal in alldata[d]['vehicle']['ctrl'].keys()])
+                                                   for d in alldata.keys()
+                                                   if animal in alldata[d]['vehicle']['ctrl'].keys()
+                                                   and alldata[d]['vehicle'][base][animal][metric]['time'] > (cutoff_frame * 4)])
                     eventdata[metric][i, j] = tempdata[animal]
 
-                elif (basetime[animal] > (cutoff / 900)):
+                else:
 
                     tempdata[animal] = np.nanmean([alldata[d]['vehicle'][base][animal][metric]['rate'] * 60
-                                                  for d in alldata.keys()
-                                                  if animal in alldata[d]['vehicle']['ctrl'].keys()])
+                                                   for d in alldata.keys()
+                                                   if animal in alldata[d]['vehicle']['ctrl'].keys()
+                                                   and alldata[d]['vehicle'][base][animal][metric]['time'] > (cutoff_frame)])
                     eventdata[metric][i, j] = tempdata[animal]
 
             data = list(tempdata.values())
@@ -500,8 +500,6 @@ def norm_eventrate_drugs(spn, base):
 
         tempdata = {}
         baserate_ctrl = {}
-        # basetime_ctrl = {}
-        # basetime_amph = {}
 
         eventdata[metric] = np.ndarray((len(animals), len(drugs) + 1), dtype=object)
         eventdata[metric].fill(np.NaN)
@@ -517,7 +515,7 @@ def norm_eventrate_drugs(spn, base):
                 tempdata[animal] = np.nanmean([alldata[d]['vehicle']['amph'][animal][metric]['rate'] * 60
                                               for d in alldata.keys()
                                               if animal in alldata[d]['vehicle']['ctrl'].keys()
-                                              and alldata[d]['vehicle']['amph'][animal][metric]['time'] > (cutoff / 2700.)])
+                                              and alldata[d]['vehicle']['amph'][animal][metric]['time'] > (cutoff * 4 / 2700.)])
                 tempdata[animal] = (tempdata[animal] / baserate_ctrl[animal])
                 eventdata[metric][i, 0] = tempdata[animal]
 
