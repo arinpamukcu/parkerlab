@@ -227,8 +227,8 @@ def get_alldata():
     pkl.dump(allmetrics, open("allmetrics.pkl", "wb"))
     savemat("allmetrics.mat", allmetrics)
 
-    pkl.dump(fulldata, open("fulldata.pkl", "wb"))
-    savemat("fulldata.mat", fulldata)
+    # pkl.dump(fulldata, open("fulldata.pkl", "wb"))
+    # savemat("fulldata.mat", fulldata)
 
     return allmetrics, fulldata
 
