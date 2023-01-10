@@ -118,13 +118,11 @@ def get_behavior(speed_data, turn_data, groom_data, rear_data, eventmean_data):
 def get_metrics(drug, dose):
     experiments, animals, _, _ = get_animal_id(drug, dose)
 
-    data_ctrl = {}
-    data_amph = {}
+    metric_ctrl, metric_amph, fulldata_ctrl, fulldata_amph = ({} for i in range(4))
 
     for experiment, animal in zip(experiments, animals):
         print(experiment)
-        data_ctrl[animal] = {}
-        data_amph[animal] = {}
+        metric_ctrl[animal], metric_amph[animal], fulldata_ctrl[animal], fulldata_amph[animal] = ({} for i in range(4))
 
         # get values for speed or turn
         speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph \
@@ -144,77 +142,95 @@ def get_metrics(drug, dose):
         groom_amph, rear_amph, other_rest_amph, other_move_amph \
             = get_behavior(speed_amph, turn_amph, grooming_amph, rearing_amph, eventmean_amph)
 
-        data_ctrl[animal]['acc'], data_ctrl[animal]['dec'], \
-        data_ctrl[animal]['rest'], data_ctrl[animal]['move'], \
-        data_ctrl[animal]['right_turn'], data_ctrl[animal]['left_turn'], \
-        data_ctrl[animal]['groom'], data_ctrl[animal]['rear'], \
-        data_ctrl[animal]['other_rest'], data_ctrl[animal]['other_move'] = ({} for i in range(10))
+        metric_ctrl[animal]['acc'], metric_ctrl[animal]['dec'], \
+        metric_ctrl[animal]['rest'], metric_ctrl[animal]['move'], \
+        metric_ctrl[animal]['right_turn'], metric_ctrl[animal]['left_turn'], \
+        metric_ctrl[animal]['groom'], metric_ctrl[animal]['rear'], \
+        metric_ctrl[animal]['other_rest'], metric_ctrl[animal]['other_move'] = ({} for i in range(10))
 
-        data_amph[animal]['acc'], data_amph[animal]['dec'], \
-        data_amph[animal]['rest'], data_amph[animal]['move'], \
-        data_amph[animal]['right_turn'], data_amph[animal]['left_turn'], \
-        data_amph[animal]['groom'], data_amph[animal]['rear'], \
-        data_amph[animal]['other_rest'], data_amph[animal]['other_move'] = ({} for i in range(10))
+        metric_amph[animal]['acc'], metric_amph[animal]['dec'], \
+        metric_amph[animal]['rest'], metric_amph[animal]['move'], \
+        metric_amph[animal]['right_turn'], metric_amph[animal]['left_turn'], \
+        metric_amph[animal]['groom'], metric_amph[animal]['rear'], \
+        metric_amph[animal]['other_rest'], metric_amph[animal]['other_move'] = ({} for i in range(10))
 
-        # append values for each animal to a list
-        # data_ctrl[animal]['eventrate_full'] = eventmean_ctrl
-        # data_ctrl[animal]['speed_full'] = speed_ctrl
-        # data_ctrl[animal]['turn_full'] = turn_ctrl
-        # data_ctrl[animal]['rear_full'] = rearing_ctrl
-        # data_ctrl[animal]['groom_full'] = grooming_ctrl
-        data_ctrl[animal]['acc']['time'], data_ctrl[animal]['acc']['rate'] = acc_ctrl
-        data_ctrl[animal]['dec']['time'], data_ctrl[animal]['dec']['rate'] = dec_ctrl
-        data_ctrl[animal]['rest']['time'], data_ctrl[animal]['rest']['rate'] = rest_ctrl
-        data_ctrl[animal]['move']['time'], data_ctrl[animal]['move']['rate'] = move_ctrl
-        data_ctrl[animal]['right_turn']['time'], data_ctrl[animal]['right_turn']['rate'] = right_turn_ctrl
-        data_ctrl[animal]['left_turn']['time'], data_ctrl[animal]['left_turn']['rate'] = left_turn_ctrl
-        data_ctrl[animal]['groom']['time'], data_ctrl[animal]['groom']['rate'] = groom_ctrl
-        data_ctrl[animal]['rear']['time'], data_ctrl[animal]['rear']['rate'] = rear_ctrl
-        data_ctrl[animal]['other_rest']['time'], data_ctrl[animal]['other_rest']['rate'] = other_rest_ctrl
-        data_ctrl[animal]['other_move']['time'], data_ctrl[animal]['other_move']['rate'] = other_move_ctrl
+        # append values for each animal to the full data list
+        fulldata_ctrl[animal]['eventrate_full'] = eventmean_ctrl
+        fulldata_ctrl[animal]['speed_full'] = speed_ctrl
+        fulldata_ctrl[animal]['turn_full'] = turn_ctrl
+        fulldata_ctrl[animal]['rear_full'] = rearing_ctrl
+        fulldata_ctrl[animal]['groom_full'] = grooming_ctrl
 
-        # data_amph[animal]['eventrate_full'] = eventmean_amph
-        # data_amph[animal]['speed_full'] = speed_amph
-        # data_amph[animal]['turn_full'] = turn_amph
-        # data_amph[animal]['rear_full'] = rearing_amph
-        # data_amph[animal]['groom_full'] = grooming_amph
-        data_amph[animal]['acc']['time'], data_amph[animal]['acc']['rate'] = acc_amph
-        data_amph[animal]['dec']['time'], data_amph[animal]['dec']['rate'] = dec_amph
-        data_amph[animal]['rest']['time'], data_amph[animal]['rest']['rate'] = rest_amph
-        data_amph[animal]['move']['time'], data_amph[animal]['move']['rate'] = move_amph
-        data_amph[animal]['right_turn']['time'], data_amph[animal]['right_turn']['rate'] = right_turn_amph
-        data_amph[animal]['left_turn']['time'], data_amph[animal]['left_turn']['rate'] = left_turn_amph
-        data_amph[animal]['groom']['time'], data_amph[animal]['groom']['rate'] = groom_amph
-        data_amph[animal]['rear']['time'], data_amph[animal]['rear']['rate'] = rear_amph
-        data_amph[animal]['other_rest']['time'], data_amph[animal]['other_rest']['rate'] = other_rest_amph
-        data_amph[animal]['other_move']['time'], data_amph[animal]['other_move']['rate'] = other_move_amph
+        fulldata_amph[animal]['eventrate_full'] = eventmean_amph
+        fulldata_amph[animal]['speed_full'] = speed_amph
+        fulldata_amph[animal]['turn_full'] = turn_amph
+        fulldata_amph[animal]['rear_full'] = rearing_amph
+        fulldata_amph[animal]['groom_full'] = grooming_amph
 
-    return data_ctrl, data_amph
+        # append values for each animal to the metric data list
+        metric_ctrl[animal]['acc']['time'], metric_ctrl[animal]['acc']['rate'] = acc_ctrl
+        metric_ctrl[animal]['dec']['time'], metric_ctrl[animal]['dec']['rate'] = dec_ctrl
+        metric_ctrl[animal]['rest']['time'], metric_ctrl[animal]['rest']['rate'] = rest_ctrl
+        metric_ctrl[animal]['move']['time'], metric_ctrl[animal]['move']['rate'] = move_ctrl
+        metric_ctrl[animal]['right_turn']['time'], metric_ctrl[animal]['right_turn']['rate'] = right_turn_ctrl
+        metric_ctrl[animal]['left_turn']['time'], metric_ctrl[animal]['left_turn']['rate'] = left_turn_ctrl
+        metric_ctrl[animal]['groom']['time'], metric_ctrl[animal]['groom']['rate'] = groom_ctrl
+        metric_ctrl[animal]['rear']['time'], metric_ctrl[animal]['rear']['rate'] = rear_ctrl
+        metric_ctrl[animal]['other_rest']['time'], metric_ctrl[animal]['other_rest']['rate'] = other_rest_ctrl
+        metric_ctrl[animal]['other_move']['time'], metric_ctrl[animal]['other_move']['rate'] = other_move_ctrl
+
+        metric_amph[animal]['acc']['time'], metric_amph[animal]['acc']['rate'] = acc_amph
+        metric_amph[animal]['dec']['time'], metric_amph[animal]['dec']['rate'] = dec_amph
+        metric_amph[animal]['rest']['time'], metric_amph[animal]['rest']['rate'] = rest_amph
+        metric_amph[animal]['move']['time'], metric_amph[animal]['move']['rate'] = move_amph
+        metric_amph[animal]['right_turn']['time'], metric_amph[animal]['right_turn']['rate'] = right_turn_amph
+        metric_amph[animal]['left_turn']['time'], metric_amph[animal]['left_turn']['rate'] = left_turn_amph
+        metric_amph[animal]['groom']['time'], metric_amph[animal]['groom']['rate'] = groom_amph
+        metric_amph[animal]['rear']['time'], metric_amph[animal]['rear']['rate'] = rear_amph
+        metric_amph[animal]['other_rest']['time'], metric_amph[animal]['other_rest']['rate'] = other_rest_amph
+        metric_amph[animal]['other_move']['time'], metric_amph[animal]['other_move']['rate'] = other_move_amph
+
+    return fulldata_ctrl, fulldata_amph, metric_ctrl, metric_amph
 
 
 def get_alldata():
 
     drugs = ['clozapine', 'haloperidol', 'mp10', 'olanzapine']
     doses = ['vehicle', 'lowdose', 'highdose']
-    # doses = ['vehicle', 'highdose']
 
-    alldata = {}
+    allmetrics = {}
+    fulldata = {}
     for drug in drugs:
-        alldata[drug] = {}
+        allmetrics[drug] = {}
+        fulldata[drug] = {}
+
         for dose in doses:
             print(drug, dose)
-            alldata[drug][dose] = {}
-            alldata[drug][dose]['ctrl'] = {}
-            alldata[drug][dose]['amph'] = {}
-            data_ctrl, data_amph = get_metrics(drug, dose)
+
+            allmetrics[drug][dose] = {}
+            allmetrics[drug][dose]['ctrl'] = {}
+            allmetrics[drug][dose]['amph'] = {}
+
+            fulldata[drug][dose] = {}
+            fulldata[drug][dose]['ctrl'] = {}
+            fulldata[drug][dose]['amph'] = {}
+
+            fulldata_ctrl, fulldata_amph, metric_ctrl, metric_amph = get_metrics(drug, dose)
             _, animals, _, _ = get_animal_id(drug, dose)
-            alldata[drug][dose]['ctrl'] = data_ctrl
-            alldata[drug][dose]['amph'] = data_amph
 
-    pkl.dump(alldata, open("alldata.pkl", "wb"))
-    savemat("alldata.mat", alldata)
+            allmetrics[drug][dose]['ctrl'] = metric_ctrl
+            allmetrics[drug][dose]['amph'] = metric_amph
 
-    return alldata
+            fulldata[drug][dose]['ctrl'] = fulldata_ctrl
+            fulldata[drug][dose]['amph'] = fulldata_amph
+
+    pkl.dump(allmetrics, open("allmetrics.pkl", "wb"))
+    savemat("allmetrics.mat", allmetrics)
+
+    pkl.dump(fulldata, open("fulldata.pkl", "wb"))
+    savemat("fulldata.mat", fulldata)
+
+    return allmetrics, fulldata
 
 
 def separate_spns(spn, event):
@@ -224,7 +240,7 @@ def separate_spns(spn, event):
     bases = ['ctrl', 'amph']
     metrics = ['rest', 'move', 'acc', 'dec', 'right_turn', 'left_turn', 'groom', 'rear', 'other_rest', 'other_move']
 
-    alldata = pkl.load(open("alldata.pkl", "rb"))
+    allmetrics = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
 
     animals = []
@@ -248,8 +264,8 @@ def separate_spns(spn, event):
 
                     for j, animal in enumerate(animals):
 
-                        if animal in alldata[drug][dose][base].keys():
-                            data[drug][dose][base][i, j] = alldata[drug][dose][base][animal][metric][event]
+                        if animal in allmetrics[drug][dose][base].keys():
+                            data[drug][dose][base][i, j] = allmetrics[drug][dose][base][animal][metric][event]
 
                         else:
                             data[drug][dose][base][i, j] = 'NaN'
