@@ -1,6 +1,6 @@
 # Created by Arin Pamukcu, PhD on August 2022
 
-from data import *
+from calcium import *
 from info import *
 from speed_neurons import *
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ def ctrl():
             print(experiment)
 
             speed_ctrl, speed_amph, calcium_ctrl_dff, calcium_amph_dff, _, _, _, _, \
-            neuron_count, time_ctrl, time_amph = get_ca_data(drug, dose, experiment)
+            neuron_count, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
 
             # if you just want to use speed neurons for your analysis
             _, _, _, speed_neuron_ctrl_events, speed_neuron_amph_events = get_speed_neurons(drug, dose, experiment)
@@ -91,7 +91,7 @@ def amph():
             print(experiment + '_amph')
 
             speed_ctrl, speed_amph, calcium_ctrl_dff, calcium_amph_dff, _, _, _, _, \
-            neuron_count, time_ctrl, time_amph = get_ca_data(drug, dose, experiment)
+            neuron_count, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
 
             # remove events in first 25 and last 25 frames
             window = 25

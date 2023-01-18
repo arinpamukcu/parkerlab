@@ -1,7 +1,7 @@
 # Created by Arin Pamukcu, PhD on August 2022
 # histogras for time spent doing particular action
 
-from data import *
+from calcium import *
 from info import *
 from mars import *
 import numpy as np

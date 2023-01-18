@@ -1,6 +1,6 @@
 # Created by Arin Pamukcu, PhD on August 2022 in Chicago, IL
 
-from data import *
+from calcium import *
 from info import *
 from mars import *
 from scipy.io import savemat
@@ -126,7 +126,7 @@ def get_metrics(drug, dose):
 
         # get values for speed or turn
         speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, neuron, time_ctrl, time_amph \
-            = get_ca_data(drug, dose, experiment)
+            = get_calcium_data(drug, dose, experiment)
         turn_ctrl, turn_amph \
             = get_mars_features(drug, dose, experiment)
         grooming_ctrl, grooming_amph \

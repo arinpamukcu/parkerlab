@@ -3,7 +3,7 @@
 # y-axis: Ca event rate (event/min)
 # x-axis: Locomotor speed bin (cm/s)
 
-from data import *
+from calcium import *
 from info import *
 from mars import *
 from scipy.io import savemat
@@ -129,7 +129,7 @@ def get_metrics(drug, dose):
 
         # get values for speed or turn
         speed_ctrl, speed_amph, _, _, eventmean_ctrl, eventmean_amph, \
-        _, time_ctrl, time_amph = get_ca_data(drug, dose, experiment)
+        _, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
         turn_ctrl, turn_amph = get_mars_features(drug, dose, experiment)
 
         # get values for each animal for that drug & dose

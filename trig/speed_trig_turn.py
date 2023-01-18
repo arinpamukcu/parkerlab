@@ -1,6 +1,6 @@
 # Created by Arin Pamukcu, PhD on August 2022
 
-from data import *
+from calcium import *
 from info import *
 from mars import *
 from speed_neurons import *

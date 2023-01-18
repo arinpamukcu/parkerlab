@@ -1,13 +1,13 @@
 # Created by Arin Pamukcu, PhD on August 2022
 
-from data import *
+from calcium import *
 # from mars import *
 # from calcium import *
 
 def get_speed_neurons(drug, dose, experiment):
     # find speed neurons based on control values
     speed_ctrl, _, calcium_ctrl_dff, calcium_amph_dff, calcium_ctrl_events, calcium_amph_events, _, _, \
-    neuron_count, time_ctrl, _ = get_ca_data(drug, dose, experiment)
+    neuron_count, time_ctrl, _ = get_calcium_data(drug, dose, experiment)
 
     speed_neuron_no = []
     speed_neuron_ctrl_dff = []

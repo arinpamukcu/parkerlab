@@ -4,7 +4,7 @@
 # x-axis: Locomotor speed bin (cm/s)
 # bin: <0.5, 0.5-1, 1-2, 2-4, 4-8, 8-14
 
-from data import *
+from calcium import *
 from info import *
 from mars import *
 import numpy as np

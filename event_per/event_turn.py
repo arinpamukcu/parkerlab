@@ -3,7 +3,7 @@
 # y-axis: Ca event rate (event/min)
 # x-axis: Locomotor speed bin (cm/s)
 
-from data import *
+from calcium import *
 from info import *
 from mars import *
 import pickle as pkl
