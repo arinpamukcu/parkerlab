@@ -5,10 +5,13 @@ from scipy.stats import zscore
 from sklearn.decomposition import FastICA
 from sklearn.decomposition import NMF
 from sklearn.decomposition import PCA
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 
-# PCA on calcium event times
-def pca(data, components):
+# PCA (principal component analysis)
+
+def pca_calcium(data, components):
 
     # standardize data
     std_peaks = zscore(data, axis=1)  # Q
@@ -19,9 +22,20 @@ def pca(data, components):
     data_pcaX = PCA(n_components=components).fit_transform(std_peaks)  # R
 
     # find variance explaiend by each component
-    pca_components =
-    pca_peaks_evr = data_pca.explained_variance_ratio_  # variance explained for R
-    print(data_pca.explained_variance_ratio_)
+    pca_components = data_pca.components_.T  # eigenvector
+    pca_expl_var = data_pca.explained_variance_ratio_  # eigenvalue
+
+    # reconstruct data
+    pca_computed_matrix = pca_components @ data_pcaX.T
+
+    # find the mean square error and r2 squared of calcium smooth vs computed matrix
+    pca_mse = mean_squared_error(data, pca_computed_matrix)
+    pca_r2 = r2_score(data, pca_computed_matrix)
+
+    pca_residuals = np.mean(np.square(data - pca_computed_matrix))
+    pca_total = np.mean(np.square(data))
+    pca_r2_manual = 1 - pca_residuals / pca_total
+
 
     # plot PCs
     plt.figure(figsize=(4, 6))
@@ -31,6 +45,7 @@ def pca(data, components):
     plt.plot(data_pcaX[:, 2], label='PC 3')
     plt.xlabel('time')
     plt.ylabel('PCs')
+    plt.legend()
 
 
     # plot PC vs PC
@@ -50,35 +65,58 @@ def pca(data, components):
     plt.hexbin(data_pcaX[:, 1], data_pcaX[:, 2], gridsize=40, bins='log', mincnt=1)
     plt.xlabel('PC 2')
     plt.ylabel('PC 3')
-
-
-    # plot reconstruction
-    plt.figure(figsize=(4, 6))
-
-    plt.subplot(131)
-    plt.plot((data_pcaX[:, 0]) @ data)
-    plt.xlabel('time')
-    plt.ylabel('reconstruction')
+    plt.legend()
 
 
     # plot variance explained
     plt.figure(figsize=(4, 6))
 
     plt.subplot(131)
-    plt.plot(pca_peaks_evr.cumsum())
+    plt.plot(pca_expl_var.cumsum())
     plt.xlabel('no of PCs')
     plt.ylabel('cumulative explained variance')
+    plt.legend()
 
 
-    # plot 3D plot for first three PCs
-    plt.figure(figsize=(5, 9))
+    # plot 3D phase plot for first three PCs
+    fig = plt.figure(figsize=(6, 6))
+
+    ax = fig.add_subplot(131, projection='3d')
+    ax.scatter(data_pcaX[:, 0], data_pcaX[:, 1], data_pcaX[:, 2], s=0.5, c=data_pcaX[:, 0], cmap='magma')
+    ax.set(xlabel='PC 1', ylabel='PC 2', zlabel='PC 3')
 
 
+    # compare original data to reconstructed data (individual)
+    plt.figure(figsize=(12, 6))
+
+    ax = plt.subplot(211)
+    plt.plot(data[1, :].T)
+    ax.set(title='original neuron 1', xlabel='time', ylabel='signal')
+    plt.xlim(0, 5000)
+
+    ax = plt.subplot(212)
+    plt.imshow(pca_computed_matrix[1, :].T)
+    ax.set(title='reconstructed neuron 1', xlabel='time', ylabel='signal')
+    plt.xlim(0, 5000)
+
+
+    # compare original data to reconstructed data (population)
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(211)
+    plt.imshow(data[:, ::10], aspect='auto')
+    plt.colorbar()
+
+    plt.subplot(212)
+    plt.imshow(pca_computed_matrix[:, ::10], aspect='auto')
+    plt.colorbar()
+
+    plt.show()
 
     return
 
-# ICA o MARS fts
+# ICA (independent component analysis)
 
 
-# NMM
+# NMF (non-negative matrix factorization)
 
