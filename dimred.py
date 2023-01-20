@@ -36,6 +36,11 @@ def pca_calcium(data, components):
     pca_total = np.mean(np.square(data))
     pca_r2_manual = 1 - pca_residuals / pca_total
 
+    return data_pcaX, pca_expl_var, pca_computed_matrix
+
+
+def pca_calcium_data(data, components):
+    data_pcaX, pca_expl_var, pca_computed_matrix = pca_calcium(data, components)
 
     # plot PCs
     plt.figure(figsize=(4, 6))
@@ -114,6 +119,10 @@ def pca_calcium(data, components):
     plt.show()
 
     return
+
+
+def pca_calcium_sort(data, components):
+    data_pcaX, pca_expl_var, pca_computed_matrix = pca_calcium(data, components)
 
 # ICA (independent component analysis)
 
