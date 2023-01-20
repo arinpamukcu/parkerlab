@@ -123,6 +123,7 @@ def pca_calcium_data(data, components):
 
 def pca_calcium_sort(data, components):
     data_pcaX, pca_expl_var, pca_computed_matrix = pca_calcium(data, components)
+    
 
 # ICA (independent component analysis)
 
