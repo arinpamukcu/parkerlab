@@ -1,6 +1,8 @@
 # Created by Arin Pamukcu, PhD on January 2023 in Chicago, IL
 
 from mars import *
+import pandas as pd
+from scipy.ndimage import gaussian_filter1d
 from scipy.stats import zscore
 from sklearn.decomposition import FastICA
 from sklearn.decomposition import NMF
@@ -21,26 +23,27 @@ def pca_calcium(data, components):
     data_pca = PCA(n_components=components).fit(std_peaks)  # T
     data_pcaX = PCA(n_components=components).fit_transform(std_peaks)  # R
 
-    # find variance explaiend by each component
-    pca_components = data_pca.components_.T  # eigenvector
+    # find variance explained by each component
+    pca_weights = data_pca.components_.T  # eigenvector
     pca_expl_var = data_pca.explained_variance_ratio_  # eigenvalue
 
     # reconstruct data
-    pca_computed_matrix = pca_components @ data_pcaX.T
+    pca_computed_data = pca_weights @ data_pcaX.T
 
     # find the mean square error and r2 squared of calcium smooth vs computed matrix
-    pca_mse = mean_squared_error(data, pca_computed_matrix)
-    pca_r2 = r2_score(data, pca_computed_matrix)
+    pca_mse = mean_squared_error(data, pca_computed_data)
+    pca_r2 = r2_score(data, pca_computed_data)
 
-    pca_residuals = np.mean(np.square(data - pca_computed_matrix))
+    pca_residuals = np.mean(np.square(data - pca_computed_data))
     pca_total = np.mean(np.square(data))
     pca_r2_manual = 1 - pca_residuals / pca_total
 
-    return data_pcaX, pca_expl_var, pca_computed_matrix
+    return data_pcaX, pca_expl_var, pca_weights, pca_computed_data
 
 
-def pca_calcium_data(data, components):
-    data_pcaX, pca_expl_var, pca_computed_matrix = pca_calcium(data, components)
+def pca_calcium_plots(data, components):
+
+    data_pcaX, pca_expl_var, pca_weights, pca_computed_matrix = pca_calcium(data, components)
 
     # plot PCs
     plt.figure(figsize=(4, 6))
@@ -116,17 +119,232 @@ def pca_calcium_data(data, components):
     plt.imshow(pca_computed_matrix[:, ::10], aspect='auto')
     plt.colorbar()
 
+
     plt.show()
 
     return
 
 
 def pca_calcium_sort(data, components):
-    data_pcaX, pca_expl_var, pca_computed_matrix = pca_calcium(data, components)
-    
+    data_pcaX, pca_expl_var, pca_weights, pca_computed_matrix = pca_calcium(data, components)
+
+    # concatenate PC data on dataT
+    df_data = pd.DataFrame(data)
+
+    # oncatenate PC data on dataT
+    df_data['PCA1'] = pca_weights[:, 0]  # chose which PC you want to sort with
+    df_data['PCA2'] = pca_weights[:, 1]
+    df_data['PCA3'] = pca_weights[:, 2]
+    # df_data.head()
+
+    # sort data wrt PCs
+    df_sorted_pca1 = df_data.sort_values(by='PCA1', ascending=False)
+    df_sorted_pca2 = df_data.sort_values(by='PCA2', ascending=False)
+    df_sorted_pca3 = df_data.sort_values(by='PCA3', ascending=False)
+
+    sorted_pca1 = df_sorted_pca1.iloc[:, :-4].to_numpy()
+    sorted_pca2 = df_sorted_pca2.iloc[:, :-4].to_numpy()
+    sorted_pca3 = df_sorted_pca3.iloc[:, :-4].to_numpy()
+    # df_sorted_pca1.head()
+
+    plt.figure(figsize=(20, 9))
+
+    ax = plt.subplot(3, 1, 1)
+    plt.imshow(sorted_pca1[:, :], aspect='auto')
+    # plt.xlabel('time (s)')
+    plt.ylabel('sorted wrt PC 1')
+    plt.colorbar()
+
+    ax = plt.subplot(3, 1, 2)
+    plt.imshow(sorted_pca2[:, :], aspect='auto')
+    # plt.xlabel('time (s)')
+    plt.ylabel('sorted wrt PC 2')
+    plt.colorbar()
+
+    ax = plt.subplot(3, 1, 3)
+    plt.imshow(sorted_pca3[:, :], aspect='auto')
+    plt.xlabel('time (s)')
+    plt.ylabel('sorted wrt PC 3')
+    plt.colorbar()
+
+    # plot first 15 neurons
+    plt.figure(figsize=(20, 10))
+
+    ax = plt.subplot(10, 1, 1)
+    plt.plot(data_pcaX[:, 0])
+    plt.xlabel('time (s)')
+    plt.ylabel('PC')
+    plt.xlim(0, 4500)
+    plt.axis('off')
+    plt.legend()
+
+    for n in range(0, 9):
+        ax = plt.subplot(15, 1, n + 2)
+        plt.plot(sorted_pca1[n, :])
+        plt.xlim((0, 4500))
+        # plt.ylim((-2,6))
+        plt.axis('off')
+
+
+def pca_varexpl(data):
+
+    time = len(data)
+
+    data_train = data[:, int(time * 0.2):]
+    data_test = data[:, :int(time * 0.2)]
+
+    pca_var_mse = []
+    pca_var_r2 = []
+
+    for n in range(1, 51):
+        # fit pca with component no = n
+        pca = PCA(n)
+        pca_train = pca.fit(data_train.T)
+        pca_test = pca.transform(data_test.T)
+
+        # compute predicted matrix calculated from pca with the assigned component number
+        pca_train_weights = pca_train.components_
+        pca_train_weights = pca_train_weights.T
+        pca_computed_data = pca_train_weights @ pca_test.T
+
+        # find the mean square error and r squared between original and computed matrices
+        pca_mse = mean_squared_error(data_test, pca_computed_data)
+        pca_r2 = r2_score(data_test, pca_computed_data)
+        print("R^2 for PCA", str(n), ":", str(pca_r2))
+
+        # append the mean square error and r squared for each ic in a separate matrix
+        pca_var_mse.append(pca_mse)
+        pca_var_r2.append(pca_r2)
+
+    # print(pca_var)
+
+    # plot change in R squared
+    plt.subplot(1, 3, 3)
+    pca_var_r2 = np.array(pca_var_r2)
+    plt.plot((pca_var_r2[1:] - pca_var_r2[:-1]))
+    plt.xlabel('PC')
+    plt.ylabel('Change in R squared');
+
+    return
+
 
 # ICA (independent component analysis)
 
+def ica_calcium(data, component):
+
+    # smooth, then whiten data
+    time = len(data)
+    data = gaussian_filter1d(data, sigma=20)  # smooth
+    data = (data - np.nanmean(data)) / np.nanstd(data)  # whiten
+
+    ica = FastICA(n_components=component)
+    data_ica = ica.fit(data.T)
+    data_icaX = ica.transform(data.T)
+
+    # plot ICAs
+    plt.figure(figsize=(20, 7.5))
+
+    plt.subplot(3, 1, 1)
+    plt.plot(data_icaX[:, 0])
+    plt.xlim(0, time)
+
+    # reconstruct data
+    ica_weights = data @ np.linalg.pinv(data_icaX.T)
+    ica_computed_data = ica_weights @ data_icaX.T
+
+    # find the mean square error and r2 squared of calcium smooth vs computed matrix
+    ica_mse = mean_squared_error(data, ica_computed_data)
+    ica_r2 = r2_score(data, ica_computed_data)
+
+    ica_residuals = np.mean(np.square(data - ica_computed_data))
+    ica_total = np.mean(np.square(data))
+    ica_r2_manual = 1 - ica_residuals / ica_total
+
+    # compare Ca signal from original and computed matrices
+    plt.figure(figsize=(20, 7.5))
+
+    ax = plt.subplot(2, 1, 1)
+    plt.plot(data[1, :].T)
+    ax.set(title='original neuron 1', xlabel='time (s)', ylabel='Ca signal')
+    plt.xlim(0, time)
+
+    ax = plt.subplot(2, 1, 2)
+    plt.plot(ica_computed_data[1, :].T)
+    ax.set(title='computed neuron 1', xlabel='time (s)', ylabel='Ca signal')
+    plt.xlim(0, time)
+
+    plt.figure(figsize=(20, 6))
+
+    ax = plt.subplot(1, 5, 1)
+    plt.hist(data_icaX[:, 1])
+    plt.gca().set(title='Frequency Histogram', xlabel='IC1 for time', ylabel='Frequency');
+
+    return data_icaX, ica_weights, ica_computed_data
+
+
+def ica_calcium_sort(data, component):
+
+    data_icaX, ica_weights, ica_computed_data = ica_calcium(data, component)
+
+    # sort data by ICA
+    df_data = pd.DataFrame(data)
+    df_data['IC1'] = ica_weights[:, 0]  # chose which ICA component you want to sort with
+    df_data.head()
+    df_data_ica_sorted = df_data.sort_values(by='IC1', ascending=False)
+    # print(df_sorted_ica)
+    data_ica_sorted = df_data_ica_sorted.iloc[:, :-3].to_numpy()
+
+    # plot data sorted by ICA-1 for first and last 50 neurons
+    data_ica_sorted_firstlast = np.concatenate((data_ica_sorted[:50, :], data_ica_sorted[-50:, :]))
+
+    # plt.figure(figsize = (20,4))
+    plt.imshow(data_ica_sorted_firstlast, aspect='auto')
+    plt.xlabel('time (s)')
+    plt.ylabel('50/50 neurons sorted by IC1')
+    plt.colorbar()
+
+    return
+
+
+def ica_varexpl(data):
+
+    time = len(data)
+    data = gaussian_filter1d(data, sigma=20)  # smooth
+    data = (data - np.nanmean(data)) / np.nanstd(data)  # whiten
+
+    # fit the data using training set, find MSEs using test set
+    data_train = data[:, int(time * 0.2):]
+    data_test = data[:, :int(time * 0.2)]
+
+    ica_var_mse = []
+    ica_var_r2 = []
+
+    for n in range(1, 51):
+        # fit ica with component no = n
+        ica = FastICA(n)
+        ica_train = ica.fit_transform(data_train.T)
+        ica_test = ica.transform(data_test.T)
+
+        # compute predicted matrix calculated from icas with the assigned component number
+        ica_weights = data_train @ np.linalg.pinv(ica_train.T)
+        ica_computed_matrix = ica_weights @ ica_test.T
+
+        # find the mean square error and r squared between original and computed matrices
+        mse = mean_squared_error(data_test, ica_computed_matrix)
+        r2 = r2_score(data_test, ica_computed_matrix)
+        print("R^2 for IC", str(n), ":", str(r2))
+
+        # append the mean square error and r squared for each ic in a separate matrix
+        ica_var_mse.append(mse)
+        ica_var_r2.append(r2)
+
+    # plot change in R squared
+    ax = plt.subplot(1, 3, 3)
+    ica_var_r2 = np.array(ica_var_r2)
+    plt.plot((ica_var_r2[1:] - ica_var_r2[:-1]))
+    plt.xlabel('ICs')
+    plt.ylabel('Change in R squared');
+
+
 
 # NMF (non-negative matrix factorization)
-
