@@ -1,8 +1,12 @@
 # Created by Arin Pamukcu, PhD on January 2023 in Chicago, IL
 
-from mars import *
+from info import *
+from calcium import *
+import numpy as np
 import pandas as pd
+import pickle as pkl
 from scipy.ndimage import gaussian_filter1d
+from scipy.io import savemat
 from scipy.stats import zscore
 from sklearn.decomposition import FastICA
 from sklearn.decomposition import NMF
@@ -10,6 +14,7 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
+import pdb
 
 # PCA (principal component analysis)
 # ICA (independent component analysis)
@@ -466,6 +471,37 @@ def nmf_varexpl(data):
     nmf_var_r2 = np.array(nmf_var_r2)
     plt.plot((nmf_var_r2[1:] - nmf_var_r2[:-1]))
     plt.xlabel('NMF')
-    plt.ylabel('Change in R squared');
+    plt.ylabel('Change in R squared')
 
     return
+
+
+def get_dimred(drug, dose):
+    # drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
+    # doses = ['vehicle', 'lowdose', 'highdose']
+    # bases = ['ctrl', 'amph']
+
+    experiments, animals, _, _ = get_animal_id(drug, dose)
+    fulldata = pkl.load(open("fulldata.pkl", "rb"))
+    D1_animals, D2_animals = D1_D2_names()
+    animals = D1_animals + D2_animals
+
+    dimred = {}
+    dimred['vehicle'] = []
+
+    # for drug in drugs:
+        # for dose in doses:
+        #     for base in bases:
+    for experiment, animal in zip(experiments, animals):
+        if animal in fulldata[drug]['vehicle']['ctrl'].keys():
+            speed_ctrl, speed_amph, \
+            calcium_ctrl_events, calcium_amph_events, \
+            eventmean_ctrl, eventmean_amph, \
+            neuron_count, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
+            print(animal)
+            dimred['vehicle'].append(fulldata[drug]['vehicle']['ctrl'][animal]['eventrate_full'])
+
+    pkl.dump(dimred, open("dimred.pkl", "wb"))
+    savemat("dimred.mat", dimred)
+
+    return dimred
