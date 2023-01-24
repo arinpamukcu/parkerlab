@@ -12,6 +12,8 @@ from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 
 # PCA (principal component analysis)
+# ICA (independent component analysis)
+# NMF (non-negative matrix factorization)
 
 def pca_calcium(data, components):
 
@@ -41,9 +43,9 @@ def pca_calcium(data, components):
     return data_pcaX, pca_expl_var, pca_weights, pca_computed_data
 
 
-def pca_calcium_plots(data, components):
+def pca_plots(data, components):
 
-    data_pcaX, pca_expl_var, pca_weights, pca_computed_matrix = pca_calcium(data, components)
+    data_pcaX, pca_expl_var, pca_weights, pca_computed_data = pca_calcium(data, components)
 
     # plot PCs
     plt.figure(figsize=(4, 6))
@@ -54,7 +56,6 @@ def pca_calcium_plots(data, components):
     plt.xlabel('time')
     plt.ylabel('PCs')
     plt.legend()
-
 
     # plot PC vs PC
     plt.figure(figsize=(4, 6))
@@ -75,7 +76,6 @@ def pca_calcium_plots(data, components):
     plt.ylabel('PC 3')
     plt.legend()
 
-
     # plot variance explained
     plt.figure(figsize=(4, 6))
 
@@ -85,14 +85,12 @@ def pca_calcium_plots(data, components):
     plt.ylabel('cumulative explained variance')
     plt.legend()
 
-
     # plot 3D phase plot for first three PCs
     fig = plt.figure(figsize=(6, 6))
 
     ax = fig.add_subplot(131, projection='3d')
     ax.scatter(data_pcaX[:, 0], data_pcaX[:, 1], data_pcaX[:, 2], s=0.5, c=data_pcaX[:, 0], cmap='magma')
     ax.set(xlabel='PC 1', ylabel='PC 2', zlabel='PC 3')
-
 
     # compare original data to reconstructed data (individual)
     plt.figure(figsize=(12, 6))
@@ -103,10 +101,9 @@ def pca_calcium_plots(data, components):
     plt.xlim(0, 5000)
 
     ax = plt.subplot(212)
-    plt.imshow(pca_computed_matrix[1, :].T)
+    plt.imshow(pca_computed_data[1, :].T)
     ax.set(title='reconstructed neuron 1', xlabel='time', ylabel='signal')
     plt.xlim(0, 5000)
-
 
     # compare original data to reconstructed data (population)
     plt.figure(figsize=(12, 6))
@@ -116,16 +113,15 @@ def pca_calcium_plots(data, components):
     plt.colorbar()
 
     plt.subplot(212)
-    plt.imshow(pca_computed_matrix[:, ::10], aspect='auto')
+    plt.imshow(pca_computed_data[:, ::10], aspect='auto')
     plt.colorbar()
-
 
     plt.show()
 
     return
 
 
-def pca_calcium_sort(data, components):
+def pca_sort(data, components):
     data_pcaX, pca_expl_var, pca_weights, pca_computed_matrix = pca_calcium(data, components)
 
     # concatenate PC data on dataT
@@ -228,8 +224,6 @@ def pca_varexpl(data):
     return
 
 
-# ICA (independent component analysis)
-
 def ica_calcium(data, component):
 
     # smooth, then whiten data
@@ -282,14 +276,16 @@ def ica_calcium(data, component):
     return data_icaX, ica_weights, ica_computed_data
 
 
-def ica_calcium_sort(data, component):
+def ica_sort(data, component):
 
     data_icaX, ica_weights, ica_computed_data = ica_calcium(data, component)
 
-    # sort data by ICA
+    # concatenate NMF weights on data
     df_data = pd.DataFrame(data)
     df_data['IC1'] = ica_weights[:, 0]  # chose which ICA component you want to sort with
     df_data.head()
+
+    # sort data by ICA
     df_data_ica_sorted = df_data.sort_values(by='IC1', ascending=False)
     # print(df_sorted_ica)
     data_ica_sorted = df_data_ica_sorted.iloc[:, :-3].to_numpy()
@@ -338,13 +334,138 @@ def ica_varexpl(data):
         ica_var_mse.append(mse)
         ica_var_r2.append(r2)
 
+    # plot MSE and R squared
+    ax = plt.subplot(1, 3, 1)
+    plt.plot(ica_var_mse)
+    ax.set(xlabel='ICs', ylabel='MSE')
+
+    # plot R squared
+    ax = plt.subplot(1, 3, 2)
+    plt.plot(ica_var_r2)
+    ax.set(xlabel='ICs', ylabel='R squared')
+
     # plot change in R squared
-    ax = plt.subplot(1, 3, 3)
+    plt.subplot(1, 3, 3)
     ica_var_r2 = np.array(ica_var_r2)
     plt.plot((ica_var_r2[1:] - ica_var_r2[:-1]))
     plt.xlabel('ICs')
+    plt.ylabel('Change in R squared')
+
+    return
+
+
+def nmf_calcium(data, component):
+
+    # nmf = NMF(n_components=component, init='random', random_state=0)
+    # V = nmf.fit(calcium_smooth)
+    # W = nmf.fit_transform(calcium_smooth)
+    # H = nmf.components_
+
+    data_nmf = NMF(n_components=component).fit(data.T)
+    data_nmfX = NMF(n_components=component).fit_transform(data.T)
+    nmf_weights = data_nmf.components_
+
+    # # find variance explaiend by each component
+    # data_nmf_evr = data_nmf.explained_variance_ratio_
+    # print(data_nmf_evr)
+
+    # reconstruct data
+    nmf_computed_data = nmf_weights @ data_nmfX.T
+
+    # find the mean square error and r2 squared of calcium smooth vs computed matrix
+    nmf_mse = mean_squared_error(data, nmf_computed_data)
+    nmf_r2 = r2_score(data, nmf_computed_data)
+
+    nmf_residuals = np.mean(np.square(data - nmf_computed_data))
+    nmf_total = np.mean(np.square(data))
+    nmf_r2_manual = 1 - nmf_residuals / nmf_total
+
+    # compare data from original and computed matrices
+    ax = plt.subplot(1, 2, 1)
+    plt.plot(data[1, :].T)
+    ax.set(title='original neuron 1', xlabel='time', ylabel='Ca signal')
+    plt.xlim(0, 5000)
+
+    ax = plt.subplot(1, 2, 2)
+    plt.plot(nmf_computed_data[1, :].T)
+    ax.set(title='computed neuron 1', xlabel='time', ylabel='Ca signal')
+    plt.xlim(0, 5000)
+
+    return data_nmfX, nmf_weights, nmf_computed_data
+
+
+def nmf_sort(data, component):
+
+    data_nmfX, nmf_weights, nmf_computed_data = nmf_calcium(data, component)
+
+    # concatenate NMF data on dataT
+    df_nmf = pd.DataFrame(data)
+    df_nmf['NMF1'] = nmf_weights[0, :]  # chose which NMF component you want to sort with
+    # df_nmf['NMF2'] = nmf_weights[1, :]
+    # df_nmf['NMF3'] = nmf_weights[2, :]
+    # df_nmf.head()
+
+    # sort data wrt NMF
+    df_sorted_nmf1 = df_nmf.sort_values(by='NMF1', ascending=False)
+    # df_sorted_nmf2 = df_nmf.sort_values(by='NMF2', ascending=False)
+    # df_sorted_nmf3 = df_nmf.sort_values(by='NMF3', ascending=False)
+    # print(df_sorted_cnmf1)
+    sorted_nmf1 = df_sorted_nmf1.iloc[:, :-4].to_numpy()
+    # sorted_nmf2 = df_sorted_nmf2.iloc[:, :-4].to_numpy()
+    # sorted_nmf3 = df_sorted_nmf3.iloc[:, :-4].to_numpy()
+
+    return
+
+
+def nmf_varexpl(data):
+
+    time = len(data)
+    data = gaussian_filter1d(data, sigma=20)  # smooth
+    data = (data - np.nanmean(data)) / np.nanstd(data)  # whiten
+
+    data_train = data[:, int(time * 0.2):]
+    data_test = data[:, :int(time * 0.2)]
+
+    # fit the data using training set, find MSEs using test set
+
+    nmf_var_mse = []
+    nmf_var_r2 = []
+
+    for n in range(1, 51):
+        # fit nmf with component no = n
+        nmf = NMF(n)
+        nmf_train = nmf.fit(data_train.T)
+        nmf_test = nmf.transform(data_test.T)
+
+        # compute predicted matrix calculated from nmf with the assigned component number
+        nmf_train_weights = nmf_train.components_
+        nmf_train_weights = nmf_train_weights.T
+        nmf_computed_data = nmf_train_weights @ nmf_test.T
+
+        # find the mean square error and r squared between original and computed matrices
+        nmf_mse = mean_squared_error(data_test, nmf_computed_data)
+        nmf_r2 = r2_score(data_test, nmf_computed_data)
+        print("R^2 for NMF", str(n), ":", str(nmf_r2))
+
+        # append the mean square error and r squared for each ic in a separate matrix
+        nmf_var_mse.append(nmf_mse)
+        nmf_var_r2.append(nmf_r2)
+
+    # # plot MSE and R squared
+    # ax = plt.subplot(1,3,1)
+    # plt.plot(nmf_var_mse)
+    # ax.set(xlabel = 'NMF', ylabel = 'MSE');
+
+    # # plot R squared
+    # ax = plt.subplot(1,3,2)
+    # plt.plot(nmf_var_r2)
+    # ax.set(xlabel = 'NMF', ylabel = 'R squared');
+
+    # plot change in R squared
+    ax = plt.subplot(1, 3, 3)
+    nmf_var_r2 = np.array(nmf_var_r2)
+    plt.plot((nmf_var_r2[1:] - nmf_var_r2[:-1]))
+    plt.xlabel('NMF')
     plt.ylabel('Change in R squared');
 
-
-
-# NMF (non-negative matrix factorization)
+    return
