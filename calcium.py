@@ -4,17 +4,21 @@ import os
 import numpy as np
 import pandas as pd
 from scipy.io import loadmat
+from scipy.ndimage import gaussian_filter1d
 from scipy.signal import find_peaks
 
-#  path
-calcium_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v2' #pc
-# calcium_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_v2' #mac
+#  path for older calcium files
+calcium_raw_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v1' #pc
+# calcium_raw_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_v1' #mac
 
+#  path for new calcium files
+calcium_events_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v2' #pc
+# calcium_events_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_v2' #mac
 
-def get_calcium_data(drug, dose, experiment):
+def get_calcium_events(drug, dose, experiment):
 
-    calcium_ctrl_path = os.path.join(calcium_dir, drug, dose, experiment, 'veh_drug.mat')
-    calcium_amph_path = os.path.join(calcium_dir, drug, dose, experiment + '_amph', 'amph_drug.mat')
+    calcium_ctrl_path = os.path.join(calcium_events_dir, drug, dose, experiment, 'veh_drug.mat')
+    calcium_amph_path = os.path.join(calcium_events_dir, drug, dose, experiment + '_amph', 'amph_drug.mat')
 
     # ctrl: 15 min * 60 sec * 5 Hz sampling rate = 4500
     # amph: 45 min * 60 sec * 5 Hz sampling rate = 13500
@@ -37,35 +41,41 @@ def get_calcium_data(drug, dose, experiment):
     time_ctrl = np.size(calcium_ctrl_dff, 1)
     time_amph = np.size(calcium_amph_dff, 1)
 
-    # # smooth
-    # calcium_ctrl_smooth = gaussian_filter1d(calcium_ctrl_dff, sigma=10)
-    # calcium_amph_smooth = gaussian_filter1d(calcium_amph_dff, sigma=10)
-
     return speed_ctrl, speed_amph, \
            calcium_ctrl_events, calcium_amph_events, \
            eventmean_ctrl, eventmean_amph, \
            neuron_count, time_ctrl, time_amph
 
 
-### for older version (Calcium_v1) files ###
-# def get_calcium_data(drug, dose, experiment):
-#
-#     calcium_file = experiment + '_neurons_dv.csv'
-#     calcium_path = os.path.join(calcium_dir, drug, dose, experiment, calcium_file)
-#
-#     # reshape (old version)
-#     calcium = pd.read_csv(calcium_path, header=None)
-#     calcium_ctrl = np.array(calcium.iloc[:, :4500])
-#     calcium_amph = np.array(calcium.iloc[:, 4500:18000])
-#
-#     # define (old version)
-#     neuron = np.size(calcium_amph, 0)
-#     time_ctrl = np.size(calcium_ctrl, 1)
-#     time_amph = np.size(calcium_amph, 1)
-#
-#     return calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph
-#
-#
+## for older version (Calcium_v1) files ###
+def get_calcium_dff(drug, dose, experiment):
+
+    calcium_file = experiment + '_neurons_dv.csv'
+    calcium_path = os.path.join(calcium_raw_dir, drug, dose, experiment, calcium_file)
+
+    # reshape (old version)
+    calcium = pd.read_csv(calcium_path, header=None)
+    calcium_ctrl = np.array(calcium.iloc[:, :4500])
+    calcium_amph = np.array(calcium.iloc[:, 4500:18000])
+
+    # define (old version)
+    neuron = np.size(calcium_amph, 0)
+    time_ctrl = np.size(calcium_ctrl, 1)
+    time_amph = np.size(calcium_amph, 1)
+
+    # smooth
+    calcium_ctrl_smooth = gaussian_filter1d(calcium_ctrl, sigma=10)
+    calcium_amph_smooth = gaussian_filter1d(calcium_amph, sigma=10)
+
+    # whiten
+    calcium_ctrl_processed = (calcium_ctrl_smooth - np.nanmean(calcium_ctrl_smooth)) / np.nanstd(calcium_ctrl_smooth)
+    calcium_amph_processed = (calcium_amph_smooth - np.nanmean(calcium_amph_smooth)) / np.nanstd(calcium_amph_smooth)
+    # calcium_smooth_white_ = calcium_smooth_white * np.ones((1, np.shape(calcium_w)[1]))
+    # calcium_smooth_white_m = np.matrix(calcium_smooth_white)
+
+    return calcium_ctrl, calcium_amph, calcium_ctrl_processed, calcium_amph_processed, neuron, time_ctrl, time_amph
+
+
 # def binarize_calcium(drug, dose, experiment):
 #     calcium_ctrl, calcium_amph, neuron, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
 #

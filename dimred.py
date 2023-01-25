@@ -233,8 +233,6 @@ def ica_calcium(data, component):
 
     # smooth, then whiten data
     time = len(data)
-    data = gaussian_filter1d(data, sigma=20)  # smooth
-    data = (data - np.nanmean(data)) / np.nanstd(data)  # whiten
 
     ica = FastICA(n_components=component)
     data_ica = ica.fit(data.T)
@@ -310,8 +308,6 @@ def ica_sort(data, component):
 def ica_varexpl(data):
 
     time = len(data)
-    data = gaussian_filter1d(data, sigma=20)  # smooth
-    data = (data - np.nanmean(data)) / np.nanstd(data)  # whiten
 
     # fit the data using training set, find MSEs using test set
     data_train = data[:, int(time * 0.2):]
@@ -476,13 +472,13 @@ def nmf_varexpl(data):
     return
 
 
-def get_dimred(drug, dose):
+def get_dimred(drug, dose, base):
     # drugs = ['haloperidol', 'olanzapine', 'clozapine', 'mp10']
     # doses = ['vehicle', 'lowdose', 'highdose']
     # bases = ['ctrl', 'amph']
 
     experiments, animals, _, _ = get_animal_id(drug, dose)
-    fulldata = pkl.load(open("fulldata.pkl", "rb"))
+    alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
     animals = D1_animals + D2_animals
 
@@ -493,15 +489,14 @@ def get_dimred(drug, dose):
         # for dose in doses:
         #     for base in bases:
     for experiment, animal in zip(experiments, animals):
-        if animal in fulldata[drug]['vehicle']['ctrl'].keys():
-            speed_ctrl, speed_amph, \
-            calcium_ctrl_events, calcium_amph_events, \
-            eventmean_ctrl, eventmean_amph, \
-            neuron_count, time_ctrl, time_amph = get_calcium_data(drug, dose, experiment)
+        if animal in alldata[drug][dose][base].keys():
+            _, _, neuron, time_ctrl, time_amph, \
+            calcium_ctrl_processed, calcium_amph_processed = get_calcium_dff(drug, dose, experiment)
             print(animal)
-            dimred['vehicle'].append(fulldata[drug]['vehicle']['ctrl'][animal]['eventrate_full'])
+            dimred['vehicle'].append(calcium_ctrl_processed)
+            pdb.set_trace()
 
-    pkl.dump(dimred, open("dimred.pkl", "wb"))
-    savemat("dimred.mat", dimred)
+    # pkl.dump(dimred, open("dimred.pkl", "wb"))
+    # savemat("dimred.mat", dimred)
 
     return dimred
