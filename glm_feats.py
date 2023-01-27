@@ -1,4 +1,5 @@
 # Created by Arin Pamukcu, PhD on January 2023 in Chicago, IL
+# predict behavior from spikes
 
 import statsmodels.api as sm
 import pickle as pkl
