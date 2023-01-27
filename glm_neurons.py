@@ -3,6 +3,8 @@
 
 from info import *
 from calcium import *
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 import statsmodels.api as sm
 import pickle as pkl
 import pdb
@@ -93,6 +95,20 @@ def perform_glm(drug, dose, base, shift):
 
     feature_train = d1_speed_ctrl_shifted[:,:ttsplit]
     feature_test = d1_speed_ctrl_shifted[:,ttsplit:]
+
+    glm = sm.GLM(event_train, feature_train, sm.families.Poisson())
+    glm_fit = glm.fit_regularized(method='elastic_net')
+
+    # reconstruct and predict spike from feature
+    event_predict = gaussian_filter1d(glm_fit.predict(feature_test), sigma=1)
+    # event_predict = glm_fit.predict(feature_test)
+
+    # glm_xcor = np.correlate(spike_test,spike_predict)
+    glm_corrcoef = np.corrcoef(event_test, event_predict)
+    glm_r2 = r2_score(event_test, event_predict)
+    # print(glm_xcor)
+    print(glm_corrcoef)
+    print(glm_r2)
 
     return
 
