@@ -5,6 +5,7 @@ from info import *
 from calcium import *
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import pickle as pkl
 import pdb
@@ -32,7 +33,7 @@ def spike_history(data, spikeshift):
     return data_shifted
 
 
-def prep_data(drug, dose, base, shift):
+def prep_data(drug, dose, shift):
 
     experiments, animals, _, _ = get_animal_id(drug, dose)
 
@@ -51,7 +52,7 @@ def prep_data(drug, dose, base, shift):
         speed_ctrl, speed_amph, calcium_ctrl_events, calcium_amph_events, eventmean_ctrl, eventmean_amph, \
         _, _, _ = get_calcium_events(drug, dose, experiment)
 
-        if animal in alldata[drug][dose][base].keys():
+        if animal in alldata[drug][dose]['ctrl'].keys():
             if animal in D1_animals:
                 d1_eventmean_ctrl.extend(eventmean_ctrl)
                 d1_eventmean_amph.extend(eventmean_amph)
@@ -77,24 +78,35 @@ def prep_data(drug, dose, base, shift):
     d2_eventmean_ctrl = np.array(d2_eventmean_ctrl[:-shift])
     d2_eventmean_amph = np.array(d2_eventmean_amph[:-shift])
 
-    pdb.set_trace()
+    # pdb.set_trace()
+
+    pkl.dump(d1_speed_ctrl_shifted, open("d1_speed_ctrl_shifted.pkl", "wb"))
+    pkl.dump(d1_speed_amph_shifted, open("d1_speed_amph_shifted.pkl", "wb"))
+
+    pkl.dump(d1_eventmean_ctrl, open("d1_eventmean_ctrl.pkl", "wb"))
+    pkl.dump(d1_eventmean_amph, open("d1_eventmean_amph.pkl", "wb"))
 
     return d1_speed_ctrl_shifted, d1_speed_amph_shifted, d2_speed_ctrl_shifted, d2_speed_amph_shifted, \
            d1_eventmean_ctrl, d1_eventmean_amph, d2_eventmean_ctrl, d2_eventmean_amph
 
 
-def perform_glm(drug, dose, base, shift):
+def perform_glm():
 
-    d1_speed_ctrl_shifted, d1_speed_amph_shifted, d2_speed_ctrl_shifted, d2_speed_amph_shifted, \
-    d1_eventmean_ctrl, d1_eventmean_amph, d2_eventmean_ctrl, d2_eventmean_amph = prep_data(drug, dose, base, shift)
+    # d1_speed_ctrl_shifted, d1_speed_amph_shifted, d2_speed_ctrl_shifted, d2_speed_amph_shifted, \
+    # d1_eventmean_ctrl, d1_eventmean_amph, d2_eventmean_ctrl, d2_eventmean_amph = prep_data(drug, dose, base, shift)
 
-    ttsplit = len(d1_eventmean_ctrl) * .20
+    d1_speed_ctrl_shifted = pkl.load(open("d1_speed_ctrl_shifted.pkl", "rb"))
+    d1_eventmean_ctrl = pkl.load(open("d1_eventmean_ctrl.pkl", "rb"))
+
+    ttsplit = int(len(d1_eventmean_ctrl) / 4)
 
     event_train = d1_eventmean_ctrl[:ttsplit]
     event_test = d1_eventmean_ctrl[ttsplit:]
 
-    feature_train = d1_speed_ctrl_shifted[:,:ttsplit]
-    feature_test = d1_speed_ctrl_shifted[:,ttsplit:]
+    feature_train = sm.add_constant(d1_speed_ctrl_shifted[:, :ttsplit].T, prepend=False)
+    feature_test = sm.add_constant(d1_speed_ctrl_shifted[:, ttsplit:].T, prepend=False)
+
+    # pdb.set_trace()
 
     glm = sm.GLM(event_train, feature_train, sm.families.Poisson())
     glm_fit = glm.fit_regularized(method='elastic_net')
@@ -106,11 +118,25 @@ def perform_glm(drug, dose, base, shift):
     # glm_xcor = np.correlate(spike_test,spike_predict)
     glm_corrcoef = np.corrcoef(event_test, event_predict)
     glm_r2 = r2_score(event_test, event_predict)
-    # print(glm_xcor)
-    print(glm_corrcoef)
-    print(glm_r2)
 
-    return
+    plt.figure(figsize=(10, 4))
+    # plt.plot(spike_test, label='original')
+
+    ax = plt.subplot(2, 1, 1)
+    plt.plot(event_test, label='original', color='k')
+    plt.xlim(0, 1400)
+    plt.ylabel('spike count')
+    plt.legend()
+
+    ax = plt.subplot(2, 1, 2)
+    plt.plot(event_predict, label='glm reconstruct, R2=', color='k')
+    plt.xlim(0, 1400)
+    plt.legend()
+    plt.xlabel('time (5Hz)')
+    plt.ylabel('spike count')
+    plt.show()
+
+    return glm_corrcoef, glm_r2
 
     # need events + shifted features (hmm?)
 
