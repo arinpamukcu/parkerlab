@@ -49,20 +49,28 @@ def prep_data(drug, dose, shift):
 
         _, _, calcium_ctrl_processed, calcium_amph_processed, \
         _, _, _, = get_calcium_dff(drug, dose, experiment)
-        speed_ctrl, speed_amph, calcium_ctrl_events, calcium_amph_events, eventmean_ctrl, eventmean_amph, \
+        speed_ctrl, speed_amph, events_ctrl, events_amph, eventmean_ctrl, eventmean_amph, \
         _, _, _ = get_calcium_events(drug, dose, experiment)
 
         if animal in alldata[drug][dose]['ctrl'].keys():
             if animal in D1_animals:
-                d1_eventmean_ctrl.extend(eventmean_ctrl)
-                d1_eventmean_amph.extend(eventmean_amph)
+                pdb.set_trace()
 
-                d1_speed_ctrl.extend(speed_ctrl)
-                d1_speed_amph.extend(speed_amph)
+                d1_events_ctrl = np.hstack((d1_eventmean_ctrl, events_ctrl[:-shift]))
+                d1_events_amph = np.hstack((d1_eventmean_amph, events_ctrl[:-shift]))
+
+                speed_ctrl_shifted = feature_future(speed_ctrl[:], shift)
+                speed_amph_shifted = feature_future(speed_amph[:], shift)
+
+                d1_speed_ctrl = np.concatenate((d1_speed_ctrl, speed_ctrl_shifted), axis=0)
+                d1_speed_amph = np.concatenate((d1_speed_amph, speed_amph_shifted), axis=0)
 
             elif animal in D2_animals:
-                d2_eventmean_ctrl.extend(eventmean_ctrl)
-                d2_eventmean_amph.extend(eventmean_amph)
+                d2_eventmean_ctrl.extend(eventmean_ctrl[:-shift])
+                d2_eventmean_amph.extend(eventmean_amph[:-shift])
+
+                speed_ctrl_shifted = feature_future(speed_ctrl[:], shift)
+                speed_amph_shifted = feature_future(speed_amph[:], shift)
 
                 d2_speed_ctrl.extend(speed_ctrl)
                 d2_speed_amph.extend(speed_amph)
@@ -80,14 +88,16 @@ def prep_data(drug, dose, shift):
 
     # pdb.set_trace()
 
-    pkl.dump(d1_speed_ctrl_shifted, open("d1_speed_ctrl_shifted.pkl", "wb"))
-    pkl.dump(d1_speed_amph_shifted, open("d1_speed_amph_shifted.pkl", "wb"))
+    # pkl.dump(d1_speed_ctrl_shifted, open("d1_speed_ctrl_shifted.pkl", "wb"))
+    # pkl.dump(d1_speed_amph_shifted, open("d1_speed_amph_shifted.pkl", "wb"))
+    #
+    # pkl.dump(d1_eventmean_ctrl, open("d1_eventmean_ctrl.pkl", "wb"))
+    # pkl.dump(d1_eventmean_amph, open("d1_eventmean_amph.pkl", "wb"))
 
-    pkl.dump(d1_eventmean_ctrl, open("d1_eventmean_ctrl.pkl", "wb"))
-    pkl.dump(d1_eventmean_amph, open("d1_eventmean_amph.pkl", "wb"))
+    return
 
-    return d1_speed_ctrl_shifted, d1_speed_amph_shifted, d2_speed_ctrl_shifted, d2_speed_amph_shifted, \
-           d1_eventmean_ctrl, d1_eventmean_amph, d2_eventmean_ctrl, d2_eventmean_amph
+    # return d1_speed_ctrl_shifted, d1_speed_amph_shifted, d2_speed_ctrl_shifted, d2_speed_amph_shifted, \
+    #        d1_eventmean_ctrl, d1_eventmean_amph, d2_eventmean_ctrl, d2_eventmean_amph
 
 
 def perform_glm():
@@ -95,16 +105,16 @@ def perform_glm():
     # d1_speed_ctrl_shifted, d1_speed_amph_shifted, d2_speed_ctrl_shifted, d2_speed_amph_shifted, \
     # d1_eventmean_ctrl, d1_eventmean_amph, d2_eventmean_ctrl, d2_eventmean_amph = prep_data(drug, dose, base, shift)
 
-    d1_speed_ctrl_shifted = pkl.load(open("d1_speed_ctrl_shifted.pkl", "rb"))
-    d1_eventmean_ctrl = pkl.load(open("d1_eventmean_ctrl.pkl", "rb"))
+    d1_speed_amph_shifted = pkl.load(open("d1_speed_amph_shifted.pkl", "rb"))
+    d1_eventmean_amph = pkl.load(open("d1_eventmean_amph.pkl", "rb"))
 
-    ttsplit = int(len(d1_eventmean_ctrl) / 4)
+    ttsplit = int(len(d1_eventmean_amph) / 4)
 
-    event_train = d1_eventmean_ctrl[:ttsplit]
-    event_test = d1_eventmean_ctrl[ttsplit:]
+    event_train = d1_eventmean_amph[:ttsplit]
+    event_test = d1_eventmean_amph[ttsplit:]
 
-    feature_train = sm.add_constant(d1_speed_ctrl_shifted[:, :ttsplit].T, prepend=False)
-    feature_test = sm.add_constant(d1_speed_ctrl_shifted[:, ttsplit:].T, prepend=False)
+    feature_train = sm.add_constant(d1_speed_amph_shifted[:, :ttsplit].T, prepend=False)
+    feature_test = sm.add_constant(d1_speed_amph_shifted[:, ttsplit:].T, prepend=False)
 
     # pdb.set_trace()
 
@@ -124,16 +134,16 @@ def perform_glm():
 
     ax = plt.subplot(2, 1, 1)
     plt.plot(event_test, label='original', color='k')
-    plt.xlim(0, 1400)
+    # plt.xlim(0, 1400)
     plt.ylabel('spike count')
-    plt.legend()
 
     ax = plt.subplot(2, 1, 2)
     plt.plot(event_predict, label='glm reconstruct, R2=', color='k')
-    plt.xlim(0, 1400)
-    plt.legend()
+    # plt.xlim(0, 1400)
     plt.xlabel('time (5Hz)')
     plt.ylabel('spike count')
+
+    plt.legend()
     plt.show()
 
     return glm_corrcoef, glm_r2
