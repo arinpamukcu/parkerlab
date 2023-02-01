@@ -2,6 +2,7 @@
 # predict spikes from behavioral features
 
 from info import *
+from mars import *
 from calcium import *
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
@@ -39,10 +40,9 @@ def prep_data(drug, dose, shift):
 
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
-    # animals = D1_animals + D2_animals
 
-    d1_eventmean_ctrl, d1_eventmean_amph, d1_speed_ctrl, d1_speed_amph = ([] for i in range(4))
-    d2_eventmean_ctrl, d2_eventmean_amph, d2_speed_ctrl, d2_speed_amph = ([] for i in range(4))
+    d1_network_ctrl, d1_network_amph, d1_speed_ctrl, d1_speed_amph = ([] for i in range(4))
+    d2_network_ctrl, d2_network_amph, d2_speed_ctrl, d2_speed_amph = ([] for i in range(4))
 
     for experiment, animal in zip(experiments, animals):
         print(experiment)
@@ -52,69 +52,64 @@ def prep_data(drug, dose, shift):
         speed_ctrl, speed_amph, events_ctrl, events_amph, eventmean_ctrl, eventmean_amph, \
         _, _, _ = get_calcium_events(drug, dose, experiment)
 
+        turn_ctrl, turn_amph \
+            = get_mars_features(drug, dose, experiment)
+        grooming_ctrl, grooming_amph \
+            = get_classifier(drug, dose, experiment, 'grooming')
+        rearing_ctrl, rearing_amph \
+            = get_classifier(drug, dose, experiment, 'rearing')
+
         if animal in alldata[drug][dose]['ctrl'].keys():
             if animal in D1_animals:
-                pdb.set_trace()
 
-                d1_events_ctrl = np.hstack((d1_eventmean_ctrl, events_ctrl[:-shift]))
-                d1_events_amph = np.hstack((d1_eventmean_amph, events_ctrl[:-shift]))
+                d1_network_ctrl = np.hstack((d1_network_ctrl, eventmean_ctrl[:-shift]))
+                d1_network_amph = np.hstack((d1_network_amph, eventmean_amph[:-shift]))
 
-                speed_ctrl_shifted = feature_future(speed_ctrl[:], shift)
-                speed_amph_shifted = feature_future(speed_amph[:], shift)
+                speed_ctrl_shifted = feature_future(speed_ctrl[:], shift).T
+                speed_amph_shifted = feature_future(speed_amph[:], shift).T
 
-                d1_speed_ctrl = np.concatenate((d1_speed_ctrl, speed_ctrl_shifted), axis=0)
-                d1_speed_amph = np.concatenate((d1_speed_amph, speed_amph_shifted), axis=0)
+                d1_speed_ctrl.extend(speed_ctrl_shifted)
+                d1_speed_amph.extend(speed_amph_shifted)
 
             elif animal in D2_animals:
-                d2_eventmean_ctrl.extend(eventmean_ctrl[:-shift])
-                d2_eventmean_amph.extend(eventmean_amph[:-shift])
+                d2_network_ctrl = np.hstack((d2_network_ctrl, eventmean_ctrl[:-shift]))
+                d2_network_amph = np.hstack((d2_network_amph, eventmean_amph[:-shift]))
 
-                speed_ctrl_shifted = feature_future(speed_ctrl[:], shift)
-                speed_amph_shifted = feature_future(speed_amph[:], shift)
+                speed_ctrl_shifted = feature_future(speed_ctrl[:], shift).T
+                speed_amph_shifted = feature_future(speed_amph[:], shift).T
 
-                d2_speed_ctrl.extend(speed_ctrl)
-                d2_speed_amph.extend(speed_amph)
+                d2_speed_ctrl.extend(speed_ctrl_shifted)
+                d2_speed_amph.extend(speed_amph_shifted)
 
     # add 10 seconds of feature future
-    d1_speed_ctrl_shifted = feature_future(d1_speed_ctrl[:], shift)
-    d1_speed_amph_shifted = feature_future(d1_speed_amph[:], shift)
-    d2_speed_ctrl_shifted = feature_future(d2_speed_ctrl[:], shift)
-    d2_speed_amph_shifted = feature_future(d2_speed_amph[:], shift)
+    d1_speed_ctrl_shifted = np.array(d1_speed_ctrl)
+    d1_speed_amph_shifted = np.array(d1_speed_amph)
+    d2_speed_ctrl_shifted = np.array(d2_speed_ctrl)
+    d2_speed_amph_shifted = np.array(d2_speed_amph)
 
-    d1_eventmean_ctrl = np.array(d1_eventmean_ctrl[:-shift])
-    d1_eventmean_amph = np.array(d1_eventmean_amph[:-shift])
-    d2_eventmean_ctrl = np.array(d2_eventmean_ctrl[:-shift])
-    d2_eventmean_amph = np.array(d2_eventmean_amph[:-shift])
+    d1_ctrl_regressor = np.vstack((d1_speed_ctrl_shifted.T, d1_network_ctrl.T))
+    d1_amph_regressor = np.vstack((d1_speed_amph_shifted.T, d1_network_amph.T))
+    d2_ctrl_regressor = np.vstack((d2_speed_ctrl_shifted.T, d2_network_ctrl.T))
+    d2_amph_regressor = np.vstack((d2_speed_amph_shifted.T, d2_network_amph.T))
 
-    # pdb.set_trace()
-
-    # pkl.dump(d1_speed_ctrl_shifted, open("d1_speed_ctrl_shifted.pkl", "wb"))
-    # pkl.dump(d1_speed_amph_shifted, open("d1_speed_amph_shifted.pkl", "wb"))
-    #
-    # pkl.dump(d1_eventmean_ctrl, open("d1_eventmean_ctrl.pkl", "wb"))
-    # pkl.dump(d1_eventmean_amph, open("d1_eventmean_amph.pkl", "wb"))
-
-    return
-
-    # return d1_speed_ctrl_shifted, d1_speed_amph_shifted, d2_speed_ctrl_shifted, d2_speed_amph_shifted, \
-    #        d1_eventmean_ctrl, d1_eventmean_amph, d2_eventmean_ctrl, d2_eventmean_amph
+    return d1_ctrl_regressor, d1_amph_regressor, d2_ctrl_regressor, d2_amph_regressor
 
 
-def perform_glm():
+def perform_glm(drug, dose, shift):
+    experiments, animals, _, _ = get_animal_id(drug, dose)
 
-    # d1_speed_ctrl_shifted, d1_speed_amph_shifted, d2_speed_ctrl_shifted, d2_speed_amph_shifted, \
-    # d1_eventmean_ctrl, d1_eventmean_amph, d2_eventmean_ctrl, d2_eventmean_amph = prep_data(drug, dose, base, shift)
+    for experiment, animal in zip(experiments, animals):
+        d1_ctrl_regressor, d1_amph_regressor, d2_ctrl_regressor, d2_amph_regressor = prep_data(drug, dose, shift)
 
-    d1_speed_amph_shifted = pkl.load(open("d1_speed_amph_shifted.pkl", "rb"))
-    d1_eventmean_amph = pkl.load(open("d1_eventmean_amph.pkl", "rb"))
+
 
     ttsplit = int(len(d1_eventmean_amph) / 4)
 
     event_train = d1_eventmean_amph[:ttsplit]
     event_test = d1_eventmean_amph[ttsplit:]
 
-    feature_train = sm.add_constant(d1_speed_amph_shifted[:, :ttsplit].T, prepend=False)
-    feature_test = sm.add_constant(d1_speed_amph_shifted[:, ttsplit:].T, prepend=False)
+    feature_train = sm.add_constant(d1_ctrl_regressor[:, :ttsplit].T, prepend=False)
+    feature_test = sm.add_constant(d1_ctrl_regressor[:, ttsplit:].T, prepend=False)
 
     # pdb.set_trace()
 
