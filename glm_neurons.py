@@ -61,6 +61,8 @@ def prep_data(drug, dose, shift):
         if animal in alldata[drug][dose]['ctrl'].keys():
             if animal in D1_animals:
                 print('D1_animal: ' + experiment)
+                print(eventmean_ctrl.shape)
+                print(eventmean_amph.shape)
 
                 d1_network_ctrl = np.hstack((d1_network_ctrl, eventmean_ctrl[:-shift]))
                 d1_network_amph = np.hstack((d1_network_amph, eventmean_amph[:-shift]))
@@ -85,6 +87,9 @@ def prep_data(drug, dose, shift):
 
             elif animal in D2_animals:
                 print('D2_animal: ' + experiment)
+                print(eventmean_ctrl.shape)
+                print(eventmean_amph.shape)
+
                 d2_network_ctrl = np.hstack((d2_network_ctrl, eventmean_ctrl[:-shift]))
                 d2_network_amph = np.hstack((d2_network_amph, eventmean_amph[:-shift]))
 
@@ -125,12 +130,14 @@ def prep_data(drug, dose, shift):
     d2_rear_ctrl_shifted = np.array(d2_rear_ctrl).T
     d2_rear_amph_shifted = np.array(d2_rear_amph).T
 
-    pdb.set_trace()
-
-    d1_ctrl_regressor = np.concatenate((d1_speed_ctrl_shifted, d1_turn_ctrl_shifted, d1_groom_ctrl_shifted, d1_rear_ctrl_shifted, d1_network_ctrl))
-    d1_amph_regressor = np.concatenate((d1_speed_amph_shifted, d1_turn_amph_shifted, d1_groom_amph_shifted, d1_rear_amph_shifted, d1_network_amph))
-    d2_ctrl_regressor = np.concatenate((d2_speed_ctrl_shifted, d2_turn_ctrl_shifted, d2_groom_ctrl_shifted, d2_rear_ctrl_shifted, d2_network_ctrl))
-    d2_amph_regressor = np.concatenate((d2_speed_amph_shifted, d2_turn_amph_shifted, d2_groom_amph_shifted, d2_rear_amph_shifted, d2_network_amph))
+    d1_ctrl_regressor = np.concatenate((d1_speed_ctrl_shifted, d1_turn_ctrl_shifted, d1_groom_ctrl_shifted,
+                                        d1_rear_ctrl_shifted, d1_network_ctrl))
+    d1_amph_regressor = np.concatenate((d1_speed_amph_shifted, d1_turn_amph_shifted, d1_groom_amph_shifted,
+                                        d1_rear_amph_shifted, d1_network_amph))
+    d2_ctrl_regressor = np.concatenate((d2_speed_ctrl_shifted, d2_turn_ctrl_shifted, d2_groom_ctrl_shifted,
+                                        d2_rear_ctrl_shifted, d2_network_ctrl))
+    d2_amph_regressor = np.concatenate((d2_speed_amph_shifted, d2_turn_amph_shifted, d2_groom_amph_shifted,
+                                        d2_rear_amph_shifted, d2_network_amph))
 
     return d1_ctrl_regressor, d1_amph_regressor, d2_ctrl_regressor, d2_amph_regressor
 
