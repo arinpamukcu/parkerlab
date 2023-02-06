@@ -175,8 +175,8 @@ def perform_glm():
     event_train = d1_event_amph[:ttsplit]
     event_test = d1_event_amph[ttsplit:]
 
-    feature_train = sm.add_constant(d1_amph_regressor[:, :ttsplit].T, prepend=False)
-    feature_test = sm.add_constant(d1_amph_regressor[:, ttsplit:].T, prepend=False)
+    feature_train = sm.add_constant(d1_amph_regressor[:, :ttsplit], prepend=False)
+    feature_test = sm.add_constant(d1_amph_regressor[:, ttsplit:], prepend=False)
 
     pdb.set_trace()
 
