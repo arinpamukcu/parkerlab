@@ -41,10 +41,10 @@ def prep_data(drug, dose, shift):
     alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
 
-    d1_network_ctrl, d1_network_amph, d1_speed_ctrl, d1_speed_amph, d1_turn_ctrl, d1_turn_amph, \
-    d1_groom_ctrl, d1_groom_amph, d1_rear_ctrl, d1_rear_amph = ([] for i in range(10))
-    d2_network_ctrl, d2_network_amph, d2_speed_ctrl, d2_speed_amph, d2_turn_ctrl, d2_turn_amph, \
-    d2_groom_ctrl, d2_groom_amph, d2_rear_ctrl, d2_rear_amph = ([] for i in range(10))
+    d1_events_ctrl, d1_events_amph, d1_network_ctrl, d1_network_amph, d1_speed_ctrl, d1_speed_amph, \
+    d1_turn_ctrl, d1_turn_amph, d1_groom_ctrl, d1_groom_amph, d1_rear_ctrl, d1_rear_amph = ([] for i in range(12))
+    d2_events_ctrl, d2_events_amph, d2_network_ctrl, d2_network_amph, d2_speed_ctrl, d2_speed_amph, \
+    d2_turn_ctrl, d2_turn_amph, d2_groom_ctrl, d2_groom_amph, d2_rear_ctrl, d2_rear_amph = ([] for i in range(12))
 
     for experiment, animal in zip(experiments, animals):
         # print(experiment)
@@ -58,11 +58,25 @@ def prep_data(drug, dose, shift):
         groom_ctrl, groom_amph = get_classifier(drug, dose, experiment, 'grooming')
         rear_ctrl, rear_amph = get_classifier(drug, dose, experiment, 'rearing')
 
+        if len(turn_ctrl) != 4500:
+            pad_size = 4500 - len(turn_ctrl)
+            turn_ctrl = np.pad(turn_ctrl, (0, pad_size), mode='constant', constant_values='nan')
+            groom_ctrl = np.pad(groom_ctrl, (0, pad_size), mode='constant', constant_values='nan')
+            rear_ctrl = np.pad(rear_ctrl, (0, pad_size), mode='constant', constant_values='nan')
+        if len(turn_amph) != 13500:
+            pad_size = 13500 - len(turn_amph)
+            turn_amph = np.pad(turn_amph, (0, pad_size), mode='constant', constant_values='nan')
+            groom_amph = np.pad(groom_amph, (0, pad_size), mode='constant', constant_values='nan')
+            rear_amph = np.pad(rear_amph, (0, pad_size), mode='constant', constant_values='nan')
+        else:
+            pass
+
         if animal in alldata[drug][dose]['ctrl'].keys():
             if animal in D1_animals:
                 print('D1_animal: ' + experiment)
-                print(eventmean_ctrl.shape)
-                print(eventmean_amph.shape)
+
+                d1_events_ctrl = np.hstack((d1_events_ctrl, events_ctrl[0, :-shift]))
+                d1_events_amph = np.hstack((d1_events_amph, events_ctrl[0, :-shift]))
 
                 d1_network_ctrl = np.hstack((d1_network_ctrl, eventmean_ctrl[:-shift]))
                 d1_network_amph = np.hstack((d1_network_amph, eventmean_amph[:-shift]))
@@ -87,8 +101,9 @@ def prep_data(drug, dose, shift):
 
             elif animal in D2_animals:
                 print('D2_animal: ' + experiment)
-                print(eventmean_ctrl.shape)
-                print(eventmean_amph.shape)
+
+                d2_events_ctrl = np.hstack((d2_events_ctrl, events_ctrl[0, :-shift]))
+                d2_events_amph = np.hstack((d2_events_amph, events_ctrl[0, :-shift]))
 
                 d2_network_ctrl = np.hstack((d2_network_ctrl, eventmean_ctrl[:-shift]))
                 d2_network_amph = np.hstack((d2_network_amph, eventmean_amph[:-shift]))
@@ -130,35 +145,40 @@ def prep_data(drug, dose, shift):
     d2_rear_ctrl_shifted = np.array(d2_rear_ctrl).T
     d2_rear_amph_shifted = np.array(d2_rear_amph).T
 
-    d1_ctrl_regressor = np.concatenate((d1_speed_ctrl_shifted, d1_turn_ctrl_shifted, d1_groom_ctrl_shifted,
-                                        d1_rear_ctrl_shifted, d1_network_ctrl))
-    d1_amph_regressor = np.concatenate((d1_speed_amph_shifted, d1_turn_amph_shifted, d1_groom_amph_shifted,
-                                        d1_rear_amph_shifted, d1_network_amph))
-    d2_ctrl_regressor = np.concatenate((d2_speed_ctrl_shifted, d2_turn_ctrl_shifted, d2_groom_ctrl_shifted,
-                                        d2_rear_ctrl_shifted, d2_network_ctrl))
-    d2_amph_regressor = np.concatenate((d2_speed_amph_shifted, d2_turn_amph_shifted, d2_groom_amph_shifted,
-                                        d2_rear_amph_shifted, d2_network_amph))
-
-    return d1_ctrl_regressor, d1_amph_regressor, d2_ctrl_regressor, d2_amph_regressor
-
-
-def perform_glm(drug, dose, shift):
-    experiments, animals, _, _ = get_animal_id(drug, dose)
-
-    for experiment, animal in zip(experiments, animals):
-        d1_ctrl_regressor, d1_amph_regressor, d2_ctrl_regressor, d2_amph_regressor = prep_data(drug, dose, shift)
-
-
-
-    ttsplit = int(len(d1_eventmean_amph) / 4)
-
-    event_train = d1_eventmean_amph[:ttsplit]
-    event_test = d1_eventmean_amph[ttsplit:]
-
-    feature_train = sm.add_constant(d1_ctrl_regressor[:, :ttsplit].T, prepend=False)
-    feature_test = sm.add_constant(d1_ctrl_regressor[:, ttsplit:].T, prepend=False)
-
     # pdb.set_trace()
+
+    d1_ctrl_regressor = np.vstack((d1_speed_ctrl_shifted, d1_turn_ctrl_shifted, d1_groom_ctrl_shifted, d1_rear_ctrl_shifted, d1_network_ctrl))
+    d1_amph_regressor = np.vstack((d1_speed_amph_shifted, d1_turn_amph_shifted, d1_groom_amph_shifted, d1_rear_amph_shifted, d1_network_amph))
+    d2_ctrl_regressor = np.vstack((d2_speed_ctrl_shifted, d2_turn_ctrl_shifted, d2_groom_ctrl_shifted, d2_rear_ctrl_shifted, d2_network_ctrl))
+    d2_amph_regressor = np.vstack((d2_speed_amph_shifted, d2_turn_amph_shifted, d2_groom_amph_shifted, d2_rear_amph_shifted, d2_network_amph))
+
+    pkl.dump(d1_events_ctrl, open("d1_events_ctrl.pkl", "wb"))
+    pkl.dump(d1_ctrl_regressor, open("d1_ctrl_regressor.pkl", "wb"))
+    pkl.dump(d1_events_amph, open("d1_events_amph.pkl", "wb"))
+    pkl.dump(d1_amph_regressor, open("d1_amph_regressor.pkl", "wb"))
+
+    return d1_events_ctrl, d1_ctrl_regressor, d1_events_amph, d1_amph_regressor, \
+           d2_events_ctrl, d2_ctrl_regressor, d2_events_amph, d2_amph_regressor
+
+
+def perform_glm():
+    # experiments, animals, _, _ = get_animal_id(drug, dose)
+
+    # d1_events_ctrl, d1_ctrl_regressor, d1_event_amph, d1_amph_regressor, \
+    # d2_events_ctrl, d2_ctrl_regressor, d2_event_amph, d2_amph_regressor = prep_data(drug, dose, shift)
+
+    d1_event_amph = pkl.load(open("d1_events_amph.pkl", "rb"))
+    d1_amph_regressor = pkl.load(open("d1_amph_regressor.pkl", "rb"))
+
+    ttsplit = int(13500 / 4)
+
+    event_train = d1_event_amph[:ttsplit]
+    event_test = d1_event_amph[ttsplit:]
+
+    feature_train = sm.add_constant(d1_amph_regressor[:, :ttsplit].T, prepend=False)
+    feature_test = sm.add_constant(d1_amph_regressor[:, ttsplit:].T, prepend=False)
+
+    pdb.set_trace()
 
     glm = sm.GLM(event_train, feature_train, sm.families.Poisson())
     glm_fit = glm.fit_regularized(method='elastic_net')
