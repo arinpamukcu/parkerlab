@@ -8,12 +8,12 @@ from scipy.ndimage import gaussian_filter1d
 from scipy.signal import find_peaks
 
 #  path for older calcium files
-# calcium_raw_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v1' #pc
-calcium_raw_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_v1' #mac
+calcium_raw_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v1' #pc
+# calcium_raw_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_v1' #mac
 
 #  path for new calcium files
-# calcium_events_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v2' #pc
-calcium_events_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_v2' #mac
+calcium_events_dir = 'R:\Basic_Sciences\Phys\Kennedylab\Parkerlab\Calcium_v2' #pc
+# calcium_events_dir = '/Volumes/fsmresfiles/Basic_Sciences/Phys/Kennedylab/Parkerlab/Calcium_v2' #mac
 
 def get_calcium_events(drug, dose, experiment):
 

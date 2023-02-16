@@ -75,8 +75,8 @@ def prep_data(drug, dose, shift):
             if animal in D1_animals:
                 print('D1_animal: ' + experiment)
 
-                d1_events_ctrl = np.hstack((d1_events_ctrl, events_ctrl[0, :-shift]))
-                d1_events_amph = np.hstack((d1_events_amph, events_ctrl[0, :-shift]))
+                # d1_events_ctrl = np.hstack((d1_events_ctrl, events_ctrl[0, :-shift]))
+                # d1_events_amph = np.hstack((d1_events_amph, events_amph[0, :-shift]))
 
                 d1_network_ctrl = np.hstack((d1_network_ctrl, eventmean_ctrl[:-shift]))
                 d1_network_amph = np.hstack((d1_network_amph, eventmean_amph[:-shift]))
@@ -102,8 +102,8 @@ def prep_data(drug, dose, shift):
             elif animal in D2_animals:
                 print('D2_animal: ' + experiment)
 
-                d2_events_ctrl = np.hstack((d2_events_ctrl, events_ctrl[0, :-shift]))
-                d2_events_amph = np.hstack((d2_events_amph, events_ctrl[0, :-shift]))
+                # d2_events_ctrl = np.hstack((d2_events_ctrl, events_ctrl[0, :-shift]))
+                # d2_events_amph = np.hstack((d2_events_amph, events_amph[0, :-shift]))
 
                 d2_network_ctrl = np.hstack((d2_network_ctrl, eventmean_ctrl[:-shift]))
                 d2_network_amph = np.hstack((d2_network_amph, eventmean_amph[:-shift]))
@@ -126,6 +126,8 @@ def prep_data(drug, dose, shift):
                 d2_rear_ctrl.extend(rear_ctrl_shifted)
                 d2_rear_amph.extend(rear_amph_shifted)
 
+    pdb.set_trace()
+
     # add 10 seconds of feature future
     d1_speed_ctrl_shifted = np.array(d1_speed_ctrl).T
     d1_speed_amph_shifted = np.array(d1_speed_amph).T
@@ -145,20 +147,25 @@ def prep_data(drug, dose, shift):
     d2_rear_ctrl_shifted = np.array(d2_rear_ctrl).T
     d2_rear_amph_shifted = np.array(d2_rear_amph).T
 
-    # pdb.set_trace()
+    d1_ctrl_regressor = np.vstack((d1_speed_ctrl_shifted, d1_turn_ctrl_shifted, d1_groom_ctrl_shifted, d1_rear_ctrl_shifted))
+    d1_amph_regressor = np.vstack((d1_speed_amph_shifted, d1_turn_amph_shifted, d1_groom_amph_shifted, d1_rear_amph_shifted))
+    d2_ctrl_regressor = np.vstack((d2_speed_ctrl_shifted, d2_turn_ctrl_shifted, d2_groom_ctrl_shifted, d2_rear_ctrl_shifted))
+    d2_amph_regressor = np.vstack((d2_speed_amph_shifted, d2_turn_amph_shifted, d2_groom_amph_shifted, d2_rear_amph_shifted))
 
-    d1_ctrl_regressor = np.vstack((d1_speed_ctrl_shifted, d1_turn_ctrl_shifted, d1_groom_ctrl_shifted, d1_rear_ctrl_shifted, d1_network_ctrl))
-    d1_amph_regressor = np.vstack((d1_speed_amph_shifted, d1_turn_amph_shifted, d1_groom_amph_shifted, d1_rear_amph_shifted, d1_network_amph))
-    d2_ctrl_regressor = np.vstack((d2_speed_ctrl_shifted, d2_turn_ctrl_shifted, d2_groom_ctrl_shifted, d2_rear_ctrl_shifted, d2_network_ctrl))
-    d2_amph_regressor = np.vstack((d2_speed_amph_shifted, d2_turn_amph_shifted, d2_groom_amph_shifted, d2_rear_amph_shifted, d2_network_amph))
-
-    pkl.dump(d1_events_ctrl, open("d1_events_ctrl.pkl", "wb"))
+    pkl.dump(d1_network_ctrl, open("d1_network_ctrl.pkl", "wb"))
     pkl.dump(d1_ctrl_regressor, open("d1_ctrl_regressor.pkl", "wb"))
-    pkl.dump(d1_events_amph, open("d1_events_amph.pkl", "wb"))
+    pkl.dump(d1_network_amph, open("d1_network_amph.pkl", "wb"))
     pkl.dump(d1_amph_regressor, open("d1_amph_regressor.pkl", "wb"))
 
-    return d1_events_ctrl, d1_ctrl_regressor, d1_events_amph, d1_amph_regressor, \
-           d2_events_ctrl, d2_ctrl_regressor, d2_events_amph, d2_amph_regressor
+    pkl.dump(d2_network_ctrl, open("d2_network_ctrl.pkl", "wb"))
+    pkl.dump(d2_ctrl_regressor, open("d2_ctrl_regressor.pkl", "wb"))
+    pkl.dump(d2_network_amph, open("d2_network_amph.pkl", "wb"))
+    pkl.dump(d2_amph_regressor, open("d2_amph_regressor.pkl", "wb"))
+
+    return
+
+    # return d1_network_ctrl, d1_ctrl_regressor, d1_network_amph, d1_amph_regressor, \
+    #        d2_network_ctrl, d2_ctrl_regressor, d2_network_amph, d2_amph_regressor
 
 
 def perform_glm():
@@ -167,20 +174,23 @@ def perform_glm():
     # d1_events_ctrl, d1_ctrl_regressor, d1_event_amph, d1_amph_regressor, \
     # d2_events_ctrl, d2_ctrl_regressor, d2_event_amph, d2_amph_regressor = prep_data(drug, dose, shift)
 
-    d1_event_amph = pkl.load(open("d1_events_amph.pkl", "rb"))
-    d1_amph_regressor = pkl.load(open("d1_amph_regressor.pkl", "rb"))
+    # d1_event_amph = pkl.load(open("d1_events_amph.pkl", "rb"))
+    # d1_amph_regressor = pkl.load(open("d1_amph_regressor.pkl", "rb"))
+
+    d1_network_ctrl = pkl.load(open("d1_network_ctrl.pkl", "rb"))
+    d1_ctrl_regressor = pkl.load(open("d1_ctrl_regressor.pkl", "rb"))
 
     ttsplit = int(13500 / 4)
 
-    event_train = d1_event_amph[:ttsplit]
-    event_test = d1_event_amph[ttsplit:]
+    event_train = d1_network_ctrl[:ttsplit]
+    event_test = d1_network_ctrl[ttsplit:]
 
-    feature_train = sm.add_constant(d1_amph_regressor[:, :ttsplit], prepend=False)
-    feature_test = sm.add_constant(d1_amph_regressor[:, ttsplit:], prepend=False)
+    feature_train = sm.add_constant(d1_ctrl_regressor[:, :ttsplit].T, prepend=False)
+    feature_test = sm.add_constant(d1_ctrl_regressor[:, ttsplit:].T, prepend=False)
 
     pdb.set_trace()
 
-    glm = sm.GLM(event_train, feature_train, sm.families.Poisson())
+    glm = sm.GLM(event_train, feature_train, sm.families.Poisson(), missing='drop')
     glm_fit = glm.fit_regularized(method='elastic_net')
 
     # reconstruct and predict spike from feature
