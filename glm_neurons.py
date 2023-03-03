@@ -34,11 +34,12 @@ def spike_history(data, spikeshift):
     return data_shifted
 
 
-def prep_data(drug, dose, shift):
+def prep_data():
+    drugs = ['clozapine', 'haloperidol', 'mp-10']
+    dose = 'vehicle'
+    shift = 10
 
-    experiments, animals, _, _ = get_animal_id(drug, dose)
-
-    alldata = pkl.load(open("alldata.pkl", "rb"))
+    # alldata = pkl.load(open("alldata.pkl", "rb"))
     D1_animals, D2_animals = D1_D2_names()
 
     d1_events_ctrl, d1_events_amph, d1_network_ctrl, d1_network_amph, d1_speed_ctrl, d1_speed_amph, \
@@ -46,85 +47,92 @@ def prep_data(drug, dose, shift):
     d2_events_ctrl, d2_events_amph, d2_network_ctrl, d2_network_amph, d2_speed_ctrl, d2_speed_amph, \
     d2_turn_ctrl, d2_turn_amph, d2_groom_ctrl, d2_groom_amph, d2_rear_ctrl, d2_rear_amph = ([] for i in range(12))
 
-    for experiment, animal in zip(experiments, animals):
-        # print(experiment)
+    for drug in drugs:
 
-        _, _, calcium_ctrl_processed, calcium_amph_processed, \
-        _, _, _, = get_calcium_dff(drug, dose, experiment)
-        speed_ctrl, speed_amph, events_ctrl, events_amph, eventmean_ctrl, eventmean_amph, \
-        _, _, _ = get_calcium_events(drug, dose, experiment)
+        experiments, animals, _, _ = get_animal_id(drug, dose)
 
-        turn_ctrl, turn_amph = get_mars_features(drug, dose, experiment)
-        groom_ctrl, groom_amph = get_classifier(drug, dose, experiment, 'grooming')
-        rear_ctrl, rear_amph = get_classifier(drug, dose, experiment, 'rearing')
+        for experiment, animal in zip(experiments, animals):
+            # print(experiment)
 
-        if len(turn_ctrl) != 4500:
-            pad_size = 4500 - len(turn_ctrl)
-            turn_ctrl = np.pad(turn_ctrl, (0, pad_size), mode='constant', constant_values='nan')
-            groom_ctrl = np.pad(groom_ctrl, (0, pad_size), mode='constant', constant_values='nan')
-            rear_ctrl = np.pad(rear_ctrl, (0, pad_size), mode='constant', constant_values='nan')
-        if len(turn_amph) != 13500:
-            pad_size = 13500 - len(turn_amph)
-            turn_amph = np.pad(turn_amph, (0, pad_size), mode='constant', constant_values='nan')
-            groom_amph = np.pad(groom_amph, (0, pad_size), mode='constant', constant_values='nan')
-            rear_amph = np.pad(rear_amph, (0, pad_size), mode='constant', constant_values='nan')
-        else:
-            pass
+            _, _, calcium_ctrl_processed, calcium_amph_processed, \
+            _, _, _, = get_calcium_dff(drug, dose, experiment)
+            speed_ctrl, speed_amph, events_ctrl, events_amph, eventmean_ctrl, eventmean_amph, \
+            _, _, _ = get_calcium_events(drug, dose, experiment)
 
-        if animal in alldata[drug][dose]['ctrl'].keys():
-            if animal in D1_animals:
-                print('D1_animal: ' + experiment)
+            turn_ctrl, turn_amph = get_mars_features(drug, dose, experiment)
+            groom_ctrl, groom_amph = get_classifier(drug, dose, experiment, 'grooming')
+            rear_ctrl, rear_amph = get_classifier(drug, dose, experiment, 'rearing')
 
-                # d1_events_ctrl = np.hstack((d1_events_ctrl, events_ctrl[0, :-shift]))
-                # d1_events_amph = np.hstack((d1_events_amph, events_amph[0, :-shift]))
+            if len(turn_ctrl) != 4500:
+                pad_size = 4500 - len(turn_ctrl)
+                turn_ctrl = np.pad(turn_ctrl, (0, pad_size), mode='constant', constant_values='nan')
+                groom_ctrl = np.pad(groom_ctrl, (0, pad_size), mode='constant', constant_values='nan')
+                rear_ctrl = np.pad(rear_ctrl, (0, pad_size), mode='constant', constant_values='nan')
+            if len(turn_amph) != 13500:
+                pad_size = 13500 - len(turn_amph)
+                turn_amph = np.pad(turn_amph, (0, pad_size), mode='constant', constant_values='nan')
+                groom_amph = np.pad(groom_amph, (0, pad_size), mode='constant', constant_values='nan')
+                rear_amph = np.pad(rear_amph, (0, pad_size), mode='constant', constant_values='nan')
+            else:
+                pass
 
-                d1_network_ctrl = np.hstack((d1_network_ctrl, eventmean_ctrl[:-shift]))
-                d1_network_amph = np.hstack((d1_network_amph, eventmean_amph[:-shift]))
+            # if animal in alldata[drug][dose]['ctrl'].keys():
+            if animal in animals:
+                if animal in D1_animals:
+                    print('D1_animal: ' + experiment)
 
-                speed_ctrl_shifted = feature_future(speed_ctrl[:], shift).T
-                speed_amph_shifted = feature_future(speed_amph[:], shift).T
-                turn_ctrl_shifted = feature_future(turn_ctrl[:], shift).T
-                turn_amph_shifted = feature_future(turn_amph[:], shift).T
-                groom_ctrl_shifted = feature_future(groom_ctrl[:], shift).T
-                groom_amph_shifted = feature_future(groom_amph[:], shift).T
-                rear_ctrl_shifted = feature_future(rear_ctrl[:], shift).T
-                rear_amph_shifted = feature_future(rear_amph[:], shift).T
+                    # d1_events_ctrl = np.hstack((d1_events_ctrl, events_ctrl[0, :-shift]))
+                    # d1_events_amph = np.hstack((d1_events_amph, events_amph[0, :-shift]))
 
-                d1_speed_ctrl.extend(speed_ctrl_shifted)
-                d1_speed_amph.extend(speed_amph_shifted)
-                d1_turn_ctrl.extend(turn_ctrl_shifted)
-                d1_turn_amph.extend(turn_amph_shifted)
-                d1_groom_ctrl.extend(groom_ctrl_shifted)
-                d1_groom_amph.extend(groom_amph_shifted)
-                d1_rear_ctrl.extend(rear_ctrl_shifted)
-                d1_rear_amph.extend(rear_amph_shifted)
+                    d1_network_ctrl = np.hstack((d1_network_ctrl, eventmean_ctrl[:-shift]))
+                    d1_network_amph = np.hstack((d1_network_amph, eventmean_amph[:-shift]))
 
-            elif animal in D2_animals:
-                print('D2_animal: ' + experiment)
+                    speed_ctrl_shifted = feature_future(speed_ctrl[:], shift).T
+                    speed_amph_shifted = feature_future(speed_amph[:], shift).T
+                    turn_ctrl_shifted = feature_future(turn_ctrl[:], shift).T
+                    turn_amph_shifted = feature_future(turn_amph[:], shift).T
+                    groom_ctrl_shifted = feature_future(groom_ctrl[:], shift).T
+                    groom_amph_shifted = feature_future(groom_amph[:], shift).T
+                    rear_ctrl_shifted = feature_future(rear_ctrl[:], shift).T
+                    rear_amph_shifted = feature_future(rear_amph[:], shift).T
 
-                # d2_events_ctrl = np.hstack((d2_events_ctrl, events_ctrl[0, :-shift]))
-                # d2_events_amph = np.hstack((d2_events_amph, events_amph[0, :-shift]))
+                    d1_speed_ctrl.extend(speed_ctrl_shifted)
+                    d1_speed_amph.extend(speed_amph_shifted)
+                    d1_turn_ctrl.extend(turn_ctrl_shifted)
+                    d1_turn_amph.extend(turn_amph_shifted)
+                    d1_groom_ctrl.extend(groom_ctrl_shifted)
+                    d1_groom_amph.extend(groom_amph_shifted)
+                    d1_rear_ctrl.extend(rear_ctrl_shifted)
+                    d1_rear_amph.extend(rear_amph_shifted)
 
-                d2_network_ctrl = np.hstack((d2_network_ctrl, eventmean_ctrl[:-shift]))
-                d2_network_amph = np.hstack((d2_network_amph, eventmean_amph[:-shift]))
+                elif animal in D2_animals:
+                    print('D2_animal: ' + experiment)
 
-                speed_ctrl_shifted = feature_future(speed_ctrl[:], shift).T
-                speed_amph_shifted = feature_future(speed_amph[:], shift).T
-                turn_ctrl_shifted = feature_future(turn_ctrl[:], shift).T
-                turn_amph_shifted = feature_future(turn_amph[:], shift).T
-                groom_ctrl_shifted = feature_future(groom_ctrl[:], shift).T
-                groom_amph_shifted = feature_future(groom_amph[:], shift).T
-                rear_ctrl_shifted = feature_future(rear_ctrl[:], shift).T
-                rear_amph_shifted = feature_future(rear_amph[:], shift).T
+                    # d2_events_ctrl = np.hstack((d2_events_ctrl, events_ctrl[0, :-shift]))
+                    # d2_events_amph = np.hstack((d2_events_amph, events_amph[0, :-shift]))
 
-                d2_speed_ctrl.extend(speed_ctrl_shifted)
-                d2_speed_amph.extend(speed_amph_shifted)
-                d2_turn_ctrl.extend(turn_ctrl_shifted)
-                d2_turn_amph.extend(turn_amph_shifted)
-                d2_groom_ctrl.extend(groom_ctrl_shifted)
-                d2_groom_amph.extend(groom_amph_shifted)
-                d2_rear_ctrl.extend(rear_ctrl_shifted)
-                d2_rear_amph.extend(rear_amph_shifted)
+                    d2_network_ctrl = np.hstack((d2_network_ctrl, eventmean_ctrl[:-shift]))
+                    d2_network_amph = np.hstack((d2_network_amph, eventmean_amph[:-shift]))
+
+                    speed_ctrl_shifted = feature_future(speed_ctrl[:], shift).T
+                    speed_amph_shifted = feature_future(speed_amph[:], shift).T
+                    turn_ctrl_shifted = feature_future(turn_ctrl[:], shift).T
+                    turn_amph_shifted = feature_future(turn_amph[:], shift).T
+                    groom_ctrl_shifted = feature_future(groom_ctrl[:], shift).T
+                    groom_amph_shifted = feature_future(groom_amph[:], shift).T
+                    rear_ctrl_shifted = feature_future(rear_ctrl[:], shift).T
+                    rear_amph_shifted = feature_future(rear_amph[:], shift).T
+
+                    d2_speed_ctrl.extend(speed_ctrl_shifted)
+                    d2_speed_amph.extend(speed_amph_shifted)
+                    d2_turn_ctrl.extend(turn_ctrl_shifted)
+                    d2_turn_amph.extend(turn_amph_shifted)
+                    d2_groom_ctrl.extend(groom_ctrl_shifted)
+                    d2_groom_amph.extend(groom_amph_shifted)
+                    d2_rear_ctrl.extend(rear_ctrl_shifted)
+                    d2_rear_amph.extend(rear_amph_shifted)
+
+        # pdb.set_trace()
 
     pdb.set_trace()
 
@@ -162,13 +170,27 @@ def prep_data(drug, dose, shift):
     pkl.dump(d2_network_amph, open("d2_network_amph.pkl", "wb"))
     pkl.dump(d2_amph_regressor, open("d2_amph_regressor.pkl", "wb"))
 
+
+
     return
 
     # return d1_network_ctrl, d1_ctrl_regressor, d1_network_amph, d1_amph_regressor, \
     #        d2_network_ctrl, d2_ctrl_regressor, d2_network_amph, d2_amph_regressor
 
 
-def perform_glm():
+def plots(eventrate, regressors):
+    eventrate = pkl.load(open(eventrate + ".pkl", "rb"))
+    regressors = pkl.load(open(regressors + ".pkl", "rb"))
+
+    pdb.set_trace()
+
+    plt.figure(figsize=(6, 6))
+    plt.plot(regressors[0, :1000])
+
+    return
+
+
+def perform_glm(predict, regressor):
     # experiments, animals, _, _ = get_animal_id(drug, dose)
 
     # d1_events_ctrl, d1_ctrl_regressor, d1_event_amph, d1_amph_regressor, \
@@ -177,16 +199,16 @@ def perform_glm():
     # d1_event_amph = pkl.load(open("d1_events_amph.pkl", "rb"))
     # d1_amph_regressor = pkl.load(open("d1_amph_regressor.pkl", "rb"))
 
-    d1_network_ctrl = pkl.load(open("d1_network_ctrl.pkl", "rb"))
-    d1_ctrl_regressor = pkl.load(open("d1_ctrl_regressor.pkl", "rb"))
+    neural_fr = pkl.load(open(predict + ".pkl", "rb"))
+    regressors = pkl.load(open(regressor + ".pkl", "rb"))
 
     ttsplit = int(13500 / 4)
 
-    event_train = d1_network_ctrl[:ttsplit]
-    event_test = d1_network_ctrl[ttsplit:]
+    event_train = neural_fr[:ttsplit]
+    event_test = neural_fr[ttsplit:]
 
-    feature_train = sm.add_constant(d1_ctrl_regressor[:, :ttsplit].T, prepend=False)
-    feature_test = sm.add_constant(d1_ctrl_regressor[:, ttsplit:].T, prepend=False)
+    feature_train = sm.add_constant(regressors[:, :ttsplit].T, prepend=False)
+    feature_test = sm.add_constant(regressors[:, ttsplit:].T, prepend=False)
 
     pdb.set_trace()
 
